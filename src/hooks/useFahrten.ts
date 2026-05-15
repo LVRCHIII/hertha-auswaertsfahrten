@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { insertFahrt } from '../lib/fahrtenApi'
-import { supabase } from '../lib/supabase'
+import { requireSupabase } from '../lib/supabase'
 import type { Fahrt, FahrtInsert } from '../types/fahrt'
 
 export function useFahrten() {
@@ -12,7 +12,7 @@ export function useFahrten() {
     setLoading(true)
     setError(null)
 
-    const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await requireSupabase()
       .from('fahrten')
       .select('*')
       .order('spiel_at', { ascending: true })

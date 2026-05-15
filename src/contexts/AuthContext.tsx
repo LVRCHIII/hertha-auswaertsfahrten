@@ -8,7 +8,8 @@ import {
   type ReactNode,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
+import { requireSupabase } from '../lib/supabase'
+import { formatAuthNetworkError } from '../lib/supabaseEnv'
 
 type AuthContextValue = {
   user: User | null
@@ -22,6 +23,9 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 function mapAuthError(message: string): string {
+  if (message.toLowerCase().includes('failed to fetch')) {
+    return formatAuthNetworkError(message)
+  }
   if (message.includes('Invalid login credentials')) {
     return 'E-Mail oder Passwort ist falsch.'
   }
@@ -39,14 +43,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    const client = requireSupabase()
+
+    client.auth.getSession().then(({ data }) => {
       setSession(data.session)
       setLoading(false)
     })
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    } = client.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
       setLoading(false)
     })
@@ -55,17 +61,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await requireSupabase().auth.signInWithPassword({ email, password })
     return { error: error ? mapAuthError(error.message) : null }
   }, [])
 
   const signUp = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password })
+    const { error } = await requireSupabase().auth.signUp({ email, password })
     return { error: error ? mapAuthError(error.message) : null }
   }, [])
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut()
+    await requireSupabase().auth.signOut()
   }, [])
 
   const value = useMemo<AuthContextValue>(

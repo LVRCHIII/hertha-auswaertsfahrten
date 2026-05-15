@@ -26,7 +26,23 @@ Damit wird die Tabelle `fahrten` mit Row-Level Security angelegt.
 ```bash
 cd "/Users/lucasbruhn/Documents/Programming Projects/hertha-auswaertsfahrten"
 cp .env.example .env
-# .env mit deinen Supabase-Werten füllen
+```
+
+**Wichtig:** Vite liest nur `.env`, nicht `.env.example`. In `.env` eintragen:
+
+| Variable | Woher |
+|----------|--------|
+| `VITE_SUPABASE_URL` | Project Settings → API → **Project URL** (mit `https://`) |
+| `VITE_SUPABASE_ANON_KEY` | Project Settings → API → **anon public** (kompletter JWT, ~200 Zeichen) |
+
+Nach Änderungen an `.env` den Dev-Server **neu starten**.
+
+In Supabase unter **Authentication → URL Configuration** für lokale Entwicklung eintragen:
+
+- Site URL: `http://localhost:5173`
+- Redirect URLs: `http://localhost:5173/**`
+
+```bash
 npm install
 npm run dev
 ```

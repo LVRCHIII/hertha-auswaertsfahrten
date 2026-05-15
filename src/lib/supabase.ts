@@ -1,12 +1,23 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { resolveSupabaseConfig } from './supabaseEnv'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const config = resolveSupabaseConfig()
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Supabase-Umgebungsvariablen fehlen. Lege eine .env-Datei mit VITE_SUPABASE_URL und VITE_SUPABASE_ANON_KEY an (siehe .env.example).',
-  )
+export const supabaseConfigError = config.ok ? null : config.error
+
+export const supabase: SupabaseClient | null = config.ok
+  ? createClient(config.env.url, config.env.anonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    })
+  : null
+
+export function requireSupabase(): SupabaseClient {
+  if (!supabase) {
+    throw new Error(supabaseConfigError ?? 'Supabase ist nicht konfiguriert.')
+  }
+  return supabase
 }
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
