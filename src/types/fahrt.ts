@@ -8,6 +8,7 @@ export type Fahrt = {
   startpunkt: string
   notizen: string | null
   treffpunkt_berlin: string | null
+  treffpunkt_bestaetigt: boolean
 }
 
 export type FahrtInsert = {
@@ -17,5 +18,6 @@ export type FahrtInsert = {
   startpunkt: string
   notizen?: string | null
   treffpunkt_berlin?: string | null
+  treffpunkt_bestaetigt?: boolean
   created_by: string
 }

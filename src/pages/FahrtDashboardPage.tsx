@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
 import { DashboardSection } from '../components/DashboardSection'
 import { MatchupWappen } from '../components/MatchupWappen'
+import { AbfahrtAbstimmungBlock } from '../components/AbfahrtAbstimmungBlock'
 import { HomeDepartureBlock } from '../components/HomeDepartureBlock'
 import { RouteMap } from '../components/RouteMap'
 import { MitbringlisteSection } from '../components/MitbringlisteSection'
@@ -12,6 +13,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { useFahrt } from '../hooks/useFahrt'
 import { useProfile } from '../hooks/useProfile'
 import { deleteFahrt } from '../lib/fahrtenApi'
+import { getTreffpunktLabel, getTreffpunktMapsUrl } from '../lib/treffpunkt'
+import { useAbfahrtAbstimmung } from '../hooks/useAbfahrtAbstimmung'
 import { useParkplaetze } from '../hooks/useParkplaetze'
 import { useRoutePlan } from '../hooks/useRoutePlan'
 import {
@@ -41,12 +44,12 @@ export function FahrtDashboardPage() {
   const { user } = useAuth()
   const { profile } = useProfile(user?.id, user?.email)
   const { fahrt, loading, error } = useFahrt(id)
+  const abstimmung = useAbfahrtAbstimmung(id, user?.id)
   const parkplaetze = useParkplaetze(id)
   const selectedParkplatz = parkplaetze.entries.find((entry) => entry.is_selected) ?? null
   const [pufferMinuten, setPufferMinuten] = useState(90)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
-
   const routeEndpoints = fahrt ? getRouteEndpoints(fahrt, selectedParkplatz) : null
   const route = useRoutePlan(
     routeEndpoints?.origin ?? '',
@@ -59,12 +62,14 @@ export function FahrtDashboardPage() {
       ? calculateAbfahrtszeit(fahrt.spiel_at, route.plan.durationSeconds, pufferMinuten)
       : null
 
+  const effectiveAbfahrt = abstimmung.winning?.time ?? abfahrtszeit
+
   const homeAddress = profile?.home_address?.trim() ?? ''
   const homeOrigin = homeAddress ? qualifyBerlinAddress(homeAddress) : ''
   const homeRoute = useRoutePlan(
     homeOrigin,
     routeEndpoints?.originResolved ?? '',
-    abfahrtszeit ? departureTimeForHomeLeg(abfahrtszeit) : undefined,
+    effectiveAbfahrt ? departureTimeForHomeLeg(effectiveAbfahrt) : undefined,
   )
 
   if (loading) {
@@ -156,9 +161,9 @@ export function FahrtDashboardPage() {
             <div>
               <dt className="text-slate-500">Treffpunkt</dt>
               <dd className="font-semibold text-slate-900">
-                {routeEndpoints?.originLabel ?? HERTHA_TREFFPUNKT.label}
+                {getTreffpunktLabel(trip)}
                 <a
-                  href={HERTHA_TREFFPUNKT.mapsUrl}
+                  href={getTreffpunktMapsUrl(trip)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-2 font-medium text-hertha-mid hover:underline"
@@ -169,6 +174,7 @@ export function FahrtDashboardPage() {
             </div>
           </dl>
         </div>
+
         {trip.notizen ? (
           <p className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
             <span className="font-medium text-slate-500">Notizen · </span>
@@ -227,21 +233,48 @@ export function FahrtDashboardPage() {
               ) : null}
 
               {abfahrtszeit && route.status === 'ready' ? (
-                <div className="rounded-xl bg-hertha-blue/10 px-4 py-3">
-                  <p className="text-sm text-slate-600">
-                    {isDefaultTreffpunkt(trip.treffpunkt_berlin)
-                      ? HERTHA_TREFFPUNKT.departureHeading
-                      : 'Empfohlene Abfahrt am Treffpunkt'}
-                  </p>
-                  <p className="text-4xl font-bold text-hertha-blue">
-                    {formatUhrzeit(abfahrtszeit)} Uhr
-                  </p>
-                  <p className="mt-1 text-xs text-slate-500">
-                    Anpfiff {formatAnpfiff(trip.spiel_at)} −{' '}
-                    {formatDuration(route.plan.durationSeconds)} Fahrt −{' '}
-                    {pufferMinuten === 90 ? '1,5' : '2'} Std. Puffer
-                  </p>
-                </div>
+                <>
+                  <div className="rounded-xl bg-hertha-blue/10 px-4 py-3">
+                    <p className="text-sm text-slate-600">
+                      {abstimmung.winning
+                        ? 'Abgestimmte Abfahrt am Treffpunkt'
+                        : isDefaultTreffpunkt(trip.treffpunkt_berlin)
+                          ? HERTHA_TREFFPUNKT.departureHeading
+                          : 'Empfohlene Abfahrt am Treffpunkt'}
+                    </p>
+                    <p className="text-4xl font-bold text-hertha-blue">
+                      {formatUhrzeit(effectiveAbfahrt!)} Uhr
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {abstimmung.winning ? (
+                        <>
+                          {abstimmung.winning.count} von {abstimmung.winning.totalVotes} Stimmen
+                          {abfahrtszeit.getTime() !== effectiveAbfahrt!.getTime()
+                            ? ` · berechnet ${formatUhrzeit(abfahrtszeit)}`
+                            : null}
+                        </>
+                      ) : (
+                        <>
+                          Anpfiff {formatAnpfiff(trip.spiel_at)} −{' '}
+                          {formatDuration(route.plan.durationSeconds)} Fahrt −{' '}
+                          {pufferMinuten === 90 ? '1,5' : '2'} Std. Puffer
+                        </>
+                      )}
+                    </p>
+                  </div>
+                  <AbfahrtAbstimmungBlock
+                    empfohleneAbfahrt={abfahrtszeit}
+                    currentUserId={user?.id}
+                    votes={abstimmung.votes}
+                    winning={abstimmung.winning}
+                    loading={abstimmung.loading}
+                    error={abstimmung.error}
+                    actionError={abstimmung.actionError}
+                    busy={abstimmung.busy}
+                    onVote={(slot) => void abstimmung.vote(slot)}
+                    hasMyVoteForSlot={abstimmung.hasMyVoteForSlot}
+                  />
+                </>
               ) : route.status !== 'loading' && route.status !== 'error' && route.status !== 'no_key' ? (
                 <p className="text-sm text-slate-500">
                   Abfahrtszeit erscheint nach der Routenberechnung.
@@ -284,11 +317,11 @@ export function FahrtDashboardPage() {
               </a>
             </div>
 
-            {abfahrtszeit ? (
+            {effectiveAbfahrt ? (
               <HomeDepartureBlock
                 homeAddress={profile?.home_address}
                 treffpunktLabel={routeEndpoints?.originLabel ?? HERTHA_TREFFPUNKT.label}
-                treffpunktAbfahrt={abfahrtszeit}
+                treffpunktAbfahrt={effectiveAbfahrt}
                 homeOrigin={homeOrigin || homeAddress}
                 treffpunktDestination={routeEndpoints?.originResolved ?? routeEndpoints?.origin ?? ''}
                 routeStatus={homeRoute.status}

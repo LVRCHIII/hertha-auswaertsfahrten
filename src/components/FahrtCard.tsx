@@ -2,15 +2,18 @@ import { Link } from 'react-router-dom'
 import { MatchupWappen } from './MatchupWappen'
 import { MitfahrerAvatarStack } from './MitfahrerAvatarStack'
 import { formatAnpfiff, formatSpielDatum, isUpcoming } from '../lib/fahrtFormat'
+import { formatUhrzeit } from '../lib/fahrtFormat'
+import type { WinningAbfahrt } from '../types/abfahrt'
 import type { Fahrt } from '../types/fahrt'
 import type { MitfahrerEintrag } from '../types/social'
 
 type FahrtCardProps = {
   fahrt: Fahrt
   mitfahrer?: MitfahrerEintrag[]
+  abfahrt?: WinningAbfahrt | null
 }
 
-export function FahrtCard({ fahrt, mitfahrer = [] }: FahrtCardProps) {
+export function FahrtCard({ fahrt, mitfahrer = [], abfahrt = null }: FahrtCardProps) {
   const upcoming = isUpcoming(fahrt.spiel_at)
   const hasMitfahrer = mitfahrer.length > 0
 
@@ -60,6 +63,17 @@ export function FahrtCard({ fahrt, mitfahrer = [] }: FahrtCardProps) {
           <dt className="opacity-60">Start</dt>
           <dd className="font-medium">{fahrt.startpunkt}</dd>
         </div>
+        {abfahrt ? (
+          <div className="col-span-2">
+            <dt className="opacity-60">Abfahrt</dt>
+            <dd className="font-semibold text-hertha-blue">
+              {formatUhrzeit(abfahrt.time)} Uhr
+              <span className="ml-1.5 text-xs font-medium text-slate-500">
+                ({abfahrt.count} Stimmen)
+              </span>
+            </dd>
+          </div>
+        ) : null}
       </dl>
 
       {hasMitfahrer ? (

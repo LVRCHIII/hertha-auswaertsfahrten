@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
 import { FahrtSection } from '../components/FahrtSection'
 import { useFahrten } from '../hooks/useFahrten'
+import { useAbfahrtAbstimmungOverview } from '../hooks/useAbfahrtAbstimmungOverview'
 import { useMitfahrerOverview } from '../hooks/useMitfahrerOverview'
 import { partitionFahrten } from '../lib/partitionFahrten'
 
@@ -11,6 +12,7 @@ export function HomePage() {
   const { upcoming, past } = partitionFahrten(fahrten)
   const fahrtIds = useMemo(() => fahrten.map((fahrt) => fahrt.id), [fahrten])
   const { byFahrt: mitfahrerByFahrt } = useMitfahrerOverview(fahrtIds)
+  const { winningByFahrt: abfahrtByFahrt } = useAbfahrtAbstimmungOverview(fahrtIds)
 
   return (
     <AppShell title="Auswärtsfahrten">
@@ -48,12 +50,14 @@ export function HomePage() {
             title="Kommende Fahrten"
             fahrten={upcoming}
             mitfahrerByFahrt={mitfahrerByFahrt}
+            abfahrtByFahrt={abfahrtByFahrt}
             emptyHint="Keine kommenden Fahrten – Zeit für die nächste Auswärtsfahrt!"
           />
           <FahrtSection
             title="Vergangene Fahrten"
             fahrten={past}
             mitfahrerByFahrt={mitfahrerByFahrt}
+            abfahrtByFahrt={abfahrtByFahrt}
             emptyHint="Noch keine vergangenen Fahrten im Archiv."
           />
         </div>
