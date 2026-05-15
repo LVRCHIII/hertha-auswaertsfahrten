@@ -1,19 +1,25 @@
 import { Link } from 'react-router-dom'
 import { MatchupWappen } from './MatchupWappen'
+import { MitfahrerAvatarStack } from './MitfahrerAvatarStack'
 import { formatAnpfiff, formatSpielDatum, isUpcoming } from '../lib/fahrtFormat'
 import type { Fahrt } from '../types/fahrt'
+import type { MitfahrerEintrag } from '../types/social'
 
 type FahrtCardProps = {
   fahrt: Fahrt
+  mitfahrer?: MitfahrerEintrag[]
 }
 
-export function FahrtCard({ fahrt }: FahrtCardProps) {
+export function FahrtCard({ fahrt, mitfahrer = [] }: FahrtCardProps) {
   const upcoming = isUpcoming(fahrt.spiel_at)
+  const hasMitfahrer = mitfahrer.length > 0
 
   return (
     <Link
       to={`/fahrten/${fahrt.id}`}
-      className={`block rounded-xl border p-4 shadow-sm transition hover:scale-[1.01] ${
+      className={`relative block rounded-xl border p-4 shadow-sm transition hover:scale-[1.01] ${
+        hasMitfahrer ? 'pb-12' : ''
+      } ${
         upcoming
           ? 'border-hertha-mid/50 bg-white text-slate-900 ring-2 ring-hertha-mid/30'
           : 'border-white/20 bg-white/10 text-white/90'
@@ -40,6 +46,7 @@ export function FahrtCard({ fahrt }: FahrtCardProps) {
           </span>
         )}
       </div>
+
       <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
         <div>
           <dt className="opacity-60">Datum</dt>
@@ -54,6 +61,14 @@ export function FahrtCard({ fahrt }: FahrtCardProps) {
           <dd className="font-medium">{fahrt.startpunkt}</dd>
         </div>
       </dl>
+
+      {hasMitfahrer ? (
+        <MitfahrerAvatarStack
+          entries={mitfahrer}
+          ringClassName={upcoming ? 'ring-2 ring-white' : 'ring-2 ring-hertha-blue/80'}
+          className="absolute bottom-3 right-3"
+        />
+      ) : null}
     </Link>
   )
 }

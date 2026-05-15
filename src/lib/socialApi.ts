@@ -99,6 +99,51 @@ function isEmbedRelationshipError(message: string): boolean {
   )
 }
 
+export async function fetchMitfahrerForFahrten(fahrtIds: string[]) {
+  if (fahrtIds.length === 0) {
+    return { data: new Map<string, MitfahrerEintrag[]>(), error: null as string | null }
+  }
+
+  const client = requireSupabase()
+
+  const embedded = await client
+    .from('mitfahrer')
+    .select(MITFAHRER_SELECT)
+    .in('fahrt_id', fahrtIds)
+    .order('created_at', { ascending: true })
+
+  if (!embedded.error) {
+    return { data: groupMitfahrerByFahrt(mapMitfahrerRows(embedded.data ?? [])), error: null }
+  }
+
+  if (!isEmbedRelationshipError(embedded.error.message ?? '')) {
+    return { data: null, error: mapMitfahrerError(embedded.error) }
+  }
+
+  const fallback = await client
+    .from('mitfahrer')
+    .select(MITFAHRER_BASE)
+    .in('fahrt_id', fahrtIds)
+    .order('created_at', { ascending: true })
+
+  if (fallback.error) {
+    return { data: null, error: mapMitfahrerError(fallback.error) }
+  }
+
+  const rows = await attachProfilesToMitfahrer(fallback.data ?? [])
+  return { data: groupMitfahrerByFahrt(rows), error: null }
+}
+
+function groupMitfahrerByFahrt(entries: MitfahrerEintrag[]): Map<string, MitfahrerEintrag[]> {
+  const map = new Map<string, MitfahrerEintrag[]>()
+  for (const entry of entries) {
+    const list = map.get(entry.fahrt_id) ?? []
+    list.push(entry)
+    map.set(entry.fahrt_id, list)
+  }
+  return map
+}
+
 export async function fetchMitfahrer(fahrtId: string) {
   const client = requireSupabase()
 

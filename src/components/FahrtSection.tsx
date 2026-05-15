@@ -1,13 +1,15 @@
 import { FahrtCard } from './FahrtCard'
 import type { Fahrt } from '../types/fahrt'
+import type { MitfahrerEintrag } from '../types/social'
 
 type FahrtSectionProps = {
   title: string
   fahrten: Fahrt[]
+  mitfahrerByFahrt?: Map<string, MitfahrerEintrag[]>
   emptyHint?: string
 }
 
-export function FahrtSection({ title, fahrten, emptyHint }: FahrtSectionProps) {
+export function FahrtSection({ title, fahrten, mitfahrerByFahrt, emptyHint }: FahrtSectionProps) {
   return (
     <section className="space-y-3">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-white/70">{title}</h2>
@@ -19,7 +21,10 @@ export function FahrtSection({ title, fahrten, emptyHint }: FahrtSectionProps) {
         <ul className="space-y-3">
           {fahrten.map((fahrt) => (
             <li key={fahrt.id}>
-              <FahrtCard fahrt={fahrt} />
+              <FahrtCard
+                fahrt={fahrt}
+                mitfahrer={mitfahrerByFahrt?.get(fahrt.id) ?? []}
+              />
             </li>
           ))}
         </ul>

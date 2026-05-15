@@ -1,10 +1,13 @@
 import { initialsFromName } from '../lib/displayName'
 
+import type { CSSProperties } from 'react'
+
 type ProfileAvatarProps = {
   name: string
   avatarUrl?: string | null
   size?: 'sm' | 'md' | 'lg'
   className?: string
+  style?: CSSProperties
 }
 
 const SIZE_CLASSES = {
@@ -18,6 +21,7 @@ export function ProfileAvatar({
   avatarUrl,
   size = 'md',
   className = '',
+  style,
 }: ProfileAvatarProps) {
   const sizeClass = SIZE_CLASSES[size]
 
@@ -27,6 +31,7 @@ export function ProfileAvatar({
         src={avatarUrl}
         alt=""
         className={`shrink-0 rounded-full object-cover ${sizeClass} ${className}`}
+        style={style}
       />
     )
   }
@@ -34,6 +39,7 @@ export function ProfileAvatar({
   return (
     <span
       className={`flex shrink-0 items-center justify-center rounded-full bg-hertha-blue/10 font-bold text-hertha-blue ${sizeClass} ${className}`}
+      style={style}
       aria-hidden
     >
       {initialsFromName(name)}
