@@ -4,6 +4,7 @@ import { AppShell } from '../components/AppShell'
 import { DashboardSection } from '../components/DashboardSection'
 import { MatchupWappen } from '../components/MatchupWappen'
 import { HomeDepartureBlock } from '../components/HomeDepartureBlock'
+import { RouteMap } from '../components/RouteMap'
 import { MitbringlisteSection } from '../components/MitbringlisteSection'
 import { MitfahrerSection } from '../components/MitfahrerSection'
 import { ParkplatzSection } from '../components/ParkplatzSection'
@@ -138,8 +139,7 @@ export function FahrtDashboardPage() {
         </p>
       ) : null}
 
-      {/* Kopfzeile: Matchup + Kerninfos */}
-      <div className="rounded-2xl bg-white p-4 shadow-sm sm:p-5">
+      <DashboardSection title="Spielinfo">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <MatchupWappen gegner={trip.gegner} size="md" />
           <dl className="grid flex-1 gap-x-8 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
@@ -169,18 +169,18 @@ export function FahrtDashboardPage() {
             </div>
           </dl>
         </div>
-      </div>
+        {trip.notizen ? (
+          <p className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+            <span className="font-medium text-slate-500">Notizen · </span>
+            {trip.notizen}
+          </p>
+        ) : null}
+      </DashboardSection>
 
-      {/* Hauptbereich: Abfahrt + Route nebeneinander */}
-      <div className="mt-4 grid gap-4 lg:grid-cols-5">
-        <DashboardSection title="Abfahrt & Route" compact className="lg:col-span-3">
-          {routeEndpoints?.destinationViaParkplatz ? (
-            <p className="mb-3 rounded-lg bg-hertha-blue/10 px-3 py-2 text-sm text-hertha-blue">
-              Routenziel: gewählter Parkplatz „{routeEndpoints.destinationLabel}“
-            </p>
-          ) : null}
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:gap-6">
-            <div className="shrink-0 xl:w-56">
+      <div className="mt-4 space-y-4">
+        <DashboardSection title="Abfahrt" compact>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+            <div className="shrink-0 sm:w-56">
               <p className="mb-2 text-xs font-medium text-slate-500">Puffer vor Anpfiff</p>
               <div className="flex gap-2">
                 {PUFFER_OPTIONS.map((option) => {
@@ -231,7 +231,7 @@ export function FahrtDashboardPage() {
                   <p className="text-sm text-slate-600">
                     {isDefaultTreffpunkt(trip.treffpunkt_berlin)
                       ? HERTHA_TREFFPUNKT.departureHeading
-                      : 'Empfohlene Abfahrt'}
+                      : 'Empfohlene Abfahrt am Treffpunkt'}
                   </p>
                   <p className="text-4xl font-bold text-hertha-blue">
                     {formatUhrzeit(abfahrtszeit)} Uhr
@@ -248,64 +248,57 @@ export function FahrtDashboardPage() {
                 </p>
               ) : null}
 
-              {route.status === 'ready' ? (
-                <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-                  <p>
-                    <span className="text-slate-500">Fahrtzeit </span>
-                    <span className="font-semibold">{formatDuration(route.plan.durationSeconds)}</span>
-                  </p>
-                  <p>
-                    <span className="text-slate-500">Distanz </span>
-                    <span className="font-semibold">{formatDistance(route.plan.distanceMeters)}</span>
-                  </p>
-                  <p className="w-full text-slate-500">
-                    {routeEndpoints?.originLabel} → {routeEndpoints?.destinationLabel}
-                  </p>
-                  <a
-                    href={mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex rounded-lg bg-hertha-mid px-4 py-2 text-sm font-semibold text-white transition hover:bg-hertha-blue"
-                  >
-                    Google Maps öffnen
-                  </a>
-                </div>
-              ) : null}
-
-              {abfahrtszeit ? (
-                <HomeDepartureBlock
-                  homeAddress={profile?.home_address}
-                  treffpunktLabel={routeEndpoints?.originLabel ?? HERTHA_TREFFPUNKT.label}
-                  treffpunktAbfahrt={abfahrtszeit}
-                  homeOrigin={homeOrigin || homeAddress}
-                  treffpunktDestination={routeEndpoints?.originResolved ?? routeEndpoints?.origin ?? ''}
-                  routeStatus={homeRoute.status}
-                  routePlan={homeRoute.status === 'ready' ? homeRoute.plan : undefined}
-                  routeMessage={homeRoute.status === 'error' ? homeRoute.message : undefined}
-                />
-              ) : null}
             </div>
           </div>
         </DashboardSection>
 
-        <DashboardSection title="Weitere Infos" compact className="lg:col-span-2">
-          <dl className="space-y-3 text-sm">
-            <div>
-              <dt className="text-slate-500">Gegner</dt>
-              <dd className="font-semibold">{trip.gegner}</dd>
-            </div>
-            <div>
-              <dt className="text-slate-500">Startpunkt</dt>
-              <dd className="font-semibold">{trip.startpunkt}</dd>
-            </div>
-            {trip.notizen ? (
-              <div>
-                <dt className="text-slate-500">Notizen</dt>
-                <dd className="font-medium">{trip.notizen}</dd>
-              </div>
+        {route.status === 'ready' ? (
+          <DashboardSection title="Route" compact>
+            {routeEndpoints?.destinationViaParkplatz ? (
+              <p className="mb-3 rounded-lg bg-hertha-blue/10 px-3 py-2 text-sm text-hertha-blue">
+                Routenziel: gewählter Parkplatz „{routeEndpoints.destinationLabel}“
+              </p>
             ) : null}
-          </dl>
-        </DashboardSection>
+
+            <RouteMap directions={route.plan.directions} className="mb-4" />
+
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+              <p>
+                <span className="text-slate-500">Fahrtzeit </span>
+                <span className="font-semibold">{formatDuration(route.plan.durationSeconds)}</span>
+              </p>
+              <p>
+                <span className="text-slate-500">Distanz </span>
+                <span className="font-semibold">{formatDistance(route.plan.distanceMeters)}</span>
+              </p>
+              <p className="w-full text-slate-500">
+                {routeEndpoints?.originLabel} → {routeEndpoints?.destinationLabel}
+              </p>
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex rounded-lg bg-hertha-mid px-4 py-2 text-sm font-semibold text-white transition hover:bg-hertha-blue"
+              >
+                In Google Maps öffnen
+              </a>
+            </div>
+
+            {abfahrtszeit ? (
+              <HomeDepartureBlock
+                homeAddress={profile?.home_address}
+                treffpunktLabel={routeEndpoints?.originLabel ?? HERTHA_TREFFPUNKT.label}
+                treffpunktAbfahrt={abfahrtszeit}
+                homeOrigin={homeOrigin || homeAddress}
+                treffpunktDestination={routeEndpoints?.originResolved ?? routeEndpoints?.origin ?? ''}
+                routeStatus={homeRoute.status}
+                routePlan={homeRoute.status === 'ready' ? homeRoute.plan : undefined}
+                routeMessage={homeRoute.status === 'error' ? homeRoute.message : undefined}
+              />
+            ) : null}
+          </DashboardSection>
+        ) : null}
+
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">

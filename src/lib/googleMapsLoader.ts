@@ -2,6 +2,7 @@ import { Loader } from '@googlemaps/js-api-loader'
 
 let loaderInstance: Loader | null = null
 let routesPromise: Promise<google.maps.RoutesLibrary> | null = null
+let mapsPromise: Promise<google.maps.MapsLibrary> | null = null
 let placesPromise: Promise<google.maps.PlacesLibrary> | null = null
 let corePromise: Promise<google.maps.CoreLibrary> | null = null
 
@@ -39,6 +40,18 @@ export function loadRoutesLibrary(): Promise<google.maps.RoutesLibrary> {
   }
 
   return routesPromise
+}
+
+export function loadMapsLibrary(): Promise<google.maps.MapsLibrary> {
+  if (!getGoogleMapsApiKey()) {
+    return Promise.reject(new Error('GOOGLE_MAPS_KEY_MISSING'))
+  }
+
+  if (!mapsPromise) {
+    mapsPromise = getLoader().importLibrary('maps')
+  }
+
+  return mapsPromise
 }
 
 export function loadPlacesLibrary(): Promise<google.maps.PlacesLibrary> {

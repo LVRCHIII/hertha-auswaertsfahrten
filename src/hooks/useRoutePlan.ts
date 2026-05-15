@@ -6,6 +6,7 @@ import type { RouteLocation } from '../lib/routeAddresses'
 export type RoutePlan = {
   durationSeconds: number
   distanceMeters: number
+  directions: google.maps.DirectionsResult
 }
 
 type RouteState =
@@ -116,7 +117,7 @@ export function useRoutePlan(
 
             setState({
               status: 'ready',
-              plan: { durationSeconds, distanceMeters },
+              plan: { durationSeconds, distanceMeters, directions: result },
             })
           },
         )
