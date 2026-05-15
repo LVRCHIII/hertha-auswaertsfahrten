@@ -1,36 +1,38 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { DashboardSection } from './DashboardSection'
-import { useParkplaetze } from '../hooks/useParkplaetze'
 import { useParkingSearch } from '../hooks/useParkingSearch'
+import type { useParkplaetze } from '../hooks/useParkplaetze'
 import { ParkingMeta } from './ParkingMeta'
 import { buildGoogleMapsPlaceUrl } from '../lib/departureCalc'
 import type { Parkplatz, ParkingSuggestion } from '../types/parking'
 
 type ParkplatzSectionProps = {
-  fahrtId: string
   stadion: string
   currentUserId: string | undefined
+  parkplaetze: ReturnType<typeof useParkplaetze>
 }
 
 function ParkplatzRow({
   entry,
   busy,
   onChoose,
+  onClearSelection,
   onRemove,
 }: {
   entry: Parkplatz
   busy: boolean
   onChoose: (id: string) => void
+  onClearSelection: () => void
   onRemove: (id: string) => void
 }) {
   const mapsUrl = buildGoogleMapsPlaceUrl(entry.address, entry.place_id, entry.lat, entry.lng)
 
   return (
     <li
-      className={`rounded-lg border px-3 py-2 ${
+      className={`rounded-lg border px-3 py-2 transition ${
         entry.is_selected
-          ? 'border-hertha-blue bg-hertha-blue/5'
+          ? 'border-hertha-blue bg-hertha-blue/10 ring-2 ring-hertha-blue/25'
           : 'border-slate-200 bg-slate-50'
       }`}
     >
@@ -40,7 +42,7 @@ function ParkplatzRow({
             <p className="font-medium text-slate-900">{entry.name}</p>
             {entry.is_selected ? (
               <span className="rounded-full bg-hertha-blue px-2 py-0.5 text-xs font-semibold text-white">
-                Gewählt
+                Routenziel
               </span>
             ) : null}
             {entry.source === 'google' ? (
@@ -61,7 +63,16 @@ function ParkplatzRow({
           </a>
         </div>
         <div className="flex shrink-0 flex-col gap-1">
-          {!entry.is_selected ? (
+          {entry.is_selected ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void onClearSelection()}
+              className="rounded-lg border border-hertha-blue bg-white px-2.5 py-1 text-xs font-semibold text-hertha-blue transition hover:bg-hertha-blue/5 disabled:opacity-60"
+            >
+              Abwählen
+            </button>
+          ) : (
             <button
               type="button"
               disabled={busy}
@@ -70,7 +81,7 @@ function ParkplatzRow({
             >
               Wählen
             </button>
-          ) : null}
+          )}
           <button
             type="button"
             disabled={busy}
@@ -115,7 +126,7 @@ function SuggestionRow({
   )
 }
 
-export function ParkplatzSection({ fahrtId, stadion, currentUserId }: ParkplatzSectionProps) {
+export function ParkplatzSection({ stadion, currentUserId, parkplaetze }: ParkplatzSectionProps) {
   const {
     entries,
     loading,
@@ -127,13 +138,17 @@ export function ParkplatzSection({ fahrtId, stadion, currentUserId }: ParkplatzS
     choose,
     clearSelection,
     remove,
-  } = useParkplaetze(fahrtId)
+  } = parkplaetze
   const { state: searchState, search, reset } = useParkingSearch(stadion)
 
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
 
   const selected = entries.find((entry) => entry.is_selected)
+  const sortedEntries = [...entries].sort((a, b) => {
+    if (a.is_selected !== b.is_selected) return a.is_selected ? -1 : 1
+    return a.created_at.localeCompare(b.created_at)
+  })
   const placeIdsInList = new Set(entries.map((entry) => entry.place_id).filter(Boolean))
 
   async function handleManualSubmit(event: FormEvent<HTMLFormElement>) {
@@ -168,38 +183,21 @@ export function ParkplatzSection({ fahrtId, stadion, currentUserId }: ParkplatzS
 
       {!loading && !error ? (
         <>
-          {selected ? (
-            <div className="mb-4 rounded-xl bg-hertha-blue/10 px-3 py-2">
-              <p className="text-xs font-medium text-slate-600">Gewählter Parkplatz</p>
-              <p className="font-semibold text-hertha-blue">{selected.name}</p>
-              <p className="text-xs text-slate-600">{selected.address}</p>
-              <ParkingMeta
-                distanceMeters={selected.distance_meters}
-                costKind={selected.cost_kind}
-              />
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => void clearSelection()}
-                className="mt-2 text-xs font-medium text-slate-600 underline hover:text-slate-900 disabled:opacity-60"
-              >
-                Auswahl aufheben
-              </button>
-            </div>
-          ) : entries.length > 0 ? (
+          {entries.length > 0 && !selected ? (
             <p className="mb-3 text-sm text-slate-500">
-              Wählt einen Parkplatz aus der Liste oder fügt einen neuen hinzu.
+              Einen Parkplatz wählen — er wird oben markiert und für die Route genutzt.
             </p>
           ) : null}
 
           {entries.length > 0 ? (
             <ul className="space-y-2">
-              {entries.map((entry) => (
+              {sortedEntries.map((entry) => (
                 <ParkplatzRow
                   key={entry.id}
                   entry={entry}
                   busy={busy}
                   onChoose={choose}
+                  onClearSelection={() => void clearSelection()}
                   onRemove={remove}
                 />
               ))}

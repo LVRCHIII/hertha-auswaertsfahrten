@@ -32,23 +32,23 @@ function directionsErrorMessage(status: string): string {
   }
 }
 
-function isOriginEmpty(origin: RouteLocation): boolean {
-  return typeof origin === 'string' && !origin.trim()
+function isLocationEmpty(location: RouteLocation): boolean {
+  return typeof location === 'string' && !location.trim()
 }
 
-function originKey(origin: RouteLocation): string {
-  return typeof origin === 'string' ? origin.trim() : `${origin.lat},${origin.lng}`
+function locationKey(location: RouteLocation): string {
+  return typeof location === 'string' ? location.trim() : `${location.lat},${location.lng}`
 }
 
 export function useRoutePlan(
   origin: RouteLocation,
-  destination: string,
+  destination: RouteLocation,
   departureTime?: Date,
 ) {
   const [state, setState] = useState<RouteState>({ status: 'idle' })
 
   useEffect(() => {
-    if (isOriginEmpty(origin) || !destination.trim()) {
+    if (isLocationEmpty(origin) || isLocationEmpty(destination)) {
       setState({ status: 'idle' })
       return
     }
@@ -63,6 +63,10 @@ export function useRoutePlan(
 
     const resolvedOrigin =
       typeof origin === 'string' ? origin.trim() : { lat: origin.lat, lng: origin.lng }
+    const resolvedDestination =
+      typeof destination === 'string'
+        ? destination.trim()
+        : { lat: destination.lat, lng: destination.lng }
 
     const timeoutId = window.setTimeout(() => {
       if (cancelled) return
@@ -82,7 +86,7 @@ export function useRoutePlan(
         service.route(
           {
             origin: resolvedOrigin,
-            destination: destination.trim(),
+            destination: resolvedDestination,
             travelMode: routes.TravelMode.DRIVING,
             drivingOptions: {
               departureTime: departureTime ?? new Date(),
@@ -135,7 +139,7 @@ export function useRoutePlan(
       cancelled = true
       clearRouteTimeout()
     }
-  }, [originKey(origin), destination, departureTime?.getTime()])
+  }, [locationKey(origin), locationKey(destination), departureTime?.getTime()])
 
   return state
 }

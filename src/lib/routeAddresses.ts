@@ -1,5 +1,6 @@
 import { HERTHA_TREFFPUNKT, isDefaultTreffpunkt } from './defaultTreffpunkt'
 import type { Fahrt } from '../types/fahrt'
+import type { Parkplatz } from '../types/parking'
 
 export type RouteLocation = string | google.maps.LatLngLiteral
 
@@ -45,24 +46,26 @@ export function qualifyDestinationAddress(stadion: string, gegner: string): stri
 
 export type RouteEndpoints = {
   origin: RouteLocation
-  destination: string
+  destination: RouteLocation
   originLabel: string
   destinationLabel: string
   /** Vollständige Adresse/Koordinaten für die Berechnung (Anzeige) */
   originResolved: string
+  /** true, wenn ein gewählter Parkplatz das Routenziel ist */
+  destinationViaParkplatz: boolean
 }
 
-export function getRouteEndpoints(
-  fahrt: Pick<Fahrt, 'treffpunkt_berlin' | 'startpunkt' | 'stadion' | 'gegner'>,
-): RouteEndpoints {
+type RouteOrigin = Pick<RouteEndpoints, 'origin' | 'originLabel' | 'originResolved'>
+
+function getRouteOrigin(
+  fahrt: Pick<Fahrt, 'treffpunkt_berlin' | 'startpunkt'>,
+): RouteOrigin {
   const treffpunkt = fahrt.treffpunkt_berlin?.trim() ?? ''
 
   if (isDefaultTreffpunkt(treffpunkt)) {
     return {
       origin: { ...HERTHA_TREFFPUNKT.coordinates },
-      destination: qualifyDestinationAddress(fahrt.stadion, fahrt.gegner),
       originLabel: HERTHA_TREFFPUNKT.label,
-      destinationLabel: fahrt.stadion.trim(),
       originResolved: HERTHA_TREFFPUNKT.address,
     }
   }
@@ -72,10 +75,51 @@ export function getRouteEndpoints(
 
   return {
     origin,
-    destination: qualifyDestinationAddress(fahrt.stadion, fahrt.gegner),
     originLabel,
-    destinationLabel: fahrt.stadion.trim(),
     originResolved: origin,
+  }
+}
+
+function destinationFromParkplatz(
+  parkplatz: Pick<Parkplatz, 'name' | 'address' | 'lat' | 'lng'>,
+): Pick<RouteEndpoints, 'destination' | 'destinationLabel'> {
+  const label = parkplatz.name.trim() || parkplatz.address.trim()
+
+  if (parkplatz.lat != null && parkplatz.lng != null) {
+    return {
+      destination: { lat: parkplatz.lat, lng: parkplatz.lng },
+      destinationLabel: label,
+    }
+  }
+
+  return {
+    destination: parkplatz.address.trim(),
+    destinationLabel: label,
+  }
+}
+
+export function getRouteEndpoints(
+  fahrt: Pick<Fahrt, 'treffpunkt_berlin' | 'startpunkt' | 'stadion' | 'gegner'>,
+  selectedParkplatz?: Pick<Parkplatz, 'name' | 'address' | 'lat' | 'lng' | 'is_selected'> | null,
+): RouteEndpoints {
+  const origin = getRouteOrigin(fahrt)
+
+  if (selectedParkplatz) {
+    const parking = destinationFromParkplatz(selectedParkplatz)
+    return {
+      ...origin,
+      ...parking,
+      destinationViaParkplatz: true,
+    }
+  }
+
+  const stadionAddress = qualifyDestinationAddress(fahrt.stadion, fahrt.gegner)
+
+  return {
+    ...origin,
+    destination: stadionAddress,
+    destinationLabel: fahrt.stadion.trim(),
+    destinationViaParkplatz: false,
   }
 }
 

@@ -11,6 +11,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useFahrt } from '../hooks/useFahrt'
 import { useProfile } from '../hooks/useProfile'
 import { deleteFahrt } from '../lib/fahrtenApi'
+import { useParkplaetze } from '../hooks/useParkplaetze'
 import { useRoutePlan } from '../hooks/useRoutePlan'
 import {
   buildGoogleMapsDirectionsUrl,
@@ -39,11 +40,13 @@ export function FahrtDashboardPage() {
   const { user } = useAuth()
   const { profile } = useProfile(user?.id, user?.email)
   const { fahrt, loading, error } = useFahrt(id)
+  const parkplaetze = useParkplaetze(id)
+  const selectedParkplatz = parkplaetze.entries.find((entry) => entry.is_selected) ?? null
   const [pufferMinuten, setPufferMinuten] = useState(90)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
-  const routeEndpoints = fahrt ? getRouteEndpoints(fahrt) : null
+  const routeEndpoints = fahrt ? getRouteEndpoints(fahrt, selectedParkplatz) : null
   const route = useRoutePlan(
     routeEndpoints?.origin ?? '',
     routeEndpoints?.destination ?? '',
@@ -171,6 +174,11 @@ export function FahrtDashboardPage() {
       {/* Hauptbereich: Abfahrt + Route nebeneinander */}
       <div className="mt-4 grid gap-4 lg:grid-cols-5">
         <DashboardSection title="Abfahrt & Route" compact className="lg:col-span-3">
+          {routeEndpoints?.destinationViaParkplatz ? (
+            <p className="mb-3 rounded-lg bg-hertha-blue/10 px-3 py-2 text-sm text-hertha-blue">
+              Routenziel: gewählter Parkplatz „{routeEndpoints.destinationLabel}“
+            </p>
+          ) : null}
           <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:gap-6">
             <div className="shrink-0 xl:w-56">
               <p className="mb-2 text-xs font-medium text-slate-500">Puffer vor Anpfiff</p>
@@ -306,7 +314,11 @@ export function FahrtDashboardPage() {
       </div>
 
       <div className="mt-4">
-        <ParkplatzSection fahrtId={trip.id} stadion={trip.stadion} currentUserId={user?.id} />
+        <ParkplatzSection
+          stadion={trip.stadion}
+          currentUserId={user?.id}
+          parkplaetze={parkplaetze}
+        />
       </div>
     </AppShell>
   )
