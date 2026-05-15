@@ -12,7 +12,7 @@ export function mapFahrtError(error: PostgrestError): string {
   }
 
   if (code === '42501' || message.toLowerCase().includes('row-level security')) {
-    return 'Keine Berechtigung zum Speichern. Bitte erneut anmelden.'
+    return 'Keine Berechtigung für diese Aktion. Bitte erneut anmelden.'
   }
 
   if (code === '23503') {
@@ -20,4 +20,19 @@ export function mapFahrtError(error: PostgrestError): string {
   }
 
   return `Fahrt konnte nicht gespeichert werden. (${message || code || 'Unbekannter Fehler'})`
+}
+
+export function mapFahrtDeleteError(error: PostgrestError): string {
+  const code = error.code ?? ''
+  const message = error.message ?? ''
+
+  if (code === '42501' || message.toLowerCase().includes('row-level security')) {
+    return 'Nur die Person, die diese Fahrt angelegt hat, kann sie löschen.'
+  }
+
+  if (code === '42P01' || (message.includes('fahrten') && message.includes('does not exist'))) {
+    return mapFahrtError(error)
+  }
+
+  return `Fahrt konnte nicht gelöscht werden. (${message || code || 'Unbekannter Fehler'})`
 }

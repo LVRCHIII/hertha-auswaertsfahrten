@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { filterVereine, type Verein } from '../data/vereine'
+import { VereinWappen } from './VereinWappen'
 
 const inputClass =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-hertha-mid focus:ring-2 focus:ring-hertha-mid/30'
@@ -9,32 +10,6 @@ type VereinAutocompleteProps = {
   onChange: (value: string) => void
   onVereinSelect: (verein: Verein) => void
   required?: boolean
-}
-
-function VereinWappen({ src }: { src: string }) {
-  const [failed, setFailed] = useState(false)
-
-  if (failed) {
-    return (
-      <span
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-hertha-blue/10 text-sm"
-        aria-hidden
-      >
-        ⚽
-      </span>
-    )
-  }
-
-  return (
-    <img
-      src={src}
-      alt=""
-      width={32}
-      height={32}
-      className="h-8 w-8 shrink-0 object-contain"
-      onError={() => setFailed(true)}
-    />
-  )
 }
 
 export function VereinAutocomplete({

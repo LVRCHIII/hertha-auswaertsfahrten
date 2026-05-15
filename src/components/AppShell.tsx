@@ -5,15 +5,18 @@ import { useAuth } from '../contexts/AuthContext'
 type AppShellProps = {
   children: ReactNode
   title?: string
+  /** Breiteres Layout für Dashboard-Seiten (Web). */
+  wide?: boolean
 }
 
-export function AppShell({ children, title = 'Hertha Auswärtsfahrten' }: AppShellProps) {
+export function AppShell({ children, title = 'Hertha Auswärtsfahrten', wide = false }: AppShellProps) {
+  const maxWidth = wide ? 'max-w-6xl' : 'max-w-2xl'
   const { signOut } = useAuth()
 
   return (
     <div className="min-h-screen bg-hertha-blue text-white">
       <header className="sticky top-0 z-10 border-b border-white/20 bg-hertha-blue/95 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
+        <div className={`mx-auto flex ${maxWidth} items-center justify-between gap-3 px-4 py-4 sm:px-6`}>
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-wide text-white/70">Hertha BSC</p>
             <h1 className="truncate text-lg font-bold sm:text-xl">{title}</h1>
@@ -35,7 +38,7 @@ export function AppShell({ children, title = 'Hertha Auswärtsfahrten' }: AppShe
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-2xl px-4 py-6 sm:px-6">{children}</main>
+      <main className={`mx-auto ${maxWidth} px-4 py-6 sm:px-6`}>{children}</main>
     </div>
   )
 }

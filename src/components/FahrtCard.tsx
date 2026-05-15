@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { MatchupWappen } from './MatchupWappen'
 import { formatAnpfiff, formatSpielDatum, isUpcoming } from '../lib/fahrtFormat'
 import type { Fahrt } from '../types/fahrt'
 
@@ -18,6 +19,12 @@ export function FahrtCard({ fahrt }: FahrtCardProps) {
           : 'border-white/20 bg-white/10 text-white/90'
       }`}
     >
+      {upcoming ? (
+        <div className="mb-3">
+          <MatchupWappen gegner={fahrt.gegner} />
+        </div>
+      ) : null}
+
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-lg font-bold">{fahrt.gegner}</h3>
