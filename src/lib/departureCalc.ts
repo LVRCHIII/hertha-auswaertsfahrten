@@ -56,3 +56,18 @@ export function buildGoogleMapsDirectionsUrl(
   })
   return `https://www.google.com/maps/dir/?${params.toString()}`
 }
+
+export function buildGoogleMapsPlaceUrl(
+  address: string,
+  placeId?: string | null,
+  lat?: number | null,
+  lng?: number | null,
+): string {
+  if (placeId) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}&query_place_id=${encodeURIComponent(placeId)}`
+  }
+  if (lat != null && lng != null) {
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+}

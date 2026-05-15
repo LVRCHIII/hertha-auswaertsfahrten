@@ -8,6 +8,16 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      window.gm_authFailure = function () {
+        console.error(
+          '[Google Maps] API-Key abgelehnt (Referrer). Aktuelle URL:',
+          window.location.origin,
+          '— In der Google Cloud unter Credentials → API key → HTTP referrers z. B.',
+          window.location.origin + '/* eintragen.',
+        )
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

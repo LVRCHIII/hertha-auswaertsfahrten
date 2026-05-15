@@ -6,6 +6,7 @@ import { MatchupWappen } from '../components/MatchupWappen'
 import { HomeDepartureBlock } from '../components/HomeDepartureBlock'
 import { MitbringlisteSection } from '../components/MitbringlisteSection'
 import { MitfahrerSection } from '../components/MitfahrerSection'
+import { ParkplatzSection } from '../components/ParkplatzSection'
 import { useAuth } from '../contexts/AuthContext'
 import { useFahrt } from '../hooks/useFahrt'
 import { useProfile } from '../hooks/useProfile'
@@ -304,7 +305,9 @@ export function FahrtDashboardPage() {
         <MitbringlisteSection fahrtId={trip.id} currentUserId={user?.id} />
       </div>
 
-      <p className="mt-4 text-center text-xs text-white/45">Demnächst: Parkplätze</p>
+      <div className="mt-4">
+        <ParkplatzSection fahrtId={trip.id} stadion={trip.stadion} currentUserId={user?.id} />
+      </div>
     </AppShell>
   )
 }

@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev:stop": "lsof -ti :5173 | xargs kill -9 2>/dev/null || true",
+    "dev": "npm run dev:stop && vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },

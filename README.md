@@ -1,6 +1,8 @@
 # Hertha Auswärtsfahrten Planer
 
-Milestone 1–3: Auth, Fahrten verwalten, Dashboard mit Routenplanung, Mitfahrer & Mitbringliste.
+Milestone 1–4: Auth, Fahrten verwalten, Dashboard mit Routenplanung, Mitfahrer, Mitbringliste & Parkplätze.
+
+**Projektkontext für Cursor-Chats:** [`PROJEKT_KONTEXT.md`](./PROJEKT_KONTEXT.md)
 
 ## Voraussetzungen
 
@@ -25,8 +27,11 @@ Für Milestone 3 zusätzlich im SQL Editor ausführen:
 `supabase/migrations/20250516120000_milestone3_social.sql`  
 (Profile, Mitfahrer, Mitbringliste)
 
-Optional danach: `supabase/migrations/20250516130000_profile_avatar_home.sql`  
-(Profilbild-Storage, Zuhause-Adresse)
+Danach: `20250516130000_profile_avatar_home.sql` (Profilbild, Zuhause-Adresse)  
+und `20250516140000_fix_social_profile_fkeys.sql` (FK für Mitfahrer-Joins)
+
+Für Milestone 4 zusätzlich:  
+`supabase/migrations/20250516150000_milestone4_parkplaetze.sql` (Parkplätze pro Fahrt)
 
 ## App starten
 
@@ -48,9 +53,13 @@ Nach Änderungen an `.env` den Dev-Server **neu starten**.
 ### Google Maps API (Milestone 2)
 
 1. [Google Cloud Console](https://console.cloud.google.com/) → neues Projekt oder bestehendes wählen.
-2. APIs aktivieren: **Maps JavaScript API** und **Directions API**.
+2. APIs aktivieren: **Maps JavaScript API**, **Directions API** und **Places API (New)** (Parkplatz-Suche; die ältere „Places API“ reicht nicht).
 3. **Credentials → API key** erstellen.
-4. Key unter „Application restrictions“ auf **HTTP referrers** setzen: `http://localhost:5173/*`
+4. Key unter „Application restrictions“ auf **HTTP referrers** setzen (einmalig, Port ändert sich nicht mehr):
+   - `http://localhost:5173/*`
+   - `http://127.0.0.1:5173/*`  
+   **Warum nicht ständig neue Ports?** Wenn 5173 belegt war, hat Vite früher 5174, 5177, … genommen — Google erlaubt keinen Port-Wildcard. `npm run dev` beendet deshalb zuerst alte Prozesse auf 5173 (`dev:stop`).  
+   **Alternative für Dev:** zweiten API-Key nur mit API-Einschränkung (ohne HTTP-Referrer), Produktions-Key später mit Domain.
 5. In `.env`: `VITE_GOOGLE_MAPS_API_KEY=...`
 
 In Supabase unter **Authentication → URL Configuration** für lokale Entwicklung eintragen:
@@ -72,7 +81,7 @@ Die App läuft unter http://localhost:5173
 | Login / Registrierung | `/login`, `/register` | E-Mail + Passwort (Supabase Auth) |
 | Kalenderübersicht | `/` | Liste: kommende + vergangene Fahrten |
 | Fahrt anlegen | `/fahrten/neu` | Gegner, Stadion, Datum, Anpfiff, Startpunkt, optional Notizen |
-| Fahrt-Dashboard | `/fahrten/:id` | Spielinfo, Abfahrtszeit, Route, Mitfahrer, Mitbringliste |
+| Fahrt-Dashboard | `/fahrten/:id` | Spielinfo, Abfahrtszeit, Route, Mitfahrer, Mitbringliste, Parkplatz |
 | Profil | `/profil` | Anzeigename, Profilbild, Abfahrt von Zuhause |
 
 ## Projektstruktur
