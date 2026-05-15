@@ -1,3 +1,5 @@
+import type { ParkingCostKind } from '../lib/parkingInfo'
+
 export type ParkplatzSource = 'google' | 'manual'
 
 export type Parkplatz = {
@@ -8,6 +10,8 @@ export type Parkplatz = {
   place_id: string | null
   lat: number | null
   lng: number | null
+  distance_meters: number | null
+  cost_kind: ParkingCostKind | null
   source: ParkplatzSource
   is_selected: boolean
   created_by: string
@@ -20,6 +24,8 @@ export type ParkingSuggestion = {
   placeId: string | null
   lat: number
   lng: number
+  distanceMeters: number
+  costKind: ParkingCostKind
 }
 
 export type ParkplatzInsert = {
@@ -29,6 +35,8 @@ export type ParkplatzInsert = {
   place_id?: string | null
   lat?: number | null
   lng?: number | null
+  distance_meters?: number | null
+  cost_kind?: ParkingCostKind | null
   source: ParkplatzSource
   created_by: string
 }

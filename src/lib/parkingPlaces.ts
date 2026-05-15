@@ -1,11 +1,12 @@
 import { isRefererOrAuthError, refererRestrictionHint } from './googleMapsErrors'
 import { loadMapsCore, loadPlacesLibrary, getGoogleMapsApiKey } from './googleMapsLoader'
+import { haversineMeters, parkingCostFromOptions } from './parkingInfo'
 import type { ParkingSuggestion } from '../types/parking'
 
 const SEARCH_RADIUS_M = 2500
 const MAX_RESULTS = 8
 
-const NEARBY_FIELDS = ['displayName', 'formattedAddress', 'location', 'id'] as const
+const NEARBY_FIELDS = ['displayName', 'formattedAddress', 'location', 'id', 'parkingOptions'] as const
 
 function geocodeStadium(stadium: string): Promise<google.maps.LatLngLiteral> {
   return loadMapsCore().then(
@@ -33,7 +34,10 @@ function latLngFromLocation(
   return { lat: location.lat, lng: location.lng }
 }
 
-function mapNewPlace(place: google.maps.places.Place): ParkingSuggestion | null {
+function mapNewPlace(
+  place: google.maps.places.Place,
+  stadiumCenter: google.maps.LatLngLiteral,
+): ParkingSuggestion | null {
   const name = place.displayName?.trim()
   const address = place.formattedAddress?.trim()
   const location = place.location
@@ -48,6 +52,8 @@ function mapNewPlace(place: google.maps.places.Place): ParkingSuggestion | null 
     placeId: place.id?.trim() || null,
     lat,
     lng,
+    distanceMeters: haversineMeters(stadiumCenter, { lat, lng }),
+    costKind: parkingCostFromOptions(place.parkingOptions),
   }
 }
 
@@ -113,7 +119,7 @@ export async function searchParkingNearStadium(
     const suggestions: ParkingSuggestion[] = []
 
     for (const place of results) {
-      const mapped = mapNewPlace(place)
+      const mapped = mapNewPlace(place, center)
       if (!mapped) continue
 
       const key = mapped.placeId ?? `${mapped.name}|${mapped.address}`
@@ -123,6 +129,8 @@ export async function searchParkingNearStadium(
 
       if (suggestions.length >= MAX_RESULTS) break
     }
+
+    suggestions.sort((a, b) => a.distanceMeters - b.distanceMeters)
 
     return { data: suggestions, error: null }
   } catch (err) {

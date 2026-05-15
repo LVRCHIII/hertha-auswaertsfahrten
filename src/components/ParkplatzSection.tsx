@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { DashboardSection } from './DashboardSection'
 import { useParkplaetze } from '../hooks/useParkplaetze'
 import { useParkingSearch } from '../hooks/useParkingSearch'
+import { ParkingMeta } from './ParkingMeta'
 import { buildGoogleMapsPlaceUrl } from '../lib/departureCalc'
 import type { Parkplatz, ParkingSuggestion } from '../types/parking'
 
@@ -49,6 +50,7 @@ function ParkplatzRow({
             ) : null}
           </div>
           <p className="mt-0.5 text-xs text-slate-500">{entry.address}</p>
+          <ParkingMeta distanceMeters={entry.distance_meters} costKind={entry.cost_kind} />
           <a
             href={mapsUrl}
             target="_blank"
@@ -99,6 +101,7 @@ function SuggestionRow({
       <div className="min-w-0">
         <p className="font-medium text-slate-900">{suggestion.name}</p>
         <p className="text-xs text-slate-500">{suggestion.address}</p>
+        <ParkingMeta distanceMeters={suggestion.distanceMeters} costKind={suggestion.costKind} />
       </div>
       <button
         type="button"
@@ -170,6 +173,10 @@ export function ParkplatzSection({ fahrtId, stadion, currentUserId }: ParkplatzS
               <p className="text-xs font-medium text-slate-600">Gewählter Parkplatz</p>
               <p className="font-semibold text-hertha-blue">{selected.name}</p>
               <p className="text-xs text-slate-600">{selected.address}</p>
+              <ParkingMeta
+                distanceMeters={selected.distance_meters}
+                costKind={selected.cost_kind}
+              />
               <button
                 type="button"
                 disabled={busy}

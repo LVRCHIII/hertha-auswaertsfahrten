@@ -17,6 +17,13 @@ function baseMessage(error: PostgrestError, fallback: string): string {
     )
   }
 
+  if (message.includes('distance_meters') || message.includes('cost_kind')) {
+    return (
+      'Parkplatz-Spalten fehlen. Im SQL Editor ausführen: ' +
+      'supabase/migrations/20250516160000_parkplaetze_distance_cost.sql'
+    )
+  }
+
   if (code === '42501' || message.toLowerCase().includes('row-level security')) {
     return 'Keine Berechtigung für diese Aktion. Bitte erneut anmelden.'
   }

@@ -1,9 +1,17 @@
 import { mapParkingError } from './mapParkingError'
 import { requireSupabase } from './supabase'
+import type { ParkingCostKind } from './parkingInfo'
 import type { Parkplatz, ParkplatzInsert, ParkingSuggestion } from '../types/parking'
 
+function parseCostKind(value: unknown): ParkingCostKind | null {
+  if (value === 'free' || value === 'paid' || value === 'mixed' || value === 'unknown') {
+    return value
+  }
+  return null
+}
+
 const PARKPLATZ_SELECT =
-  'id, fahrt_id, name, address, place_id, lat, lng, source, is_selected, created_by, created_at'
+  'id, fahrt_id, name, address, place_id, lat, lng, distance_meters, cost_kind, source, is_selected, created_by, created_at'
 
 function mapRow(row: Record<string, unknown>): Parkplatz {
   return {
@@ -14,6 +22,8 @@ function mapRow(row: Record<string, unknown>): Parkplatz {
     place_id: (row.place_id as string | null) ?? null,
     lat: row.lat != null ? Number(row.lat) : null,
     lng: row.lng != null ? Number(row.lng) : null,
+    distance_meters: row.distance_meters != null ? Number(row.distance_meters) : null,
+    cost_kind: parseCostKind(row.cost_kind),
     source: row.source as Parkplatz['source'],
     is_selected: Boolean(row.is_selected),
     created_by: row.created_by as string,
@@ -58,6 +68,8 @@ export async function addParkplatz(payload: ParkplatzInsert) {
       place_id: payload.place_id ?? null,
       lat: payload.lat ?? null,
       lng: payload.lng ?? null,
+      distance_meters: payload.distance_meters ?? null,
+      cost_kind: payload.cost_kind ?? null,
       source: payload.source,
       created_by: payload.created_by,
     })
@@ -98,6 +110,8 @@ export async function addParkplatzFromSuggestion(
     place_id: suggestion.placeId,
     lat: suggestion.lat,
     lng: suggestion.lng,
+    distance_meters: suggestion.distanceMeters,
+    cost_kind: suggestion.costKind,
     source: 'google',
     created_by: userId,
   })
