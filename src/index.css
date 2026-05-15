@@ -1,0 +1,14 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-hertha-blue: #003264;
+  --color-hertha-mid: #005bac;
+  --color-hertha-white: #ffffff;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+}
