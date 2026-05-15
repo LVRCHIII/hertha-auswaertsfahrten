@@ -2,19 +2,18 @@ import { mapMitbringError, mapMitfahrerError } from './mapSocialError'
 import { requireSupabase } from './supabase'
 import type { MitbringEintrag, MitfahrerEintrag } from '../types/social'
 
-const MITFAHRER_SELECT =
-  'fahrt_id, user_id, created_at, profile:profiles(display_name, avatar_url)'
-const MITBRING_SELECT =
-  'id, fahrt_id, user_id, item, created_at, profile:profiles(display_name, avatar_url)'
+type ProfileSnippet = { display_name: string; avatar_url: string | null }
 
-type ProfileJoin =
-  | { display_name: string; avatar_url: string | null }
-  | { display_name: string; avatar_url: string | null }[]
-  | null
+const MITFAHRER_BASE = 'fahrt_id, user_id, created_at'
+const MITBRING_BASE = 'id, fahrt_id, user_id, item, created_at'
 
-function normalizeProfile(
-  profile: ProfileJoin,
-): { display_name: string; avatar_url: string | null } | null {
+/** Expliziter FK-Name nach Migration fix_social_profile_fkeys */
+const MITFAHRER_SELECT = `${MITFAHRER_BASE}, profile:profiles!mitfahrer_user_id_fkey(display_name, avatar_url)`
+const MITBRING_SELECT = `${MITBRING_BASE}, profile:profiles!mitbringliste_user_id_fkey(display_name, avatar_url)`
+
+type ProfileJoin = ProfileSnippet | ProfileSnippet[] | null
+
+function normalizeProfile(profile: ProfileJoin): ProfileSnippet | null {
   if (!profile) return null
   if (Array.isArray(profile)) return profile[0] ?? null
   return profile
@@ -40,18 +39,95 @@ function mapMitbringRows(rows: Record<string, unknown>[]): MitbringEintrag[] {
   }))
 }
 
-export async function fetchMitfahrer(fahrtId: string) {
+async function loadProfilesForUserIds(
+  userIds: string[],
+): Promise<Map<string, ProfileSnippet>> {
+  const unique = [...new Set(userIds)]
+  if (unique.length === 0) return new Map()
+
   const { data, error } = await requireSupabase()
+    .from('profiles')
+    .select('id, display_name, avatar_url')
+    .in('id', unique)
+
+  if (error || !data) return new Map()
+
+  return new Map(
+    data.map((row) => [
+      row.id as string,
+      {
+        display_name: row.display_name as string,
+        avatar_url: row.avatar_url as string | null,
+      },
+    ]),
+  )
+}
+
+async function attachProfilesToMitfahrer(
+  rows: Record<string, unknown>[],
+): Promise<MitfahrerEintrag[]> {
+  const profileMap = await loadProfilesForUserIds(rows.map((row) => row.user_id as string))
+  return rows.map((row) => ({
+    fahrt_id: row.fahrt_id as string,
+    user_id: row.user_id as string,
+    created_at: row.created_at as string,
+    profile: profileMap.get(row.user_id as string) ?? null,
+  }))
+}
+
+async function attachProfilesToMitbring(
+  rows: Record<string, unknown>[],
+): Promise<MitbringEintrag[]> {
+  const profileMap = await loadProfilesForUserIds(rows.map((row) => row.user_id as string))
+  return rows.map((row) => ({
+    id: row.id as string,
+    fahrt_id: row.fahrt_id as string,
+    user_id: row.user_id as string,
+    item: row.item as string,
+    created_at: row.created_at as string,
+    profile: profileMap.get(row.user_id as string) ?? null,
+  }))
+}
+
+function isEmbedRelationshipError(message: string): boolean {
+  const lower = message.toLowerCase()
+  return (
+    lower.includes('relationship') ||
+    lower.includes('could not find') ||
+    lower.includes('pgrst200') ||
+    lower.includes('schema cache')
+  )
+}
+
+export async function fetchMitfahrer(fahrtId: string) {
+  const client = requireSupabase()
+
+  const embedded = await client
     .from('mitfahrer')
     .select(MITFAHRER_SELECT)
     .eq('fahrt_id', fahrtId)
     .order('created_at', { ascending: true })
 
-  if (error) {
-    return { data: null, error: mapMitfahrerError(error) }
+  if (!embedded.error) {
+    return { data: mapMitfahrerRows(embedded.data ?? []), error: null }
   }
 
-  return { data: mapMitfahrerRows(data ?? []), error: null }
+  if (!isEmbedRelationshipError(embedded.error.message ?? '')) {
+    return { data: null, error: mapMitfahrerError(embedded.error) }
+  }
+
+  const fallback = await client
+    .from('mitfahrer')
+    .select(MITFAHRER_BASE)
+    .eq('fahrt_id', fahrtId)
+    .order('created_at', { ascending: true })
+
+  if (fallback.error) {
+    return { data: null, error: mapMitfahrerError(fallback.error) }
+  }
+
+  const data = await attachProfilesToMitfahrer(fallback.data ?? [])
+  return { data, error: null }
 }
 
 export async function joinMitfahrer(fahrtId: string, userId: string) {
@@ -82,17 +158,34 @@ export async function leaveMitfahrer(fahrtId: string, userId: string) {
 }
 
 export async function fetchMitbringliste(fahrtId: string) {
-  const { data, error } = await requireSupabase()
+  const client = requireSupabase()
+
+  const embedded = await client
     .from('mitbringliste')
     .select(MITBRING_SELECT)
     .eq('fahrt_id', fahrtId)
     .order('created_at', { ascending: true })
 
-  if (error) {
-    return { data: null, error: mapMitbringError(error) }
+  if (!embedded.error) {
+    return { data: mapMitbringRows(embedded.data ?? []), error: null }
   }
 
-  return { data: mapMitbringRows(data ?? []), error: null }
+  if (!isEmbedRelationshipError(embedded.error.message ?? '')) {
+    return { data: null, error: mapMitbringError(embedded.error) }
+  }
+
+  const fallback = await client
+    .from('mitbringliste')
+    .select(MITBRING_BASE)
+    .eq('fahrt_id', fahrtId)
+    .order('created_at', { ascending: true })
+
+  if (fallback.error) {
+    return { data: null, error: mapMitbringError(fallback.error) }
+  }
+
+  const data = await attachProfilesToMitbring(fallback.data ?? [])
+  return { data, error: null }
 }
 
 export async function addMitbringItem(fahrtId: string, userId: string, item: string) {

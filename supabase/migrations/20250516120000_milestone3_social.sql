@@ -50,7 +50,7 @@ create trigger on_auth_user_created
 -- Mitfahrer: wer fährt mit?
 create table public.mitfahrer (
   fahrt_id uuid not null references public.fahrten (id) on delete cascade,
-  user_id uuid not null references auth.users (id) on delete cascade,
+  user_id uuid not null references public.profiles (id) on delete cascade,
   created_at timestamptz not null default now(),
   primary key (fahrt_id, user_id)
 );
@@ -81,7 +81,7 @@ create policy "mitfahrer_delete_own"
 create table public.mitbringliste (
   id uuid primary key default gen_random_uuid(),
   fahrt_id uuid not null references public.fahrten (id) on delete cascade,
-  user_id uuid not null references auth.users (id) on delete cascade,
+  user_id uuid not null references public.profiles (id) on delete cascade,
   item text not null check (char_length(trim(item)) > 0),
   created_at timestamptz not null default now()
 );
