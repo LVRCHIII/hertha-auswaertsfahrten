@@ -4,6 +4,7 @@ import { SupabaseConfigError } from './components/SupabaseConfigError'
 import { AuthProvider } from './contexts/AuthContext'
 import { supabaseConfigError } from './lib/supabase'
 import { FahrtAnlegenPage } from './pages/FahrtAnlegenPage'
+import { FahrtDashboardPage } from './pages/FahrtDashboardPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
@@ -15,6 +16,7 @@ function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/fahrten/neu" element={<FahrtAnlegenPage />} />
+          <Route path="/fahrten/:id" element={<FahrtDashboardPage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

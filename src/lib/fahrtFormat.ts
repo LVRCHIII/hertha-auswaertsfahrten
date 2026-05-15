@@ -18,6 +18,10 @@ export function formatAnpfiff(spielAt: string): string {
   return timeFormatter.format(new Date(spielAt))
 }
 
+export function formatUhrzeit(date: Date): string {
+  return timeFormatter.format(date)
+}
+
 export function isUpcoming(spielAt: string): boolean {
   return new Date(spielAt) >= new Date()
 }

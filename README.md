@@ -1,6 +1,6 @@
 # Hertha Auswärtsfahrten Planer
 
-Milestone 1: Auth, Kalenderübersicht (Liste), Fahrt anlegen.
+Milestone 1 + 2: Auth, Fahrten verwalten, Dashboard mit Routenplanung.
 
 ## Voraussetzungen
 
@@ -34,8 +34,17 @@ cp .env.example .env
 |----------|--------|
 | `VITE_SUPABASE_URL` | Project Settings → API → **Project URL** (mit `https://`) |
 | `VITE_SUPABASE_ANON_KEY` | Project Settings → API → **anon public** (kompletter JWT, ~200 Zeichen) |
+| `VITE_GOOGLE_MAPS_API_KEY` | Google Cloud Console → API-Key (siehe unten) |
 
 Nach Änderungen an `.env` den Dev-Server **neu starten**.
+
+### Google Maps API (Milestone 2)
+
+1. [Google Cloud Console](https://console.cloud.google.com/) → neues Projekt oder bestehendes wählen.
+2. APIs aktivieren: **Maps JavaScript API** und **Directions API**.
+3. **Credentials → API key** erstellen.
+4. Key unter „Application restrictions“ auf **HTTP referrers** setzen: `http://localhost:5173/*`
+5. In `.env`: `VITE_GOOGLE_MAPS_API_KEY=...`
 
 In Supabase unter **Authentication → URL Configuration** für lokale Entwicklung eintragen:
 
@@ -49,13 +58,14 @@ npm run dev
 
 Die App läuft unter http://localhost:5173
 
-## Milestone 1 – Funktionen
+## Funktionen
 
 | Feature | Route | Beschreibung |
 |---------|-------|--------------|
 | Login / Registrierung | `/login`, `/register` | E-Mail + Passwort (Supabase Auth) |
 | Kalenderübersicht | `/` | Liste: kommende + vergangene Fahrten |
 | Fahrt anlegen | `/fahrten/neu` | Gegner, Stadion, Datum, Anpfiff, Startpunkt, optional Notizen |
+| Fahrt-Dashboard | `/fahrten/:id` | Spielinfo, Abfahrtszeit, Route (Google Maps) |
 
 ## Projektstruktur
 
@@ -64,3 +74,5 @@ Die App läuft unter http://localhost:5173
 - `src/lib/fahrtenApi.ts` — Fahrt speichern
 - `src/pages/HomePage.tsx` — Kalenderübersicht
 - `src/pages/FahrtAnlegenPage.tsx` — Formular
+- `src/pages/FahrtDashboardPage.tsx` — Dashboard mit Zeitplanung
+- `src/hooks/useRoutePlan.ts` — Google Directions

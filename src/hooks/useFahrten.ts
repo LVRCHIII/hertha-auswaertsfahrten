@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { insertFahrt } from '../lib/fahrtenApi'
+import { mapFahrtError } from '../lib/mapSupabaseError'
 import { requireSupabase } from '../lib/supabase'
 import type { Fahrt, FahrtInsert } from '../types/fahrt'
 
@@ -18,7 +19,8 @@ export function useFahrten() {
       .order('spiel_at', { ascending: true })
 
     if (fetchError) {
-      setError('Fahrten konnten nicht geladen werden.')
+      console.error('Fahrten laden fehlgeschlagen:', fetchError)
+      setError(mapFahrtError(fetchError))
       setFahrten([])
     } else {
       setFahrten((data as Fahrt[]) ?? [])

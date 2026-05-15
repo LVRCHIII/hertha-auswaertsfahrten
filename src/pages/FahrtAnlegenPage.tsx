@@ -1,8 +1,13 @@
-import { FormEvent, useState } from 'react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { AnpfiffPicker } from '../components/AnpfiffPicker'
 import { AppShell } from '../components/AppShell'
+import { VereinAutocomplete } from '../components/VereinAutocomplete'
 import { useAuth } from '../contexts/AuthContext'
+import type { Verein } from '../data/vereine'
 import { combineDateAndTime } from '../lib/fahrtFormat'
+import { HERTHA_TREFFPUNKT, isDefaultTreffpunkt } from '../lib/defaultTreffpunkt'
 import { insertFahrt } from '../lib/fahrtenApi'
 
 const inputClass =
@@ -17,14 +22,23 @@ export function FahrtAnlegenPage() {
   const [datum, setDatum] = useState('')
   const [anpfiff, setAnpfiff] = useState('')
   const [startpunkt, setStartpunkt] = useState('Berlin')
-  const [treffpunktBerlin, setTreffpunktBerlin] = useState('')
+  const [treffpunktBerlin, setTreffpunktBerlin] = useState<string>(HERTHA_TREFFPUNKT.label)
   const [notizen, setNotizen] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
+  function handleVereinSelect(verein: Verein) {
+    setStadion(verein.stadion)
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!user) return
+
+    if (!anpfiff.trim()) {
+      setError('Bitte eine Anpfiffzeit wählen oder eingeben.')
+      return
+    }
 
     setError(null)
     setSubmitting(true)
@@ -35,7 +49,7 @@ export function FahrtAnlegenPage() {
       spiel_at: combineDateAndTime(datum, anpfiff),
       startpunkt: startpunkt.trim() || 'Berlin',
       notizen: notizen.trim() || null,
-      treffpunkt_berlin: treffpunktBerlin.trim() || null,
+      treffpunkt_berlin: isDefaultTreffpunkt(treffpunktBerlin) ? null : treffpunktBerlin.trim(),
       created_by: user.id,
     })
 
@@ -55,19 +69,12 @@ export function FahrtAnlegenPage() {
         className="space-y-5 rounded-2xl bg-white p-6 text-slate-900 shadow-lg"
         onSubmit={handleSubmit}
       >
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="gegner">
-            Gegner <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="gegner"
-            required
-            placeholder="z. B. FC Bayern München"
-            value={gegner}
-            onChange={(e) => setGegner(e.target.value)}
-            className={inputClass}
-          />
-        </div>
+        <VereinAutocomplete
+          value={gegner}
+          onChange={setGegner}
+          onVereinSelect={handleVereinSelect}
+          required
+        />
 
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="stadion">
@@ -76,11 +83,14 @@ export function FahrtAnlegenPage() {
           <input
             id="stadion"
             required
-            placeholder="z. B. Allianz Arena, München"
+            placeholder="z. B. VELTINS-Arena, Gelsenkirchen"
             value={stadion}
             onChange={(e) => setStadion(e.target.value)}
             className={inputClass}
           />
+          <p className="mt-1 text-xs text-slate-500">
+            Wird beim Vereins-Picker automatisch befüllt — lässt sich jederzeit anpassen.
+          </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -97,19 +107,7 @@ export function FahrtAnlegenPage() {
               className={inputClass}
             />
           </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium" htmlFor="anpfiff">
-              Anpfiff <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="anpfiff"
-              type="time"
-              required
-              value={anpfiff}
-              onChange={(e) => setAnpfiff(e.target.value)}
-              className={inputClass}
-            />
-          </div>
+          <AnpfiffPicker value={anpfiff} onChange={setAnpfiff} required />
         </div>
 
         <div>
@@ -127,11 +125,11 @@ export function FahrtAnlegenPage() {
 
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="treffpunkt">
-            Treffpunkt in Berlin (optional)
+            Treffpunkt (optional)
           </label>
           <input
             id="treffpunkt"
-            placeholder="z. B. Olympiastadion Nordkurve"
+            placeholder={HERTHA_TREFFPUNKT.label}
             value={treffpunktBerlin}
             onChange={(e) => setTreffpunktBerlin(e.target.value)}
             className={inputClass}

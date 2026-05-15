@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { formatAnpfiff, formatSpielDatum, isUpcoming } from '../lib/fahrtFormat'
 import type { Fahrt } from '../types/fahrt'
 
@@ -9,8 +10,9 @@ export function FahrtCard({ fahrt }: FahrtCardProps) {
   const upcoming = isUpcoming(fahrt.spiel_at)
 
   return (
-    <article
-      className={`rounded-xl border p-4 shadow-sm ${
+    <Link
+      to={`/fahrten/${fahrt.id}`}
+      className={`block rounded-xl border p-4 shadow-sm transition hover:scale-[1.01] ${
         upcoming
           ? 'border-hertha-mid/50 bg-white text-slate-900 ring-2 ring-hertha-mid/30'
           : 'border-white/20 bg-white/10 text-white/90'
@@ -45,6 +47,6 @@ export function FahrtCard({ fahrt }: FahrtCardProps) {
           <dd className="font-medium">{fahrt.startpunkt}</dd>
         </div>
       </dl>
-    </article>
+    </Link>
   )
 }
