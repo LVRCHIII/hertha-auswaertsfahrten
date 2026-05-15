@@ -87,3 +87,10 @@ export function departureTimeForTraffic(spielAt: string, pufferMinuten: number):
   const now = new Date()
   return estimated > now ? estimated : now
 }
+
+/** Verkehrsprognose für die Fahrt Zuhause → Treffpunkt. */
+export function departureTimeForHomeLeg(treffpunktAbfahrt: Date): Date {
+  const guess = new Date(treffpunktAbfahrt.getTime() - 2 * 60 * 60 * 1000)
+  const now = new Date()
+  return guess > now ? guess : now
+}

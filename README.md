@@ -1,6 +1,6 @@
 # Hertha Auswärtsfahrten Planer
 
-Milestone 1 + 2: Auth, Fahrten verwalten, Dashboard mit Routenplanung.
+Milestone 1–3: Auth, Fahrten verwalten, Dashboard mit Routenplanung, Mitfahrer & Mitbringliste.
 
 ## Voraussetzungen
 
@@ -20,6 +20,13 @@ Im Supabase Dashboard: **SQL Editor → New query** — Inhalt von
 `supabase/migrations/20250515120000_create_fahrten.sql` einfügen und **Run** klicken.
 
 Damit wird die Tabelle `fahrten` mit Row-Level Security angelegt.
+
+Für Milestone 3 zusätzlich im SQL Editor ausführen:  
+`supabase/migrations/20250516120000_milestone3_social.sql`  
+(Profile, Mitfahrer, Mitbringliste)
+
+Optional danach: `supabase/migrations/20250516130000_profile_avatar_home.sql`  
+(Profilbild-Storage, Zuhause-Adresse)
 
 ## App starten
 
@@ -65,7 +72,8 @@ Die App läuft unter http://localhost:5173
 | Login / Registrierung | `/login`, `/register` | E-Mail + Passwort (Supabase Auth) |
 | Kalenderübersicht | `/` | Liste: kommende + vergangene Fahrten |
 | Fahrt anlegen | `/fahrten/neu` | Gegner, Stadion, Datum, Anpfiff, Startpunkt, optional Notizen |
-| Fahrt-Dashboard | `/fahrten/:id` | Spielinfo, Abfahrtszeit, Route (Google Maps) |
+| Fahrt-Dashboard | `/fahrten/:id` | Spielinfo, Abfahrtszeit, Route, Mitfahrer, Mitbringliste |
+| Profil | `/profil` | Anzeigename, Profilbild, Abfahrt von Zuhause |
 
 ## Projektstruktur
 

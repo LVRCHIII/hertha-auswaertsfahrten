@@ -23,6 +23,12 @@ export function AppShell({ children, title = 'Hertha Auswärtsfahrten', wide = f
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <Link
+              to="/profil"
+              className="rounded-lg border border-white/40 px-3 py-1.5 text-sm font-medium transition hover:bg-white/10"
+            >
+              Profil
+            </Link>
+            <Link
               to="/fahrten/neu"
               className="rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-hertha-blue transition hover:bg-white/90"
             >

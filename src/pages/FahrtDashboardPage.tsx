@@ -3,8 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
 import { DashboardSection } from '../components/DashboardSection'
 import { MatchupWappen } from '../components/MatchupWappen'
+import { HomeDepartureBlock } from '../components/HomeDepartureBlock'
+import { MitbringlisteSection } from '../components/MitbringlisteSection'
+import { MitfahrerSection } from '../components/MitfahrerSection'
 import { useAuth } from '../contexts/AuthContext'
 import { useFahrt } from '../hooks/useFahrt'
+import { useProfile } from '../hooks/useProfile'
 import { deleteFahrt } from '../lib/fahrtenApi'
 import { useRoutePlan } from '../hooks/useRoutePlan'
 import {
@@ -16,7 +20,12 @@ import {
 } from '../lib/departureCalc'
 import { formatAnpfiff, formatSpielDatum, formatUhrzeit } from '../lib/fahrtFormat'
 import { HERTHA_TREFFPUNKT, isDefaultTreffpunkt } from '../lib/defaultTreffpunkt'
-import { departureTimeForTraffic, getRouteEndpoints } from '../lib/routeAddresses'
+import {
+  departureTimeForHomeLeg,
+  departureTimeForTraffic,
+  getRouteEndpoints,
+  qualifyBerlinAddress,
+} from '../lib/routeAddresses'
 
 const PUFFER_OPTIONS = [
   { label: '1,5 Std.', minutes: 90 },
@@ -27,6 +36,7 @@ export function FahrtDashboardPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { profile } = useProfile(user?.id, user?.email)
   const { fahrt, loading, error } = useFahrt(id)
   const [pufferMinuten, setPufferMinuten] = useState(90)
   const [deleting, setDeleting] = useState(false)
@@ -43,6 +53,14 @@ export function FahrtDashboardPage() {
     fahrt && route.status === 'ready'
       ? calculateAbfahrtszeit(fahrt.spiel_at, route.plan.durationSeconds, pufferMinuten)
       : null
+
+  const homeAddress = profile?.home_address?.trim() ?? ''
+  const homeOrigin = homeAddress ? qualifyBerlinAddress(homeAddress) : ''
+  const homeRoute = useRoutePlan(
+    homeOrigin,
+    routeEndpoints?.originResolved ?? '',
+    abfahrtszeit ? departureTimeForHomeLeg(abfahrtszeit) : undefined,
+  )
 
   if (loading) {
     return (
@@ -244,6 +262,19 @@ export function FahrtDashboardPage() {
                   </a>
                 </div>
               ) : null}
+
+              {abfahrtszeit ? (
+                <HomeDepartureBlock
+                  homeAddress={profile?.home_address}
+                  treffpunktLabel={routeEndpoints?.originLabel ?? HERTHA_TREFFPUNKT.label}
+                  treffpunktAbfahrt={abfahrtszeit}
+                  homeOrigin={homeOrigin || homeAddress}
+                  treffpunktDestination={routeEndpoints?.originResolved ?? routeEndpoints?.origin ?? ''}
+                  routeStatus={homeRoute.status}
+                  routePlan={homeRoute.status === 'ready' ? homeRoute.plan : undefined}
+                  routeMessage={homeRoute.status === 'error' ? homeRoute.message : undefined}
+                />
+              ) : null}
             </div>
           </div>
         </DashboardSection>
@@ -268,9 +299,12 @@ export function FahrtDashboardPage() {
         </DashboardSection>
       </div>
 
-      <p className="mt-4 text-center text-xs text-white/45">
-        Demnächst: Mitfahrer · Mitbringliste · Parkplätze
-      </p>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <MitfahrerSection fahrtId={trip.id} currentUserId={user?.id} />
+        <MitbringlisteSection fahrtId={trip.id} currentUserId={user?.id} />
+      </div>
+
+      <p className="mt-4 text-center text-xs text-white/45">Demnächst: Parkplätze</p>
     </AppShell>
   )
 }

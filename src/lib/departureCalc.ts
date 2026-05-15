@@ -14,6 +14,14 @@ export function calculateAbfahrtszeit(
   return new Date(anpfiff - fahrtMs - pufferMs)
 }
 
+/** Abfahrt Zuhause, damit man rechtzeitig am Treffpunkt ist. */
+export function calculateHomeAbfahrtszeit(
+  treffpunktAbfahrt: Date,
+  fahrtdauerSekunden: number,
+): Date {
+  return new Date(treffpunktAbfahrt.getTime() - fahrtdauerSekunden * 1000)
+}
+
 export function formatDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.round((seconds % 3600) / 60)
@@ -38,12 +46,12 @@ function formatLocationParam(location: RouteLocation): string {
 
 export function buildGoogleMapsDirectionsUrl(
   origin: RouteLocation,
-  destination: string,
+  destination: RouteLocation | string,
 ): string {
   const params = new URLSearchParams({
     api: '1',
     origin: formatLocationParam(origin),
-    destination,
+    destination: formatLocationParam(destination),
     travelmode: 'driving',
   })
   return `https://www.google.com/maps/dir/?${params.toString()}`
