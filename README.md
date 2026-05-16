@@ -1,6 +1,6 @@
 # Hertha Auswärtsfahrten Planer
 
-Milestone 1–4: Auth, Fahrten verwalten, Dashboard mit Routenplanung, Mitfahrer, Mitbringliste & Parkplätze.
+Milestone 1–6 Basis: Auth, Fahrten verwalten, Dashboard mit Routenplanung, Mitfahrer, Mitbringliste, Parkplätze, Kalender, PWA-Grundlage & erste Tests.
 
 **Projektkontext für Cursor-Chats:** [`PROJEKT_KONTEXT.md`](./PROJEKT_KONTEXT.md)
 
@@ -74,6 +74,14 @@ npm run dev
 
 Die App läuft unter http://localhost:5173
 
+## Tests
+
+```bash
+npm test
+```
+
+Vitest deckt aktuell Kernlogik für Kalender, Abfahrtszeiten/Google-Maps-URLs und Parkplatz-Metadaten ab.
+
 ## Funktionen
 
 | Feature | Route | Beschreibung |
@@ -83,6 +91,7 @@ Die App läuft unter http://localhost:5173
 | Fahrt anlegen | `/fahrten/neu` | Gegner, Stadion, Datum, Anpfiff, Startpunkt, optional Notizen |
 | Fahrt-Dashboard | `/fahrten/:id` | Spielinfo, Abfahrtszeit, Route, Mitfahrer, Mitbringliste, Parkplatz |
 | Profil | `/profil` | Anzeigename, Profilbild, Abfahrt von Zuhause |
+| PWA | `/` | Manifest, App-Icon und Service Worker für App-Shell/offline Fallback |
 
 ## Projektstruktur
 

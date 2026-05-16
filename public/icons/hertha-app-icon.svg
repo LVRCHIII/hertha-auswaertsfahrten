@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Hertha Auswärtsfahrten</title>
+  <desc id="desc">Blaues App-Icon mit weißer Fahne und Straßenlinie.</desc>
+  <rect width="512" height="512" rx="112" fill="#003264" />
+  <path d="M128 121c58 31 103-35 163-4 21 11 44 16 67 13v151c-29 6-55 0-79-12-56-29-99 35-151 5V121Z" fill="#fff" />
+  <path d="M128 121v270" stroke="#fff" stroke-width="32" stroke-linecap="round" />
+  <path d="M128 363c92-36 164-36 256 0" fill="none" stroke="#005BAC" stroke-width="34" stroke-linecap="round" />
+  <path d="M204 346c36-8 68-8 104 0" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" />
+</svg>

@@ -1,0 +1,20 @@
+{
+  "name": "Hertha Auswärtsfahrten Planer",
+  "short_name": "Hertha Fahrten",
+  "description": "Gemeinsame Hertha-Auswärtsfahrten planen: Kalender, Route, Mitfahrer und Parkplätze.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#003264",
+  "theme_color": "#003264",
+  "orientation": "portrait-primary",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "/icons/hertha-app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

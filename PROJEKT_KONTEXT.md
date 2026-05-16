@@ -55,6 +55,7 @@ Web-App für eine kleine Gruppe Hertha BSC Fans (3–6 Leute) aus Berlin: gemein
 npm install
 cp .env.example .env   # Keys eintragen
 npm run dev            # Port 5173 (fest), beendet vorher alte Prozesse auf 5173
+npm test               # Vitest Unit-Tests
 ```
 
 - **URL:** http://localhost:5173
@@ -197,6 +198,10 @@ src/
 ├── types/
 │   ├── fahrt.ts / parking.ts / social.ts / profile.ts
 └── data/vereine.ts               2. Bundesliga 25/26 + Wappen
+public/
+├── manifest.webmanifest          PWA-Metadaten
+├── sw.js                         Service Worker für App-Shell/offline Fallback
+└── icons/hertha-app-icon.svg     App-/Favicon
 ```
 
 ---
@@ -225,8 +230,11 @@ Mitfahrer, Mitbringliste, Profil (Avatar, Zuhause-Adresse), persönliche Abfahrt
 - Spiele als anklickbare Kalendereinträge (`Anpfiff + Gegner`)
 - Abgestimmte Abfahrtszeit erscheint im Kalendereintrag, wenn vorhanden
 
-### 🔲 Milestone 6 — Polish
-PWA, Design-Feinschliff, Tests, ggf. Migration Directions → Routes API (New)
+### ✅ Milestone 6 — Polish-Basis
+- PWA-Metadaten: Manifest, Theme-Farbe, App-Icon, Mobile-App-Tags
+- Service Worker: App-Shell/offline Fallback nur für gleiche Origin; keine Supabase-/Google-API-Caches
+- Test-Setup mit Vitest (`npm test`)
+- Erste Unit-Tests für Kalenderlogik, Abfahrts-/Maps-URL-Helfer und Parkplatz-Metadaten
 
 ---
 
@@ -262,11 +270,11 @@ Chat, Push, Tickets, Kostenaufteilung, Einladungslinks, native Apps, Discord, au
 
 ## Nächster Schritt
 
-**Milestone 5:** PWA, Design-Feinschliff, Tests
+**Weitere Polish-Schritte:** Lighthouse-/PWA-Installierbarkeit prüfen, ggf. PNG/maskable Icons ergänzen, Design-Feinschliff auf Mobile testen, optional Migration Directions → Routes API (New).
 
 **Beispiel-Prompt für neuen Chat:**
-> Ich arbeite an der Hertha Auswärtsfahrten App. Kontext: @PROJEKT_KONTEXT.md — Milestone 1–4 sind fertig (inkl. Parkplatz mit Routen-Integration). Bitte Milestone 5 umsetzen.
+> Ich arbeite an der Hertha Auswärtsfahrten App. Kontext: @PROJEKT_KONTEXT.md — Milestone 1–6 sind in der Basis fertig (inkl. Parkplatz, Kalender, PWA-Grundlage und Tests). Bitte den nächsten Polish-Schritt umsetzen.
 
 ---
 
-*Zuletzt aktualisiert: Mai 2026 (Milestone 4 komplett: Parkplatz, Entfernung/Kosten, Routenziel, UI-Liste)*
+*Zuletzt aktualisiert: Mai 2026 (Milestone 6 Polish-Basis: PWA-Grundlage und erste Tests)*

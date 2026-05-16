@@ -7,6 +7,8 @@
     "dev:stop": "lsof -ti :5173 | xargs kill -9 2>/dev/null || true",
     "dev": "npm run dev:stop && vite",
     "build": "tsc -b && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -17,13 +19,14 @@
     "react-router-dom": "^7.6.1"
   },
   "devDependencies": {
-    "@types/google.maps": "^3.58.1",
     "@tailwindcss/vite": "^4.1.7",
+    "@types/google.maps": "^3.58.1",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^4.4.1",
     "tailwindcss": "^4.1.7",
     "typescript": "~5.8.3",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^4.1.6"
   }
 }
