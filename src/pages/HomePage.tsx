@@ -1,13 +1,17 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
+import { CalendarView } from '../components/CalendarView'
 import { FahrtSection } from '../components/FahrtSection'
 import { useFahrten } from '../hooks/useFahrten'
 import { useAbfahrtAbstimmungOverview } from '../hooks/useAbfahrtAbstimmungOverview'
 import { useMitfahrerOverview } from '../hooks/useMitfahrerOverview'
 import { partitionFahrten } from '../lib/partitionFahrten'
 
+type HomeView = 'calendar' | 'list'
+
 export function HomePage() {
+  const [activeView, setActiveView] = useState<HomeView>('list')
   const { fahrten, loading, error } = useFahrten()
   const { upcoming, past } = partitionFahrten(fahrten)
   const fahrtIds = useMemo(() => fahrten.map((fahrt) => fahrt.id), [fahrten])
@@ -46,20 +50,46 @@ export function HomePage() {
 
       {!loading && fahrten.length > 0 ? (
         <div className="space-y-8">
-          <FahrtSection
-            title="Kommende Fahrten"
-            fahrten={upcoming}
-            mitfahrerByFahrt={mitfahrerByFahrt}
-            abfahrtByFahrt={abfahrtByFahrt}
-            emptyHint="Keine kommenden Fahrten – Zeit für die nächste Auswärtsfahrt!"
-          />
-          <FahrtSection
-            title="Vergangene Fahrten"
-            fahrten={past}
-            mitfahrerByFahrt={mitfahrerByFahrt}
-            abfahrtByFahrt={abfahrtByFahrt}
-            emptyHint="Noch keine vergangenen Fahrten im Archiv."
-          />
+          <div className="inline-flex rounded-xl bg-white/10 p-1">
+            {[
+              { id: 'list', label: 'Liste' },
+              { id: 'calendar', label: 'Kalender' },
+            ].map((view) => (
+              <button
+                key={view.id}
+                type="button"
+                onClick={() => setActiveView(view.id as HomeView)}
+                className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                  activeView === view.id
+                    ? 'bg-white text-hertha-blue shadow-sm'
+                    : 'text-white/75 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                {view.label}
+              </button>
+            ))}
+          </div>
+
+          {activeView === 'calendar' ? (
+            <CalendarView fahrten={fahrten} abfahrtByFahrt={abfahrtByFahrt} />
+          ) : (
+            <div className="space-y-8">
+              <FahrtSection
+                title="Kommende Fahrten"
+                fahrten={upcoming}
+                mitfahrerByFahrt={mitfahrerByFahrt}
+                abfahrtByFahrt={abfahrtByFahrt}
+                emptyHint="Keine kommenden Fahrten – Zeit für die nächste Auswärtsfahrt!"
+              />
+              <FahrtSection
+                title="Vergangene Fahrten"
+                fahrten={past}
+                mitfahrerByFahrt={mitfahrerByFahrt}
+                abfahrtByFahrt={abfahrtByFahrt}
+                emptyHint="Noch keine vergangenen Fahrten im Archiv."
+              />
+            </div>
+          )}
         </div>
       ) : null}
     </AppShell>
