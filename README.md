@@ -80,7 +80,7 @@ Die App läuft unter http://localhost:5173
 npm test
 ```
 
-Vitest deckt aktuell Kernlogik für Kalender, Abfahrtszeiten/Google-Maps-URLs und Parkplatz-Metadaten ab.
+Vitest deckt aktuell Kernlogik für Kalender, Spieltag-Modus, Abfahrtszeiten/Google-Maps-URLs und Parkplatz-Metadaten ab.
 
 ## Funktionen
 
@@ -88,10 +88,19 @@ Vitest deckt aktuell Kernlogik für Kalender, Abfahrtszeiten/Google-Maps-URLs un
 |---------|-------|--------------|
 | Login / Registrierung | `/login`, `/register` | E-Mail + Passwort (Supabase Auth) |
 | Kalenderübersicht | `/` | Liste: kommende + vergangene Fahrten |
+| Spieltag-Modus | `/spieltag` | Mobile Kurzansicht für nächste Fahrt, Ablauf und Schnelllinks |
 | Fahrt anlegen | `/fahrten/neu` | Gegner, Stadion, Datum, Anpfiff, Startpunkt, optional Notizen |
 | Fahrt-Dashboard | `/fahrten/:id` | Spielinfo, Abfahrtszeit, Route, Mitfahrer, Mitbringliste, Parkplatz |
 | Profil | `/profil` | Anzeigename, Profilbild, Abfahrt von Zuhause |
 | PWA | `/` | Manifest, App-Icon und Service Worker für App-Shell/offline Fallback |
+
+## Roadmap
+
+- **Milestone 10:** Auswärtsstatistik mit Ranking, persönlichen Kilometern und längster Fahrt.
+- **Milestone 11:** Spieltagsberichte mit Rich-Text-Editor und Inline-Bildern.
+- **Milestone 12:** Bewertungen pro Fahrt für Fahrt, Stadion, Mannschaft, Stimmung, Essen und Gesamt.
+- **Milestone 13:** Saisonarchiv als Erinnerungsseite mit Berichten, Fotos, Bewertungen und Statistiken.
+- **Milestone 14/15:** Erinnerungen/Änderungshinweise und spätere Gruppenverwaltung mit Rollen.
 
 ## Projektstruktur
 
@@ -99,6 +108,7 @@ Vitest deckt aktuell Kernlogik für Kalender, Abfahrtszeiten/Google-Maps-URLs un
 - `src/hooks/useFahrten.ts` — Fahrten laden
 - `src/lib/fahrtenApi.ts` — Fahrt speichern
 - `src/pages/HomePage.tsx` — Kalenderübersicht
+- `src/pages/SpieltagPage.tsx` — Spieltag-Modus für die nächste Fahrt
 - `src/pages/FahrtAnlegenPage.tsx` — Formular
 - `src/pages/FahrtDashboardPage.tsx` — Dashboard mit Zeitplanung
 - `src/hooks/useRoutePlan.ts` — Google Directions

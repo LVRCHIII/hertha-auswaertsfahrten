@@ -9,6 +9,7 @@ import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { ProfilPage } from './pages/ProfilPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { SpieltagPage } from './pages/SpieltagPage'
 
 function AppRoutes() {
   return (
@@ -16,6 +17,7 @@ function AppRoutes() {
       <Routes>
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/spieltag" element={<SpieltagPage />} />
           <Route path="/fahrten/neu" element={<FahrtAnlegenPage />} />
           <Route path="/fahrten/:id" element={<FahrtDashboardPage />} />
           <Route path="/profil" element={<ProfilPage />} />

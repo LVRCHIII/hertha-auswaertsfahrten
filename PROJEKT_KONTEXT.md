@@ -121,6 +121,7 @@ Im SQL Editor ausführen (oder per Supabase MCP `apply_migration`):
 | Route | Beschreibung |
 |-------|--------------|
 | `/` | Startseite mit Umschalter Kalender/Liste: Monatskalender und kommend/vergangen |
+| `/spieltag` | Mobile-first Spieltag-Modus für die nächste Auswärtsfahrt |
 | `/fahrten/neu` | Fahrt anlegen (Gegner-Autocomplete, Wappen, Anpfiff) |
 | `/fahrten/:id` | Fahrt-Dashboard |
 | `/profil` | Anzeigename, Avatar, Abfahrt von Zuhause |
@@ -165,6 +166,7 @@ Im SQL Editor ausführen (oder per Supabase MCP `apply_migration`):
 src/
 ├── pages/
 │   ├── HomePage.tsx              Startseite mit Kalender/Liste
+│   ├── SpieltagPage.tsx          Mobile Kurzansicht für nächste Fahrt
 │   ├── FahrtAnlegenPage.tsx      Formular + VereinAutocomplete
 │   ├── FahrtDashboardPage.tsx    Route, Parkplatz-State, Social
 │   ├── ProfilPage.tsx
@@ -192,6 +194,7 @@ src/
 │   ├── googleMapsLoader.ts       routes + places + core Libraries
 │   ├── googleMapsErrors.ts       Referrer-Hinweise
 │   ├── calendar.ts               Monatsraster + Fahrten nach Tag
+│   ├── spieltag.ts               Nächste Fahrt, Tageslabel, Timeline
 │   ├── departureCalc.ts          Abfahrtszeit, formatDistance, Maps-URLs
 │   ├── socialApi.ts / profilesApi.ts / fahrtenApi.ts
 │   └── defaultTreffpunkt.ts      Pendlerparkplatz Schwielowsee
@@ -236,13 +239,89 @@ Mitfahrer, Mitbringliste, Profil (Avatar, Zuhause-Adresse), persönliche Abfahrt
 - Test-Setup mit Vitest (`npm test`)
 - Erste Unit-Tests für Kalenderlogik, Abfahrts-/Maps-URL-Helfer und Parkplatz-Metadaten
 
+### ✅ Milestone 9 — Spieltag-Modus
+- Neue Route `/spieltag` als mobile Kurzansicht für die nächste Auswärtsfahrt
+- Hero mit Gegner, Datum, Tageslabel („Heute/Morgen/in X Tagen“) und nächstem Zeitpunkt
+- Schnellaktionen: Route, Treffpunkt, gewählter Parkplatz, vollständiges Dashboard
+- Kompakter Ablauf aus Zuhause-Abfahrt (wenn Profiladresse + Route), Treffpunkt-Abfahrt, Ankunft/Puffer, Anpfiff
+- Kompakte Mitfahrer- und Mitbringliste-Vorschau
+- Unit-Tests für Spieltag-Helfer (`pickNextSpieltagFahrt`, Tageslabel, Timeline)
+
+### 🔲 Milestone 10 — Auswärtsstatistik
+- Startseiten-Karte mit persönlicher und gruppenweiter Statistik
+- Ranking: Platz, Name, Anzahl Auswärtsfahrten, Kilometer
+- Statistik zählt nur Fahrten, bei denen der User in `mitfahrer` steht („Ich fahre mit“)
+- Längste Fahrt pro User oder gruppenweit hervorheben
+- Kilometer pro Fahrt dauerhaft speichern (nicht jedes Mal live über Google berechnen)
+- Tests für Teilnahmefilter, Ranking-Sortierung und Kilometerformatierung
+
+### 🔲 Milestone 11 — Spieltagsbericht mit Rich-Text & Bildern
+- Neuer Erinnerungsbereich pro Fahrt im Dashboard
+- Rich-Text-Editor mit Toolbar (z. B. Tiptap): Überschriften, Fett/Kursiv, Listen, Zitate, Links
+- Bilder in den Fließtext hochladen und inline einfügen
+- Bericht strukturiert speichern (`content_json`), gerenderten Output kontrolliert/sicher anzeigen
+- Supabase Storage Bucket für Berichtbilder
+
+### 🔲 Milestone 12 — Bewertungen pro Fahrt
+- Teilnehmer bewerten Fahrt, Stadion, Mannschaft, Stimmung, Essen und Gesamt mit 1-5 Sternen
+- Nur Mitfahrer dürfen eine Fahrt bewerten
+- Eigene Bewertung bearbeiten, Durchschnitt je Kategorie anzeigen
+- Highlights später nutzbar: beste Stimmung, bestes Stadion, beste Gesamtfahrt
+
+### 🔲 Milestone 13 — Saisonarchiv & Erinnerungsseite
+- Neue Archiv-/Saisonroute für abgeschlossene Auswärtsfahrten
+- Erinnerungsseite pro Fahrt mit Bericht, Bildern, Bewertungen und Teilnehmern
+- Gruppenstatistik: gesamte Auswärtskilometer, besuchte Stadien, aktivste Mitfahrer
+- Top-Fahrten nach Bewertung und Saisonrückblick
+
+### 🔲 Milestone 14 — Erinnerungen & Hinweise
+- PWA-/Browser-Erinnerungen vor Fahrt und Abfahrt
+- Hinweise bei Änderungen an Treffpunkt, Parkplatz oder Anpfiff
+- Reminder für offene Mitbringliste
+
+### 🔲 Milestone 15 — Gruppenverwaltung
+- Feste Gruppe statt globaler Auth-User-Sicht
+- Einladungslinks für neue Mitglieder
+- Rollen/Berechtigungen für Löschen, finale Zeiten, Berichte und Verwaltung
+
+---
+
+## Geplantes Erinnerungsarchiv — Datenmodell-Leitplanken
+
+### Auswärtsstatistik
+
+- Teilnahmequelle: `mitfahrer` bleibt maßgeblich. Nur „Ich fahre mit“ zählt für persönliche Spiele/Kilometer.
+- Distanzquelle: Kilometer pro Fahrt dauerhaft speichern, z. B. `route_distance_meters` auf `fahrten` oder als eigene Statistik-Basistabelle.
+- Keine Live-Abhängigkeit von Google Maps für Rankings: Routenberechnung darf Werte vorschlagen, Statistik liest gespeicherte Werte.
+- Startseite zeigt Ranking und persönliche Statistik; spätere Archivseite kann dieselben Aggregationen wiederverwenden.
+
+### Spieltagsberichte
+
+- Pro Fahrt ein Bericht in einer neuen Tabelle, z. B. `spieltagsberichte`.
+- Inhalt primär als strukturiertes Editor-JSON speichern (`content_json`), nicht nur als unsicherer HTML-String.
+- Optional zusätzlich `content_text` für Suche/Vorschau und `updated_at`/`author_id` für Historie.
+- Rich-Text-Editor geplant mit Toolbar und Inline-Bildern; Tiptap passt gut zu React und strukturiertem JSON.
+
+### Berichtbilder
+
+- Supabase Storage Bucket, z. B. `bericht-images`.
+- Bilder werden im Editor hochgeladen und als Nodes im Bericht referenziert.
+- RLS/Storage-Regeln: Lesen für authenticated; Upload/Löschen zunächst für authenticated bzw. Autor, später rollenbasiert über Gruppenverwaltung.
+
+### Bewertungen
+
+- Neue Tabelle `fahrt_bewertungen` mit Unique-Key `(fahrt_id, user_id)`.
+- Kategorien: `fahrt`, `stadion`, `mannschaft`, `stimmung`, `essen`, `gesamt` mit 1-5 Sternen.
+- Nur Mitfahrer sollen bewerten dürfen; das sollte in API und idealerweise per RLS abgesichert werden.
+- Durchschnittswerte werden im Dashboard angezeigt und später im Saisonarchiv für Highlights genutzt.
+
 ---
 
 ## Design
 
 - Primär: `#003264` · Sekundär: `#005BAC` · Akzent: Weiß
 - Sprache: Deutsch · Mobile-first
-- `AppShell` mit Header (Profil, + Fahrt, Abmelden)
+- `AppShell` mit Header (Spieltag, Profil, + Fahrt, Abmelden)
 
 ---
 
@@ -264,17 +343,19 @@ Mitfahrer, Mitbringliste, Profil (Avatar, Zuhause-Adresse), persönliche Abfahrt
 
 ## Nicht im Scope (v1.0)
 
-Chat, Push, Tickets, Kostenaufteilung, Einladungslinks, native Apps, Discord, automatischer Spielplan-Import
+Chat, Tickets, Kostenaufteilung/Fahrzeugverwaltung, native Apps, Discord, automatischer Spielplan-Import
+
+Kosten-/Auto-Features sind bewusst nicht im Milestone-Katalog, da die Gruppe mit einem festen Firmenwagen fährt und Spritkosten nicht relevant sind.
 
 ---
 
 ## Nächster Schritt
 
-**Weitere Polish-Schritte:** Lighthouse-/PWA-Installierbarkeit prüfen, ggf. PNG/maskable Icons ergänzen, Design-Feinschliff auf Mobile testen, optional Migration Directions → Routes API (New).
+**Milestone 10:** Auswärtsstatistik umsetzen (Teilnahme aus `mitfahrer`, gespeicherte Kilometer pro Fahrt, Ranking auf der Startseite).
 
 **Beispiel-Prompt für neuen Chat:**
-> Ich arbeite an der Hertha Auswärtsfahrten App. Kontext: @PROJEKT_KONTEXT.md — Milestone 1–6 sind in der Basis fertig (inkl. Parkplatz, Kalender, PWA-Grundlage und Tests). Bitte den nächsten Polish-Schritt umsetzen.
+> Ich arbeite an der Hertha Auswärtsfahrten App. Kontext: @PROJEKT_KONTEXT.md — Milestone 1–6 und 9 sind fertig. Der neue Katalog sieht Milestone 10 Auswärtsstatistik, 11 Spieltagsberichte, 12 Bewertungen und 13 Saisonarchiv vor. Bitte Milestone 10 umsetzen.
 
 ---
 
-*Zuletzt aktualisiert: Mai 2026 (Milestone 6 Polish-Basis: PWA-Grundlage und erste Tests)*
+*Zuletzt aktualisiert: Mai 2026 (Katalog erweitert: Auswärtsstatistik & Erinnerungsarchiv)*
