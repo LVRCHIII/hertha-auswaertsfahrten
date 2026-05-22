@@ -9,6 +9,7 @@ export type Fahrt = {
   notizen: string | null
   treffpunkt_berlin: string | null
   treffpunkt_bestaetigt: boolean
+  route_distance_meters: number | null
 }
 
 export type FahrtInsert = {

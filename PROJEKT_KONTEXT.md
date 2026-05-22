@@ -104,6 +104,7 @@ Im SQL Editor ausführen (oder per Supabase MCP `apply_migration`):
 | `20250516140000_fix_social_profile_fkeys.sql` | FK `user_id` → `profiles` |
 | `20250516150000_milestone4_parkplaetze.sql` | Tabelle `parkplaetze` |
 | `20250516160000_parkplaetze_distance_cost.sql` | `distance_meters`, `cost_kind` |
+| `20260518104802_milestone10_auswaertsstatistik.sql` | `fahrten.route_distance_meters` |
 
 ### Tabelle `parkplaetze`
 
@@ -247,13 +248,13 @@ Mitfahrer, Mitbringliste, Profil (Avatar, Zuhause-Adresse), persönliche Abfahrt
 - Kompakte Mitfahrer- und Mitbringliste-Vorschau
 - Unit-Tests für Spieltag-Helfer (`pickNextSpieltagFahrt`, Tageslabel, Timeline)
 
-### 🔲 Milestone 10 — Auswärtsstatistik
+### ✅ Milestone 10 — Auswärtsstatistik
 - Startseiten-Karte mit persönlicher und gruppenweiter Statistik
 - Ranking: Platz, Name, Anzahl Auswärtsfahrten, Kilometer
 - Statistik zählt nur Fahrten, bei denen der User in `mitfahrer` steht („Ich fahre mit“)
-- Längste Fahrt pro User oder gruppenweit hervorheben
-- Kilometer pro Fahrt dauerhaft speichern (nicht jedes Mal live über Google berechnen)
-- Tests für Teilnahmefilter, Ranking-Sortierung und Kilometerformatierung
+- Längste Fahrt pro User und gruppenweit hervorgehoben
+- Kilometer pro Fahrt dauerhaft als `fahrten.route_distance_meters` gespeichert
+- Tests für Teilnahmefilter, Ranking-Sortierung, fehlende Distanzen und Kilometerformatierung
 
 ### 🔲 Milestone 11 — Spieltagsbericht mit Rich-Text & Bildern
 - Neuer Erinnerungsbereich pro Fahrt im Dashboard
@@ -351,10 +352,10 @@ Kosten-/Auto-Features sind bewusst nicht im Milestone-Katalog, da die Gruppe mit
 
 ## Nächster Schritt
 
-**Milestone 10:** Auswärtsstatistik umsetzen (Teilnahme aus `mitfahrer`, gespeicherte Kilometer pro Fahrt, Ranking auf der Startseite).
+**Milestone 11:** Spieltagsbericht mit Rich-Text & Bildern umsetzen.
 
 **Beispiel-Prompt für neuen Chat:**
-> Ich arbeite an der Hertha Auswärtsfahrten App. Kontext: @PROJEKT_KONTEXT.md — Milestone 1–6 und 9 sind fertig. Der neue Katalog sieht Milestone 10 Auswärtsstatistik, 11 Spieltagsberichte, 12 Bewertungen und 13 Saisonarchiv vor. Bitte Milestone 10 umsetzen.
+> Ich arbeite an der Hertha Auswärtsfahrten App. Kontext: @PROJEKT_KONTEXT.md — Milestone 1–6, 9 und 10 sind fertig. Der neue Katalog sieht Milestone 11 Spieltagsberichte, 12 Bewertungen und 13 Saisonarchiv vor. Bitte Milestone 11 umsetzen.
 
 ---
 

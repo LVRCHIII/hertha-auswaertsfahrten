@@ -23,3 +23,20 @@ export async function deleteFahrt(id: string): Promise<{ error: string | null }>
 
   return { error: null }
 }
+
+export async function updateFahrtRouteDistance(
+  id: string,
+  distanceMeters: number,
+): Promise<{ error: string | null }> {
+  const { error } = await requireSupabase()
+    .from('fahrten')
+    .update({ route_distance_meters: Math.round(distanceMeters) })
+    .eq('id', id)
+
+  if (error) {
+    console.error('Fahrt-Distanz speichern fehlgeschlagen:', error)
+    return { error: mapFahrtError(error) }
+  }
+
+  return { error: null }
+}

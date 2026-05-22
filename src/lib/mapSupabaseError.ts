@@ -11,6 +11,13 @@ export function mapFahrtError(error: PostgrestError): string {
     )
   }
 
+  if (message.includes('route_distance_meters') || message.toLowerCase().includes('schema cache')) {
+    return (
+      'Die Distanz-Spalte für die Auswärtsstatistik fehlt oder ist im Supabase-Schema-Cache noch nicht verfügbar. ' +
+      'Führe die Milestone-10-Migration aus und lade die App neu.'
+    )
+  }
+
   if (code === '42501' || message.toLowerCase().includes('row-level security')) {
     return 'Keine Berechtigung für diese Aktion. Bitte erneut anmelden.'
   }

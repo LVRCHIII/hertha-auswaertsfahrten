@@ -19,6 +19,7 @@ function createFahrt(id: string, spielAt: string): Fahrt {
     notizen: null,
     treffpunkt_berlin: null,
     treffpunkt_bestaetigt: false,
+    route_distance_meters: null,
   }
 }
 

@@ -1,22 +1,34 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
+import { AwayStatsCard } from '../components/AwayStatsCard'
 import { CalendarView } from '../components/CalendarView'
 import { FahrtSection } from '../components/FahrtSection'
+import { useAuth } from '../contexts/AuthContext'
 import { useFahrten } from '../hooks/useFahrten'
 import { useAbfahrtAbstimmungOverview } from '../hooks/useAbfahrtAbstimmungOverview'
 import { useMitfahrerOverview } from '../hooks/useMitfahrerOverview'
+import { buildAwayStats } from '../lib/awayStats'
 import { partitionFahrten } from '../lib/partitionFahrten'
 
 type HomeView = 'calendar' | 'list'
 
 export function HomePage() {
   const [activeView, setActiveView] = useState<HomeView>('list')
+  const { user } = useAuth()
   const { fahrten, loading, error } = useFahrten()
   const { upcoming, past } = partitionFahrten(fahrten)
   const fahrtIds = useMemo(() => fahrten.map((fahrt) => fahrt.id), [fahrten])
-  const { byFahrt: mitfahrerByFahrt } = useMitfahrerOverview(fahrtIds)
+  const {
+    byFahrt: mitfahrerByFahrt,
+    loading: mitfahrerLoading,
+    error: mitfahrerError,
+  } = useMitfahrerOverview(fahrtIds)
   const { winningByFahrt: abfahrtByFahrt } = useAbfahrtAbstimmungOverview(fahrtIds)
+  const awayStats = useMemo(
+    () => buildAwayStats(fahrten, mitfahrerByFahrt, user?.id),
+    [fahrten, mitfahrerByFahrt, user?.id],
+  )
 
   return (
     <AppShell title="Auswärtsfahrten">
@@ -50,6 +62,8 @@ export function HomePage() {
 
       {!loading && fahrten.length > 0 ? (
         <div className="space-y-8">
+          <AwayStatsCard stats={awayStats} loading={mitfahrerLoading} error={mitfahrerError} />
+
           <div className="inline-flex rounded-xl bg-white/10 p-1">
             {[
               { id: 'list', label: 'Liste' },

@@ -14,6 +14,7 @@ function createFahrt(overrides: Partial<Fahrt>): Fahrt {
     notizen: null,
     treffpunkt_berlin: null,
     treffpunkt_bestaetigt: false,
+    route_distance_meters: null,
     ...overrides,
   }
 }

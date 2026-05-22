@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
 import { DashboardSection } from '../components/DashboardSection'
@@ -12,7 +12,7 @@ import { ParkplatzSection } from '../components/ParkplatzSection'
 import { useAuth } from '../contexts/AuthContext'
 import { useFahrt } from '../hooks/useFahrt'
 import { useProfile } from '../hooks/useProfile'
-import { deleteFahrt } from '../lib/fahrtenApi'
+import { deleteFahrt, updateFahrtRouteDistance } from '../lib/fahrtenApi'
 import { getTreffpunktLabel, getTreffpunktMapsUrl } from '../lib/treffpunkt'
 import { useAbfahrtAbstimmung } from '../hooks/useAbfahrtAbstimmung'
 import { useParkplaetze } from '../hooks/useParkplaetze'
@@ -50,12 +50,37 @@ export function FahrtDashboardPage() {
   const [pufferMinuten, setPufferMinuten] = useState(90)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [routeDistanceError, setRouteDistanceError] = useState<string | null>(null)
   const routeEndpoints = fahrt ? getRouteEndpoints(fahrt, selectedParkplatz) : null
+  const routeDepartureTime = useMemo(
+    () => (fahrt ? departureTimeForTraffic(fahrt.spiel_at, pufferMinuten) : undefined),
+    [fahrt?.spiel_at, pufferMinuten],
+  )
   const route = useRoutePlan(
     routeEndpoints?.origin ?? '',
     routeEndpoints?.destination ?? '',
-    fahrt ? departureTimeForTraffic(fahrt.spiel_at, pufferMinuten) : undefined,
+    routeDepartureTime,
   )
+  const routeDistanceMeters = route.status === 'ready' ? route.plan.distanceMeters : null
+
+  useEffect(() => {
+    if (!fahrt || routeDistanceMeters == null) return
+
+    const roundedDistance = Math.round(routeDistanceMeters)
+    if (fahrt.route_distance_meters === roundedDistance) return
+
+    let cancelled = false
+    setRouteDistanceError(null)
+
+    updateFahrtRouteDistance(fahrt.id, roundedDistance).then((result) => {
+      if (cancelled) return
+      setRouteDistanceError(result.error)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [fahrt?.id, fahrt?.route_distance_meters, routeDistanceMeters])
 
   const abfahrtszeit =
     fahrt && route.status === 'ready'
@@ -66,10 +91,14 @@ export function FahrtDashboardPage() {
 
   const homeAddress = profile?.home_address?.trim() ?? ''
   const homeOrigin = homeAddress ? qualifyBerlinAddress(homeAddress) : ''
+  const homeDepartureTime = useMemo(
+    () => (effectiveAbfahrt ? departureTimeForHomeLeg(effectiveAbfahrt) : undefined),
+    [effectiveAbfahrt?.getTime()],
+  )
   const homeRoute = useRoutePlan(
     homeOrigin,
     routeEndpoints?.originResolved ?? '',
-    effectiveAbfahrt ? departureTimeForHomeLeg(effectiveAbfahrt) : undefined,
+    homeDepartureTime,
   )
 
   if (loading) {
@@ -304,6 +333,11 @@ export function FahrtDashboardPage() {
                 <span className="text-slate-500">Distanz </span>
                 <span className="font-semibold">{formatDistance(route.plan.distanceMeters)}</span>
               </p>
+              {routeDistanceError ? (
+                <p className="w-full rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                  Distanz für Statistik konnte nicht gespeichert werden: {routeDistanceError}
+                </p>
+              ) : null}
               <p className="w-full text-slate-500">
                 {routeEndpoints?.originLabel} → {routeEndpoints?.destinationLabel}
               </p>

@@ -1,6 +1,6 @@
 # Hertha Auswärtsfahrten Planer
 
-Milestone 1–6 Basis: Auth, Fahrten verwalten, Dashboard mit Routenplanung, Mitfahrer, Mitbringliste, Parkplätze, Kalender, PWA-Grundlage & erste Tests.
+Milestone 1–6, 9 und 10: Auth, Fahrten verwalten, Dashboard mit Routenplanung, Mitfahrer, Mitbringliste, Parkplätze, Kalender, PWA-Grundlage, Spieltag-Modus, Auswärtsstatistik & Tests.
 
 **Projektkontext für Cursor-Chats:** [`PROJEKT_KONTEXT.md`](./PROJEKT_KONTEXT.md)
 
@@ -32,6 +32,9 @@ und `20250516140000_fix_social_profile_fkeys.sql` (FK für Mitfahrer-Joins)
 
 Für Milestone 4 zusätzlich:  
 `supabase/migrations/20250516150000_milestone4_parkplaetze.sql` (Parkplätze pro Fahrt)
+
+Für Milestone 10 zusätzlich:  
+`supabase/migrations/20260518104802_milestone10_auswaertsstatistik.sql` (gespeicherte Routendistanz)
 
 ## App starten
 
@@ -80,7 +83,7 @@ Die App läuft unter http://localhost:5173
 npm test
 ```
 
-Vitest deckt aktuell Kernlogik für Kalender, Spieltag-Modus, Abfahrtszeiten/Google-Maps-URLs und Parkplatz-Metadaten ab.
+Vitest deckt aktuell Kernlogik für Kalender, Spieltag-Modus, Abfahrtszeiten/Google-Maps-URLs, Parkplatz-Metadaten und Auswärtsstatistik ab.
 
 ## Funktionen
 
@@ -88,6 +91,7 @@ Vitest deckt aktuell Kernlogik für Kalender, Spieltag-Modus, Abfahrtszeiten/Goo
 |---------|-------|--------------|
 | Login / Registrierung | `/login`, `/register` | E-Mail + Passwort (Supabase Auth) |
 | Kalenderübersicht | `/` | Liste: kommende + vergangene Fahrten |
+| Auswärtsstatistik | `/` | Persönliche Statistik, Gruppen-Kilometer, Ranking und längste Fahrt |
 | Spieltag-Modus | `/spieltag` | Mobile Kurzansicht für nächste Fahrt, Ablauf und Schnelllinks |
 | Fahrt anlegen | `/fahrten/neu` | Gegner, Stadion, Datum, Anpfiff, Startpunkt, optional Notizen |
 | Fahrt-Dashboard | `/fahrten/:id` | Spielinfo, Abfahrtszeit, Route, Mitfahrer, Mitbringliste, Parkplatz |
@@ -96,7 +100,6 @@ Vitest deckt aktuell Kernlogik für Kalender, Spieltag-Modus, Abfahrtszeiten/Goo
 
 ## Roadmap
 
-- **Milestone 10:** Auswärtsstatistik mit Ranking, persönlichen Kilometern und längster Fahrt.
 - **Milestone 11:** Spieltagsberichte mit Rich-Text-Editor und Inline-Bildern.
 - **Milestone 12:** Bewertungen pro Fahrt für Fahrt, Stadion, Mannschaft, Stimmung, Essen und Gesamt.
 - **Milestone 13:** Saisonarchiv als Erinnerungsseite mit Berichten, Fotos, Bewertungen und Statistiken.
