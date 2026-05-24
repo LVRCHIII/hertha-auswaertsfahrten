@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
+import { FutbologyCsvUpload } from '../components/FutbologyCsvUpload'
 import { ProfileAvatar } from '../components/ProfileAvatar'
 import { useAuth } from '../contexts/AuthContext'
 import { useProfile } from '../hooks/useProfile'
@@ -190,6 +191,12 @@ export function ProfilPage() {
             >
               {saving ? 'Speichern …' : 'Speichern'}
             </button>
+
+            <hr className="border-slate-200" />
+
+            {user?.id ? (
+              <FutbologyCsvUpload userId={user.id} />
+            ) : null}
           </form>
         ) : null}
       </div>

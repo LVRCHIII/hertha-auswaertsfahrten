@@ -2,16 +2,18 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
 import { AwayStatsCard } from '../components/AwayStatsCard'
+import { BesuchteSpieleListe } from '../components/BesuchteSpieleListe'
 import { CalendarView } from '../components/CalendarView'
 import { FahrtSection } from '../components/FahrtSection'
 import { useAuth } from '../contexts/AuthContext'
 import { useFahrten } from '../hooks/useFahrten'
 import { useAbfahrtAbstimmungOverview } from '../hooks/useAbfahrtAbstimmungOverview'
+import { useFutbologySpiele } from '../hooks/useFutbologySpiele'
 import { useMitfahrerOverview } from '../hooks/useMitfahrerOverview'
 import { buildAwayStats } from '../lib/awayStats'
 import { partitionFahrten } from '../lib/partitionFahrten'
 
-type HomeView = 'calendar' | 'list'
+type HomeView = 'calendar' | 'list' | 'spiele'
 
 export function HomePage() {
   const [activeView, setActiveView] = useState<HomeView>('list')
@@ -29,6 +31,7 @@ export function HomePage() {
     () => buildAwayStats(fahrten, mitfahrerByFahrt, user?.id),
     [fahrten, mitfahrerByFahrt, user?.id],
   )
+  const { spiele, loading: spieleLoading, error: spieleError } = useFutbologySpiele()
 
   return (
     <AppShell title="Auswärtsfahrten">
@@ -66,7 +69,8 @@ export function HomePage() {
 
           <div className="inline-flex rounded-xl bg-white/10 p-1">
             {[
-              { id: 'list', label: 'Liste' },
+              { id: 'list', label: 'Fahrten' },
+              { id: 'spiele', label: 'Spiele' },
               { id: 'calendar', label: 'Kalender' },
             ].map((view) => (
               <button
@@ -86,6 +90,12 @@ export function HomePage() {
 
           {activeView === 'calendar' ? (
             <CalendarView fahrten={fahrten} abfahrtByFahrt={abfahrtByFahrt} />
+          ) : activeView === 'spiele' ? (
+            <BesuchteSpieleListe
+              spiele={spiele}
+              loading={spieleLoading}
+              error={spieleError}
+            />
           ) : (
             <div className="space-y-8">
               <FahrtSection
