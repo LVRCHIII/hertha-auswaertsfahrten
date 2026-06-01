@@ -94,11 +94,51 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
 - `route_distance_meters` dauerhaft auf `fahrten` gespeichert
 - `AwayStatsCard` zeigt Statistiken über alle Fahrten
 
-### 🔄 Milestone 11 — Spieltagsberichte (IN ARBEIT, NICHT COMMITTED)
+### ✅ Milestone 11 — Spieltagsberichte
 - Tiptap-Editor für Berichte nach einer Fahrt
 - Tabelle `spieltagsberichte` (fahrt_id PK, author_id, content_json, content_text)
-- Noch untracked: `BerichtEditor`, `BerichtToolbar`, `BerichtViewer`, `SpieltagsberichtSection`, `useSpieltagsbericht`, `berichtApi/Content/Extensions/Render/Storage`, `mapBerichtError`, `types/bericht`
-- Migration: `supabase/migrations/20260522140000_milestone11_spieltagsberichte.sql`
+- Storage-Bucket `bericht-images` (öffentlich, max 5 MB, JPEG/PNG/WebP)
+- Migration applied: `20260522140000_milestone11_spieltagsberichte.sql`
+
+### ✅ Milestone 13 — Theme-System
+
+- 5 Hertha-Themes basierend auf echten Trikots:
+  - **Klassisch** — Hertha-Dunkelblau #003264 (Standard-Heimtrikot)
+  - **Aufwärm Shirt** — Dunkles Teal #0d1c25 + Cyan #6dcfe4 + Lila CTA (Castore Trainingsshirt)
+  - **Auswärts 20/21** — Fast-schwarzes Navy #050c18 + Elektrisch-Blau #4d72ff (Nike Splatter-Trikot)
+  - **Auswärts 24/25** — Sehr dunkles Schwarz-Blau #0f1215 + Hellblau-Weiß (Streifen-Third-Kit)
+  - **Schwarzer Beton** — Mattes Schwarz #0d0d0d + Hellgrau, mit Beton-Graffiti-Textur als Hintergrundbild
+- CSS Custom Properties (`--color-shell-bg/fg/cta-bg/cta-fg`) in `src/index.css`
+- Theme-Klassen auf `<html>`-Element, Flash-Prevention-Script in `index.html`
+- Theme wird in `localStorage` gespeichert (`hertha-theme`)
+- `ThemeContext` + `useTheme` Hook in `src/contexts/ThemeContext.tsx`
+- Theme-Picker auf Profilseite (5 farbige Split-Swatches)
+- **Textur-System:** `--shell-texture-url` + `--shell-texture-opacity` CSS-Variablen
+- `TextureOverlay`-Komponente in `src/components/TextureOverlay.tsx` (global in App.tsx)
+- Textur-Datei: `public/textures/schwarzer-beton.png` (1080×1080 PNG)
+- `AppShell` und `AuthLayout` nutzen `bg-transparent`, Hintergrundfarbe kommt von `html { background-color: var(--color-shell-bg) }`
+- **Nächster Schritt:** Weitere Textur-Bilder für andere Themes nachreichen (User arbeitet in Photoshop)
+  - Vorgesehen: ähnliche Textur-PNGs für Aufwärm Shirt, Auswärts 20/21, Auswärts 24/25
+  - Ablageort: `public/textures/<theme-name>.png`
+  - CSS-Variable analog zu Schwarzer Beton in `.theme-*` Klasse eintragen
+
+### ✅ Milestone 14 — Toast-Notifications
+
+- `src/contexts/ToastContext.tsx` — `ToastProvider` + `useToast()` Hook
+  - `toast.success(msg)` / `toast.error(msg)`, Auto-Dismiss nach 3,5s, klickbar zum Schließen
+- `src/components/Toaster.tsx` — Fixed bottom-center, Pill-Design (grün/rot), PWA-freundlich
+- In `App.tsx`: `<ToastProvider>` + `<Toaster />` um alle Routes
+- Toasts eingebaut in: MitfahrerSection, MitbringlisteSection, SpieltagsberichtSection, ProfilPage, FutbologyCsvUpload
+- Strategie: Lade-/Init-Fehler bleiben inline; Aktions-Feedback (an/abmelden, speichern etc.) kommt als Toast
+- `useMitfahrer.toggle` gibt jetzt `{ error: string | null }` zurück
+- `useMitbringliste.removeItem` gibt jetzt `boolean` zurück
+
+### ✅ Milestone 12 — Futbology-Integration
+- CSV-Import aus Futbology (besuchte Spiele pro User)
+- Tabelle `futbology_spiele` (user_id, datum, stadion, heim_team, gast_team, ergebnis, liga)
+- `BesuchteSpieleListe` + `BesuchteSpielCard` + `FutbologyCsvUpload` Komponenten
+- Spiele-Tab auf HomePage, Upload auf ProfilPage
+- Migration applied: `20260525120000_milestone12_futbology.sql`
 
 ---
 
@@ -133,4 +173,6 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
 
 ## Nächster Schritt
 
-Milestone 11 abschließen: Uncommittete Spieltagsbericht-Dateien testen, ggf. in `FahrtDashboardPage` einbinden, dann committen und Migration in Supabase anwenden.
+- Textur-Bilder für weitere Themes von User einsammeln (Photoshop-Export), dann analog zu Schwarzer Beton einbauen
+- M15: Karten & Layout-Polish
+- M16: Scrollbar & Background-Effekte (optional)
