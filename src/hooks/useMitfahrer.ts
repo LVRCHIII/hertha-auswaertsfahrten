@@ -50,10 +50,11 @@ export function useMitfahrer(fahrtId: string | undefined) {
 
       if (result.error) {
         setActionError(result.error)
-        return
+        return { error: result.error }
       }
 
       await reload()
+      return { error: null }
     },
     [fahrtId, reload],
   )

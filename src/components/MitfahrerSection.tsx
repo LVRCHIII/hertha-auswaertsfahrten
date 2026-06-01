@@ -2,6 +2,7 @@ import { DashboardSection } from './DashboardSection'
 import { ProfileAvatar } from './ProfileAvatar'
 import { displayNameFromProfile } from '../lib/displayName'
 import { useMitfahrer } from '../hooks/useMitfahrer'
+import { useToast } from '../contexts/ToastContext'
 import type { MitfahrerEintrag } from '../types/social'
 
 type MitfahrerSectionProps = {
@@ -25,6 +26,7 @@ function MitfahrerRow({ entry, isSelf }: { entry: MitfahrerEintrag; isSelf: bool
 
 export function MitfahrerSection({ fahrtId, currentUserId }: MitfahrerSectionProps) {
   const { entries, loading, error, actionError, busy, toggle } = useMitfahrer(fahrtId)
+  const toast = useToast()
 
   const isJoined = currentUserId
     ? entries.some((entry) => entry.user_id === currentUserId)
@@ -64,7 +66,14 @@ export function MitfahrerSection({ fahrtId, currentUserId }: MitfahrerSectionPro
             <button
               type="button"
               disabled={busy}
-              onClick={() => void toggle(currentUserId, isJoined)}
+              onClick={async () => {
+                const result = await toggle(currentUserId, isJoined)
+                if (result?.error) {
+                  toast.error(result.error)
+                } else {
+                  toast.success(isJoined ? 'Abgemeldet' : 'Angemeldet!')
+                }
+              }}
               className={`mt-4 w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:opacity-60 ${
                 isJoined
                   ? 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'

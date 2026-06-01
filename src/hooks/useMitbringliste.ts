@@ -71,10 +71,11 @@ export function useMitbringliste(fahrtId: string | undefined) {
 
     if (result.error) {
       setActionError(result.error)
-      return
+      return false
     }
 
     await reload()
+    return true
   }, [reload])
 
   return { entries, loading, error, actionError, busy, addItem, removeItem, reload }

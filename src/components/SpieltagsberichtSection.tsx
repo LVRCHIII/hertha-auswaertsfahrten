@@ -5,6 +5,7 @@ import { BerichtViewer } from './BerichtViewer'
 import { DashboardSection } from './DashboardSection'
 import { ProfileAvatar } from './ProfileAvatar'
 import { useSpieltagsbericht } from '../hooks/useSpieltagsbericht'
+import { useToast } from '../contexts/ToastContext'
 import { EMPTY_BERICHT_DOC, isBerichtEmpty } from '../lib/berichtContent'
 import { displayNameFromProfile } from '../lib/displayName'
 
@@ -27,6 +28,7 @@ export function SpieltagsberichtSection({
 }: SpieltagsberichtSectionProps) {
   const { bericht, loading, error, actionError, busy, save, remove } =
     useSpieltagsbericht(fahrtId)
+  const toast = useToast()
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState<JSONContent>(EMPTY_BERICHT_DOC)
 
@@ -48,7 +50,12 @@ export function SpieltagsberichtSection({
     if (!currentUserId || isBerichtEmpty(draft)) return
 
     const ok = await save(currentUserId, draft as Record<string, unknown>)
-    if (ok) setEditing(false)
+    if (ok) {
+      setEditing(false)
+      toast.success('Bericht gespeichert!')
+    } else if (actionError) {
+      toast.error(actionError)
+    }
   }
 
   async function handleDelete() {
@@ -58,7 +65,12 @@ export function SpieltagsberichtSection({
     if (!confirmed) return
 
     const ok = await remove()
-    if (ok) setEditing(false)
+    if (ok) {
+      setEditing(false)
+      toast.success('Bericht gelöscht')
+    } else if (actionError) {
+      toast.error(actionError)
+    }
   }
 
   return (

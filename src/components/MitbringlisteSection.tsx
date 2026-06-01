@@ -4,6 +4,7 @@ import { DashboardSection } from './DashboardSection'
 import { ProfileAvatar } from './ProfileAvatar'
 import { displayNameFromProfile } from '../lib/displayName'
 import { useMitbringliste } from '../hooks/useMitbringliste'
+import { useToast } from '../contexts/ToastContext'
 import type { MitbringEintrag } from '../types/social'
 
 type MitbringlisteSectionProps = {
@@ -51,6 +52,7 @@ function MitbringRow({
 export function MitbringlisteSection({ fahrtId, currentUserId }: MitbringlisteSectionProps) {
   const { entries, loading, error, actionError, busy, addItem, removeItem } =
     useMitbringliste(fahrtId)
+  const toast = useToast()
   const [item, setItem] = useState('')
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -58,7 +60,21 @@ export function MitbringlisteSection({ fahrtId, currentUserId }: MitbringlisteSe
     if (!currentUserId) return
 
     const added = await addItem(currentUserId, item)
-    if (added) setItem('')
+    if (added) {
+      setItem('')
+      toast.success('Hinzugefügt!')
+    } else if (actionError) {
+      toast.error(actionError)
+    }
+  }
+
+  async function handleRemove(id: string) {
+    const ok = await removeItem(id)
+    if (ok) {
+      toast.success('Entfernt')
+    } else if (actionError) {
+      toast.error(actionError)
+    }
   }
 
   return (
@@ -86,7 +102,7 @@ export function MitbringlisteSection({ fahrtId, currentUserId }: MitbringlisteSe
                   key={entry.id}
                   entry={entry}
                   canDelete={entry.user_id === currentUserId}
-                  onDelete={removeItem}
+                  onDelete={handleRemove}
                   busy={busy}
                 />
               ))}

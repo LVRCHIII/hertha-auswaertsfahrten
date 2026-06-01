@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { replaceFutbologySpiele } from '../lib/futbologyApi'
 import { parseFutbologyCsv } from '../lib/futbologyCsv'
+import { useToast } from '../contexts/ToastContext'
 
 type Props = {
   userId: string
@@ -9,6 +10,7 @@ type Props = {
 
 export function FutbologyCsvUpload({ userId, onUploaded }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const toast = useToast()
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState<string | null>(null)
   const [count, setCount] = useState<number | null>(null)
@@ -39,6 +41,7 @@ export function FutbologyCsvUpload({ userId, onUploaded }: Props) {
       } else {
         setStatus('success')
         setCount(imported)
+        toast.success(`${imported} Spiele importiert!`)
         onUploaded?.()
       }
     } catch {

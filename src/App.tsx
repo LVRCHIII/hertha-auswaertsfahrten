@@ -1,7 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { SupabaseConfigError } from './components/SupabaseConfigError'
+import { Toaster } from './components/Toaster'
 import { AuthProvider } from './contexts/AuthContext'
+import { TextureOverlay } from './components/TextureOverlay'
+import { ThemeProvider } from './contexts/ThemeContext'
+import { ToastProvider } from './contexts/ToastContext'
 import { supabaseConfigError } from './lib/supabase'
 import { FahrtAnlegenPage } from './pages/FahrtAnlegenPage'
 import { FahrtDashboardPage } from './pages/FahrtDashboardPage'
@@ -36,8 +40,14 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <ThemeProvider>
+      <TextureOverlay />
+      <ToastProvider>
+        <Toaster />
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ToastProvider>
+    </ThemeProvider>
   )
 }
