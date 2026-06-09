@@ -11,4 +11,19 @@ export type Spieltagsbericht = {
     display_name: string
     avatar_url: string | null
   } | null
+  ergebnis_heim: number | null
+  ergebnis_gast: number | null
+  zuschauer: number | null
+  bewertung_spiel: number | null
+  bewertung_atmosphaere: number | null
+  bewertung_pommes: number | null
+}
+
+export type BerichtMeta = {
+  ergebnis_heim: number | null
+  ergebnis_gast: number | null
+  zuschauer: number | null
+  bewertung_spiel: number | null
+  bewertung_atmosphaere: number | null
+  bewertung_pommes: number | null
 }

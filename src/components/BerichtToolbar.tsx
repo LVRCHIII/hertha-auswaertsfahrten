@@ -2,8 +2,6 @@ import type { Editor } from '@tiptap/react'
 
 type BerichtToolbarProps = {
   editor: Editor | null
-  onImageClick: () => void
-  imageBusy?: boolean
 }
 
 type ToolbarButtonProps = {
@@ -22,7 +20,7 @@ function ToolbarButton({ label, active, disabled, onClick }: ToolbarButtonProps)
       aria-pressed={active}
       className={`rounded-md px-2 py-1 text-xs font-semibold transition disabled:opacity-50 ${
         active
-          ? 'bg-hertha-blue text-white'
+          ? 'bg-card-accent text-white'
           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
       }`}
     >
@@ -31,7 +29,7 @@ function ToolbarButton({ label, active, disabled, onClick }: ToolbarButtonProps)
   )
 }
 
-export function BerichtToolbar({ editor, onImageClick, imageBusy }: BerichtToolbarProps) {
+export function BerichtToolbar({ editor }: BerichtToolbarProps) {
   if (!editor) return null
 
   function setLink() {
@@ -92,11 +90,6 @@ export function BerichtToolbar({ editor, onImageClick, imageBusy }: BerichtToolb
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
       />
       <ToolbarButton label="Link" active={editor.isActive('link')} onClick={setLink} />
-      <ToolbarButton
-        label={imageBusy ? 'Bild …' : 'Bild'}
-        disabled={imageBusy}
-        onClick={onImageClick}
-      />
     </div>
   )
 }

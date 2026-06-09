@@ -62,7 +62,7 @@ export function FutbologyCsvUpload({ userId, onUploaded }: Props) {
           type="button"
           disabled={status === 'loading'}
           onClick={() => fileInputRef.current?.click()}
-          className="rounded-lg bg-hertha-mid px-4 py-2 text-sm font-semibold text-white transition hover:bg-hertha-blue disabled:opacity-60"
+          className="rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
         >
           {status === 'loading' ? 'Wird importiert …' : 'CSV hochladen'}
         </button>

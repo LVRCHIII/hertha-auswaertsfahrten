@@ -9,10 +9,10 @@ type AwayStatsCardProps = {
 
 function StatTile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-xl bg-slate-50 px-4 py-3">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-hertha-blue">{value}</p>
-      {hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
+    <div className="rounded-2xl bg-slate-50/80 px-4 py-4 ring-1 ring-slate-200/60">
+      <p className="text-xs font-medium text-slate-400">{label}</p>
+      <p className="mt-1.5 text-2xl font-bold tabular-nums tracking-tight text-card-accent">{value}</p>
+      {hint ? <p className="mt-1 text-xs text-slate-400">{hint}</p> : null}
     </div>
   )
 }
@@ -30,13 +30,13 @@ export function AwayStatsCard({ stats, loading = false, error = null }: AwayStat
       : formatStatsKilometers(stats.group.distanceMeters)
 
   return (
-    <section className="rounded-2xl bg-white p-4 text-slate-900 shadow-xl shadow-black/10 sm:p-5">
+    <section className="rounded-3xl bg-white p-5 text-slate-900 shadow-[0_4px_24px_rgb(0_0_0/0.09)] sm:p-6">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-hertha-mid">
+          <p className="text-xs font-medium text-card-accent/60">
             Auswärtsstatistik
           </p>
-          <h2 className="text-xl font-bold text-hertha-blue">Deine Saison in Zahlen</h2>
+          <h2 className="text-xl font-bold tracking-tight text-card-accent">Deine Saison in Zahlen</h2>
         </div>
         {loading ? <p className="text-sm text-slate-500">Statistik wird geladen …</p> : null}
       </div>
@@ -81,11 +81,11 @@ export function AwayStatsCard({ stats, loading = false, error = null }: AwayStat
           </div>
 
           {stats.group.longestTrip ? (
-            <div className="rounded-xl bg-hertha-blue/10 px-4 py-3 text-sm text-hertha-blue">
+            <div className="rounded-xl bg-card-accent/10 px-4 py-3 text-sm text-card-accent">
               Längste gespeicherte Fahrt:{' '}
               <Link
                 to={`/fahrten/${stats.group.longestTrip.fahrtId}`}
-                className="font-semibold underline decoration-hertha-blue/30 underline-offset-2"
+                className="font-semibold underline decoration-card-accent/30 underline-offset-2"
               >
                 {stats.group.longestTrip.gegner}
               </Link>{' '}
@@ -94,14 +94,14 @@ export function AwayStatsCard({ stats, loading = false, error = null }: AwayStat
           ) : null}
 
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Ranking</h3>
-            <div className="mt-2 overflow-hidden rounded-xl border border-slate-200">
+            <h3 className="text-sm font-semibold text-slate-400">Ranking</h3>
+            <div className="mt-2 overflow-hidden rounded-2xl border border-slate-100">
               {stats.ranking.map((entry, index) => (
                 <div
                   key={entry.userId}
                   className="grid grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-slate-100 px-3 py-2 last:border-b-0"
                 >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-hertha-blue text-xs font-bold text-white">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-card-accent text-xs font-bold text-white">
                     {index + 1}
                   </span>
                   <div className="min-w-0">
@@ -111,7 +111,7 @@ export function AwayStatsCard({ stats, loading = false, error = null }: AwayStat
                       {entry.longestTrip ? ` · längste: ${entry.longestTrip.gegner}` : ''}
                     </p>
                   </div>
-                  <p className="text-sm font-bold text-hertha-blue">
+                  <p className="text-sm font-bold text-card-accent">
                     {entry.distanceMeters === 0 && entry.missingDistanceCount > 0
                       ? 'offen'
                       : formatStatsKilometers(entry.distanceMeters)}

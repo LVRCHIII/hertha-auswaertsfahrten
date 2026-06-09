@@ -1,10 +1,10 @@
-import { extractBerichtPlainText, isBerichtEmpty, normalizeBerichtDoc } from './berichtContent'
+import { extractBerichtPlainText, normalizeBerichtDoc } from './berichtContent'
 import { mapBerichtError } from './mapBerichtError'
 import { requireSupabase } from './supabase'
-import type { Spieltagsbericht } from '../types/bericht'
+import type { BerichtMeta, Spieltagsbericht } from '../types/bericht'
 
 const BERICHT_SELECT =
-  'fahrt_id, author_id, content_json, content_text, created_at, updated_at, author:profiles!spieltagsberichte_author_id_fkey(display_name, avatar_url)'
+  'fahrt_id, author_id, content_json, content_text, created_at, updated_at, ergebnis_heim, ergebnis_gast, zuschauer, bewertung_spiel, bewertung_atmosphaere, bewertung_pommes, author:profiles!spieltagsberichte_author_id_fkey(display_name, avatar_url)'
 
 type ProfileJoin = { display_name: string; avatar_url: string | null } | null
 
@@ -20,6 +20,12 @@ function mapBerichtRow(row: Record<string, unknown>): Spieltagsbericht {
     created_at: row.created_at as string,
     updated_at: row.updated_at as string,
     author: profile,
+    ergebnis_heim: (row.ergebnis_heim as number | null) ?? null,
+    ergebnis_gast: (row.ergebnis_gast as number | null) ?? null,
+    zuschauer: (row.zuschauer as number | null) ?? null,
+    bewertung_spiel: (row.bewertung_spiel as number | null) ?? null,
+    bewertung_atmosphaere: (row.bewertung_atmosphaere as number | null) ?? null,
+    bewertung_pommes: (row.bewertung_pommes as number | null) ?? null,
   }
 }
 
@@ -48,11 +54,8 @@ export async function saveSpieltagsbericht(
   authorId: string,
   contentJson: Record<string, unknown>,
   existingAuthorId?: string,
+  meta?: BerichtMeta,
 ): Promise<{ bericht: Spieltagsbericht | null; error: string | null }> {
-  if (isBerichtEmpty(contentJson)) {
-    return { bericht: null, error: 'Der Bericht ist noch leer.' }
-  }
-
   const doc = normalizeBerichtDoc(contentJson)
   const payload = {
     fahrt_id: fahrtId,
@@ -60,6 +63,7 @@ export async function saveSpieltagsbericht(
     content_json: doc,
     content_text: extractBerichtPlainText(doc) || null,
     updated_at: new Date().toISOString(),
+    ...(meta ?? {}),
   }
 
   const client = requireSupabase()

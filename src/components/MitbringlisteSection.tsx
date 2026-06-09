@@ -117,12 +117,12 @@ export function MitbringlisteSection({ fahrtId, currentUserId }: MitbringlisteSe
                 onChange={(event) => setItem(event.target.value)}
                 placeholder="z. B. Nudelsalat, Spezi, Apfelsaft, Brownies"
                 maxLength={120}
-                className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-hertha-mid focus:outline-none focus:ring-2 focus:ring-hertha-mid/30"
+                className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-card-accent focus:outline-none focus:ring-2 focus:ring-card-accent/30"
               />
               <button
                 type="submit"
                 disabled={busy || !item.trim()}
-                className="shrink-0 rounded-lg bg-hertha-mid px-4 py-2 text-sm font-semibold text-white transition hover:bg-hertha-blue disabled:opacity-60"
+                className="shrink-0 rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
               >
                 {busy ? '…' : 'Hinzufügen'}
               </button>

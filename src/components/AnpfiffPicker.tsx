@@ -1,7 +1,7 @@
 const PRESET_ZEITEN = ['13:30', '15:30', '18:30', '20:30'] as const
 
 const inputClass =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-hertha-mid focus:ring-2 focus:ring-hertha-mid/30'
+  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-card-accent focus:ring-2 focus:ring-card-accent/30'
 
 type AnpfiffPickerProps = {
   value: string
@@ -32,8 +32,8 @@ export function AnpfiffPicker({ value, onChange, required = false }: AnpfiffPick
               onClick={() => onChange(zeit)}
               className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
                 selected
-                  ? 'border-hertha-blue bg-hertha-blue text-white'
-                  : 'border-slate-300 bg-white text-slate-700 hover:border-hertha-mid hover:bg-hertha-blue/5'
+                  ? 'border-card-accent bg-card-accent text-white'
+                  : 'border-slate-300 bg-white text-slate-700 hover:border-card-accent hover:bg-card-accent/5'
               }`}
               aria-pressed={selected}
             >

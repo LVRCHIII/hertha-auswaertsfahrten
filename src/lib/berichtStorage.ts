@@ -25,9 +25,9 @@ export async function uploadBerichtImage(
   fahrtId: string,
   userId: string,
   file: File,
-): Promise<{ url: string | null; error: string | null }> {
+): Promise<{ url: string | null; path: string | null; error: string | null }> {
   const validation = validateBerichtImageFile(file)
-  if (validation) return { url: null, error: validation }
+  if (validation) return { url: null, path: null, error: validation }
 
   const client = requireSupabase()
   const path = `${fahrtId}/${userId}/${crypto.randomUUID()}.${extensionForType(file.type)}`
@@ -42,10 +42,15 @@ export async function uploadBerichtImage(
     console.error('Berichtbild-Upload fehlgeschlagen:', uploadError)
     return {
       url: null,
+      path: null,
       error: mapBerichtStorageError(uploadError.message),
     }
   }
 
   const { data: urlData } = client.storage.from(BUCKET).getPublicUrl(path)
-  return { url: urlData.publicUrl, error: null }
+  return { url: urlData.publicUrl, path, error: null }
+}
+
+export async function deleteBerichtImage(path: string): Promise<void> {
+  await requireSupabase().storage.from(BUCKET).remove([path])
 }

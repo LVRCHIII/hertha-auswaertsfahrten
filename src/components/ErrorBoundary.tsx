@@ -17,9 +17,9 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.error) {
       return (
-        <div className="flex min-h-screen items-center justify-center bg-hertha-blue px-4 py-8 text-white">
+        <div className="flex min-h-screen items-center justify-center bg-shell-bg px-4 py-8 text-shell-fg">
           <div className="w-full max-w-lg rounded-2xl bg-white p-8 text-slate-900 shadow-xl">
-            <h1 className="text-xl font-bold text-hertha-blue">Unerwarteter Fehler</h1>
+            <h1 className="text-xl font-bold text-card-accent">Unerwarteter Fehler</h1>
             <p className="mt-4 text-sm text-slate-700">{this.state.error.message}</p>
             <p className="mt-4 text-sm text-slate-500">
               Öffne die Browser-Konsole (F12) für Details und starte den Dev-Server neu.

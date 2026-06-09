@@ -22,7 +22,7 @@ export function ParkingMeta({ distanceMeters, costKind, className = '' }: Parkin
   return (
     <div className={`mt-1 flex flex-wrap items-center gap-1.5 ${className}`}>
       {hasDistance ? (
-        <span className="rounded-full bg-hertha-blue/10 px-2 py-0.5 text-xs font-medium text-hertha-blue">
+        <span className="rounded-full bg-card-accent/10 px-2 py-0.5 text-xs font-medium text-card-accent">
           {formatDistance(distanceMeters)} vom Stadion
         </span>
       ) : null}

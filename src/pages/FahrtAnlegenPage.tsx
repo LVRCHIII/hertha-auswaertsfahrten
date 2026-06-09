@@ -3,19 +3,23 @@ import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AnpfiffPicker } from '../components/AnpfiffPicker'
 import { AppShell } from '../components/AppShell'
+import { SpielplanImport } from '../components/SpielplanImport'
 import { VereinAutocomplete } from '../components/VereinAutocomplete'
 import { useAuth } from '../contexts/AuthContext'
 import type { Verein } from '../data/vereine'
 import { combineDateAndTime } from '../lib/fahrtFormat'
 import { HERTHA_TREFFPUNKT, isDefaultTreffpunkt } from '../lib/defaultTreffpunkt'
 import { insertFahrt } from '../lib/fahrtenApi'
+import { useFahrten } from '../hooks/useFahrten'
 
 const inputClass =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-hertha-mid focus:ring-2 focus:ring-hertha-mid/30'
+  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-card-accent focus:ring-2 focus:ring-card-accent/30'
 
 export function FahrtAnlegenPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { fahrten, refetch } = useFahrten()
+  const vorhandeneSpielDaten = fahrten.map((f) => f.spiel_at)
 
   const [gegner, setGegner] = useState('')
   const [stadion, setStadion] = useState('')
@@ -27,8 +31,8 @@ export function FahrtAnlegenPage() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  function handleVereinSelect(verein: Verein) {
-    setStadion(verein.stadion)
+  function handleVereinSelect(verein: Verein | null) {
+    if (verein) setStadion(verein.stadion)
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -65,6 +69,17 @@ export function FahrtAnlegenPage() {
 
   return (
     <AppShell title="Fahrt anlegen">
+      <div className="mb-4">
+        <SpielplanImport
+          vorhandeneSpielDaten={vorhandeneSpielDaten}
+          onImported={() => { void refetch(); navigate('/') }}
+        />
+      </div>
+
+      <p className="mb-3 text-center text-xs font-medium uppercase tracking-widest text-slate-400">
+        oder manuell anlegen
+      </p>
+
       <form
         className="space-y-5 rounded-2xl bg-white p-6 text-slate-900 shadow-lg"
         onSubmit={handleSubmit}
@@ -159,7 +174,7 @@ export function FahrtAnlegenPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="flex-1 rounded-lg bg-hertha-blue px-4 py-2.5 font-semibold text-white transition hover:bg-hertha-mid disabled:opacity-60"
+            className="flex-1 rounded-lg bg-card-accent px-4 py-2.5 font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
           >
             {submitting ? 'Speichern …' : 'Fahrt speichern'}
           </button>

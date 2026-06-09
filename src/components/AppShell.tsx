@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { BottomNav } from './BottomNav'
 
 type AppShellProps = {
   children: ReactNode
@@ -9,48 +10,56 @@ type AppShellProps = {
   wide?: boolean
 }
 
+const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `relative rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150 active:scale-[0.97] ${
+    isActive
+      ? 'bg-shell-fg/15 text-shell-fg'
+      : 'text-shell-fg/60 hover:bg-shell-fg/10 hover:text-shell-fg'
+  }`
+
 export function AppShell({ children, title = 'Hertha Auswärtsfahrten', wide = false }: AppShellProps) {
   const maxWidth = wide ? 'max-w-6xl' : 'max-w-2xl'
   const { signOut } = useAuth()
 
   return (
-    <div className="min-h-screen bg-hertha-blue text-white">
-      <header className="sticky top-0 z-10 border-b border-white/20 bg-hertha-blue/95 backdrop-blur-sm">
-        <div className={`mx-auto flex ${maxWidth} items-center justify-between gap-3 px-4 py-4 sm:px-6`}>
+    <div className="relative z-10 min-h-dvh bg-transparent text-shell-fg">
+      <header className="relative z-10 sticky top-0 border-b border-shell-fg/15 bg-shell-bg/90 backdrop-blur-md">
+        <div className={`mx-auto flex ${maxWidth} items-center justify-between gap-3 px-4 py-3 sm:px-6`}>
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wide text-white/70">Hertha BSC</p>
-            <h1 className="truncate text-lg font-bold sm:text-xl">{title}</h1>
+            <p className="text-[10px] font-semibold tracking-[0.12em] uppercase text-shell-fg/40">Hertha BSC</p>
+            <h1 className="truncate text-base font-bold tracking-tight sm:text-lg">{title}</h1>
           </div>
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-            <Link
-              to="/spieltag"
-              className="rounded-lg border border-white/40 px-3 py-1.5 text-sm font-medium transition hover:bg-white/10"
-            >
-              Spieltag
-            </Link>
-            <Link
-              to="/profil"
-              className="rounded-lg border border-white/40 px-3 py-1.5 text-sm font-medium transition hover:bg-white/10"
-            >
-              Profil
-            </Link>
+          {/* Desktop-Navigation */}
+          <div className="hidden sm:flex shrink-0 items-center gap-1">
+            <NavLink to="/" end className={navLinkClass}>Fahrten</NavLink>
+            <NavLink to="/spieltag" className={navLinkClass}>Spieltag</NavLink>
+            <NavLink to="/profil" className={navLinkClass}>Profil</NavLink>
             <Link
               to="/fahrten/neu"
-              className="rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-hertha-blue transition hover:bg-white/90"
+              className="ml-2 rounded-lg bg-shell-cta-bg px-3.5 py-1.5 text-sm font-semibold text-shell-cta-fg transition-all duration-150 hover:opacity-90 active:scale-[0.97]"
             >
               + Fahrt
             </Link>
             <button
               type="button"
               onClick={() => void signOut()}
-              className="rounded-lg border border-white/40 px-3 py-1.5 text-sm font-medium transition hover:bg-white/10"
+              className="ml-1 rounded-lg px-3 py-1.5 text-sm font-medium text-shell-fg/50 transition-all duration-150 hover:bg-shell-fg/10 hover:text-shell-fg active:scale-[0.97]"
             >
               Abmelden
             </button>
           </div>
+          {/* Mobile: nur Abmelden-Button */}
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="sm:hidden rounded-lg px-3 py-1.5 text-sm font-medium text-shell-fg/50 transition-all duration-150 hover:bg-shell-fg/10 hover:text-shell-fg active:scale-[0.97]"
+          >
+            Abmelden
+          </button>
         </div>
       </header>
-      <main className={`mx-auto ${maxWidth} px-4 py-6 sm:px-6`}>{children}</main>
+      <main className={`relative z-10 mx-auto ${maxWidth} px-4 py-6 pb-24 sm:pb-8 sm:px-6`}>{children}</main>
+      <BottomNav />
     </div>
   )
 }

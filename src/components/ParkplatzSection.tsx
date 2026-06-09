@@ -32,7 +32,7 @@ function ParkplatzRow({
     <li
       className={`rounded-lg border px-3 py-2 transition ${
         entry.is_selected
-          ? 'border-hertha-blue bg-hertha-blue/10 ring-2 ring-hertha-blue/25'
+          ? 'border-card-accent bg-card-accent/10 ring-2 ring-card-accent/25'
           : 'border-slate-200 bg-slate-50'
       }`}
     >
@@ -41,7 +41,7 @@ function ParkplatzRow({
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-medium text-slate-900">{entry.name}</p>
             {entry.is_selected ? (
-              <span className="rounded-full bg-hertha-blue px-2 py-0.5 text-xs font-semibold text-white">
+              <span className="rounded-full bg-card-accent px-2 py-0.5 text-xs font-semibold text-white">
                 Routenziel
               </span>
             ) : null}
@@ -57,7 +57,7 @@ function ParkplatzRow({
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1 inline-block text-xs font-medium text-hertha-mid hover:underline"
+            className="mt-1 inline-block text-xs font-medium text-card-accent hover:underline"
           >
             In Google Maps öffnen
           </a>
@@ -68,7 +68,7 @@ function ParkplatzRow({
               type="button"
               disabled={busy}
               onClick={() => void onClearSelection()}
-              className="rounded-lg border border-hertha-blue bg-white px-2.5 py-1 text-xs font-semibold text-hertha-blue transition hover:bg-hertha-blue/5 disabled:opacity-60"
+              className="rounded-lg border border-card-accent bg-white px-2.5 py-1 text-xs font-semibold text-card-accent transition hover:bg-card-accent/5 disabled:opacity-60"
             >
               Abwählen
             </button>
@@ -77,7 +77,7 @@ function ParkplatzRow({
               type="button"
               disabled={busy}
               onClick={() => void onChoose(entry.id)}
-              className="rounded-lg bg-hertha-mid px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-hertha-blue disabled:opacity-60"
+              className="rounded-lg bg-card-accent px-2.5 py-1 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
             >
               Wählen
             </button>
@@ -118,7 +118,7 @@ function SuggestionRow({
         type="button"
         disabled={busy || alreadyAdded}
         onClick={() => void onAdd(suggestion)}
-        className="shrink-0 rounded-lg border border-hertha-mid px-2.5 py-1 text-xs font-semibold text-hertha-mid transition hover:bg-hertha-mid/10 disabled:opacity-50"
+        className="shrink-0 rounded-lg border border-card-accent px-2.5 py-1 text-xs font-semibold text-card-accent transition hover:bg-card-accent/10 disabled:opacity-50"
       >
         {alreadyAdded ? 'In Liste' : 'Hinzufügen'}
       </button>
@@ -267,7 +267,7 @@ export function ParkplatzSection({ stadion, currentUserId, parkplaetze }: Parkpl
                   onChange={(event) => setName(event.target.value)}
                   placeholder="Name, z. B. P+R Stadion"
                   maxLength={120}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-hertha-mid focus:outline-none focus:ring-2 focus:ring-hertha-mid/30"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-card-accent focus:outline-none focus:ring-2 focus:ring-card-accent/30"
                 />
                 <input
                   type="text"
@@ -275,12 +275,12 @@ export function ParkplatzSection({ stadion, currentUserId, parkplaetze }: Parkpl
                   onChange={(event) => setAddress(event.target.value)}
                   placeholder="Adresse"
                   maxLength={200}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-hertha-mid focus:outline-none focus:ring-2 focus:ring-hertha-mid/30"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-card-accent focus:outline-none focus:ring-2 focus:ring-card-accent/30"
                 />
                 <button
                   type="submit"
                   disabled={busy || !name.trim() || !address.trim()}
-                  className="rounded-lg bg-hertha-mid px-4 py-2 text-sm font-semibold text-white transition hover:bg-hertha-blue disabled:opacity-60"
+                  className="rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
                 >
                   {busy ? '…' : 'Parkplatz hinzufügen'}
                 </button>

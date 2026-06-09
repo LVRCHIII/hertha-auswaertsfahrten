@@ -66,10 +66,10 @@ export function AbfahrtAbstimmungBlock({
                 onClick={() => onVote(slot)}
                 className={`flex min-w-[4.5rem] flex-col items-center rounded-lg px-3 py-2 text-sm font-semibold transition disabled:opacity-60 ${
                   isMine
-                    ? 'bg-hertha-blue text-white ring-2 ring-hertha-mid/40'
+                    ? 'bg-card-accent text-white ring-2 ring-card-accent/40'
                     : isWinning
-                      ? 'border-2 border-hertha-blue bg-white text-hertha-blue'
-                      : 'border border-slate-200 bg-white text-slate-800 hover:border-hertha-mid/50'
+                      ? 'border-2 border-card-accent bg-white text-card-accent'
+                      : 'border border-slate-200 bg-white text-slate-800 hover:border-card-accent/50'
                 }`}
               >
                 <span>{formatUhrzeit(slot)}</span>

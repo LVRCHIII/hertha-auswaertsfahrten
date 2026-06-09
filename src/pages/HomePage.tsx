@@ -31,7 +31,7 @@ export function HomePage() {
     () => buildAwayStats(fahrten, mitfahrerByFahrt, user?.id),
     [fahrten, mitfahrerByFahrt, user?.id],
   )
-  const { spiele, loading: spieleLoading, error: spieleError } = useFutbologySpiele()
+  const { spiele, loading: spieleLoading, error: spieleError, reload: reloadSpiele } = useFutbologySpiele()
 
   return (
     <AppShell title="Auswärtsfahrten">
@@ -56,7 +56,7 @@ export function HomePage() {
           </p>
           <Link
             to="/fahrten/neu"
-            className="mt-6 inline-block rounded-lg bg-white px-5 py-2.5 font-semibold text-hertha-blue transition hover:bg-white/90"
+            className="mt-6 inline-block rounded-xl bg-shell-cta-bg px-5 py-2.5 font-semibold text-shell-cta-fg transition-all duration-150 hover:opacity-90 active:scale-[0.97]"
           >
             Erste Fahrt anlegen
           </Link>
@@ -67,7 +67,7 @@ export function HomePage() {
         <div className="space-y-8">
           <AwayStatsCard stats={awayStats} loading={mitfahrerLoading} error={mitfahrerError} />
 
-          <div className="inline-flex rounded-xl bg-white/10 p-1">
+          <div className="inline-flex rounded-xl bg-shell-fg/10 p-1 gap-0.5">
             {[
               { id: 'list', label: 'Fahrten' },
               { id: 'spiele', label: 'Spiele' },
@@ -77,10 +77,10 @@ export function HomePage() {
                 key={view.id}
                 type="button"
                 onClick={() => setActiveView(view.id as HomeView)}
-                className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-150 active:scale-[0.97] ${
                   activeView === view.id
-                    ? 'bg-white text-hertha-blue shadow-sm'
-                    : 'text-white/75 hover:bg-white/10 hover:text-white'
+                    ? 'bg-shell-cta-bg text-shell-cta-fg shadow-sm'
+                    : 'text-shell-fg/60 hover:bg-shell-fg/10 hover:text-shell-fg'
                 }`}
               >
                 {view.label}
@@ -95,6 +95,7 @@ export function HomePage() {
               spiele={spiele}
               loading={spieleLoading}
               error={spieleError}
+              onReload={reloadSpiele}
             />
           ) : (
             <div className="space-y-8">
@@ -104,6 +105,8 @@ export function HomePage() {
                 mitfahrerByFahrt={mitfahrerByFahrt}
                 abfahrtByFahrt={abfahrtByFahrt}
                 emptyHint="Keine kommenden Fahrten – Zeit für die nächste Auswärtsfahrt!"
+                heroFirst
+                loading={loading}
               />
               <FahrtSection
                 title="Vergangene Fahrten"

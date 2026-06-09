@@ -4,7 +4,7 @@ import {
   fetchSpieltagsbericht,
   saveSpieltagsbericht,
 } from '../lib/berichtApi'
-import type { Spieltagsbericht } from '../types/bericht'
+import type { BerichtMeta, Spieltagsbericht } from '../types/bericht'
 
 export function useSpieltagsbericht(fahrtId: string | undefined) {
   const [bericht, setBericht] = useState<Spieltagsbericht | null>(null)
@@ -36,6 +36,7 @@ export function useSpieltagsbericht(fahrtId: string | undefined) {
   async function save(
     authorId: string,
     contentJson: Record<string, unknown>,
+    meta?: BerichtMeta,
   ): Promise<boolean> {
     if (!fahrtId) return false
 
@@ -47,6 +48,7 @@ export function useSpieltagsbericht(fahrtId: string | undefined) {
       authorId,
       contentJson,
       bericht?.author_id,
+      meta,
     )
 
     setBusy(false)

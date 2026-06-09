@@ -17,7 +17,7 @@ export function VereinWappen({ src, size = 'sm', className = '' }: VereinWappenP
   if (failed || !src) {
     return (
       <span
-        className={`flex shrink-0 items-center justify-center rounded-full bg-hertha-blue/10 text-sm ${sizeClass[size]} ${className}`}
+        className={`flex shrink-0 items-center justify-center rounded-full bg-card-accent/10 text-sm ${sizeClass[size]} ${className}`}
         aria-hidden
       >
         ⚽

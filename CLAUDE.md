@@ -115,12 +115,23 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
 - Theme-Picker auf Profilseite (5 farbige Split-Swatches)
 - **Textur-System:** `--shell-texture-url` + `--shell-texture-opacity` CSS-Variablen
 - `TextureOverlay`-Komponente in `src/components/TextureOverlay.tsx` (global in App.tsx)
-- Textur-Datei: `public/textures/schwarzer-beton.png` (1080×1080 PNG)
 - `AppShell` und `AuthLayout` nutzen `bg-transparent`, Hintergrundfarbe kommt von `html { background-color: var(--color-shell-bg) }`
-- **Nächster Schritt:** Weitere Textur-Bilder für andere Themes nachreichen (User arbeitet in Photoshop)
-  - Vorgesehen: ähnliche Textur-PNGs für Aufwärm Shirt, Auswärts 20/21, Auswärts 24/25
-  - Ablageort: `public/textures/<theme-name>.png`
-  - CSS-Variable analog zu Schwarzer Beton in `.theme-*` Klasse eintragen
+
+### ✅ Milestone 15 — Navigation & Bottom-Nav
+
+- `src/components/BottomNav.tsx` — Mobile Bottom-Nav (Home, Spieltag, + Fahrt CTA, Profil)
+- `AppShell`: Desktop-Nav-Links ausgeblendet auf Mobile (`hidden sm:flex`), nur Abmelden-Button bleibt
+- `main` bekommt `pb-24 sm:pb-6` damit Inhalt nicht hinter Bottom-Nav verschwindet
+- `Toaster` verschoben auf `bottom-20 sm:bottom-6`
+
+### ✅ Milestone 16 — Theme-Konsistenz
+
+- Neue CSS-Var `--color-card-accent` in `src/index.css` — pro Theme eigene Akzentfarbe für weiße Karten
+- `DashboardSection`: `text-hertha-blue` → `text-card-accent`
+- `AwayStatsCard`: alle `hertha-blue/mid` Referenzen → `card-accent`
+- `FahrtCard`: Ring, Badge, Abfahrt-Farbe → `card-accent`; past-Karte → `shell-fg` vars
+- `FahrtDashboardPage`: `bg-hertha-blue/10`, Puffer-Button, Maps-Link → `card-accent`
+- `HomePage`: Tab-Switcher und Empty-State-Button → `shell-cta` vars
 
 ### ✅ Milestone 14 — Toast-Notifications
 
@@ -140,6 +151,68 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
 - Spiele-Tab auf HomePage, Upload auf ProfilPage
 - Migration applied: `20260525120000_milestone12_futbology.sql`
 
+### ✅ Milestone 17 — Karten & Layout-Polish
+
+- **FahrtCard Hero-Variante** (`hero` prop): Erste kommende Fahrt auf der HomePage als großer Featured-Card
+  - Prominentes MatchupWappen `size="md"`, Abfahrtszeit als großes Badge, Puls-Dot "Nächste Fahrt"-Label
+  - Breiter `rounded-3xl` Stil mit `shadow-lg` statt normaler `rounded-2xl`-Karte
+- **Skeleton-Loading** in `FahrtSection`: Animierte Platzhalter statt "Wird geladen…"-Text
+  - Hero-Skeleton für erste Karte, kleine Skeletons für weitere (je `animate-pulse`)
+- **FahrtSection** bekommt `heroFirst?: boolean` + `loading?: boolean` Props; `HomePage` übergibt beides für "Kommende Fahrten"
+- **SpieltagPage QuickActions**: Icon-Emoji vor Label (🗺️ Route, 📍 Treffpunkt, 🅿️ Parkplatz, ⚙️ Dashboard)
+  - QuickAction-Komponente bekommt `icon: string` prop, Layout mit `flex items-start gap-3`
+- **FahrtDashboardPage Hero-Header**: Spielinfo-Bereich in eigenem `rounded-3xl bg-white` Hero-Block
+  - Back-Link + Löschen-Button oben im Hero; Feldlabels als `uppercase tracking-wide text-slate-400`
+
+### ✅ Milestone 18 — Auth-Animationen & Login-Polish
+
+- **Framer Motion** installiert (`npm install framer-motion`)
+- **AuthLayout**: animierter Card-Einblend (fade-in + slide-up, ease `[0.16,1,0.3,1]`), Header gestaffelt nachgezogen
+- **Hintergrund-Blobs**: 3 animierte CSS-Blobs (`.auth-blob-1/2/3`) in `src/index.css`
+  - `blob-drift-*` Keyframes, 14–22s Zyklen, `blur-3xl/2xl`, Theme-Farben (`shell-fg/10`, `shell-cta-bg/15`)
+- **LoginPage**: gestaffelte Formfeld-Animationen (slide-in-left, 80ms Delay pro Feld), Error-Banner fade-in, Spinner-Button
+- **RegisterPage**: gleiche Behandlung, 3 Felder gestaffelt
+
+### ✅ Milestone 19 — Texturen für alle Themes
+
+- **TextureOverlay** erweitert: neue CSS-Vars `--shell-texture-repeat` und `--shell-texture-size`
+  - `repeat` + feste px-Größe für Seamless-Tiles; `no-repeat` + `cover` (Default) für Cover-Bilder
+- **Aufwärm Shirt** → `splatter-hell.png` (Tile, 380px, repeat, 0.28 Opacity)
+- **Auswärts 20/21** → `splatter-dunkel.png` (Tile, 380px, repeat, 0.35 Opacity)
+- **Auswärts 24/25** → `streifen.png` (Tile, 220px, repeat, 0.20 Opacity)
+- **Schwarzer Beton** → `schwarzer-beton.png` (Cover, 0.18 Opacity) — unverändert
+- **Fahnenmeer-Theme entfernt** — Bild nicht hochauflösend genug; `Fahnenmeer.png` liegt in `public/textures/` für später
+- Dateien umbenannt (Leerzeichen/`%`-Zeichen Vite-inkompatibel):
+  - `seamless_tile 50% darker.png` → `splatter-dunkel.png`
+  - `seamless_tile spritzer.png` → `splatter-hell.png`
+  - `9432da6501fec22878f0f3c897dfb554.png` → `streifen.png`
+
+### ✅ Milestone 20 — Spieltagsbewertungen
+
+- Migration applied: `20260602120000_milestone20_bewertungen.sql`
+- Neue Spalten auf `spieltagsberichte`: `ergebnis_heim`, `ergebnis_gast` (smallint), `zuschauer` (integer), `bewertung_spiel`, `bewertung_atmosphaere`, `bewertung_pommes` (smallint 1–5)
+- `src/components/StarRating.tsx` — wiederverwendbare Sterne-Komponente, readonly-Modus, Emojis konfigurierbar
+- `src/types/bericht.ts` — `BerichtMeta` Typ hinzugefügt
+- `src/lib/berichtApi.ts` — `saveSpieltagsbericht` nimmt optionalen `meta: BerichtMeta`
+- `src/hooks/useSpieltagsbericht.ts` — `save()` nimmt optionalen `meta`
+- `SpieltagsberichtSection` überarbeitet: Spielinfo-Box (Ergebnis + Zuschauer), 3 Sterne-Rater (⭐🔥🍟), Freitext-Editor
+- `FahrtDashboardPage`: `SpieltagsberichtSection` jetzt tatsächlich eingebunden (war vorher vergessen)
+
+### ✅ Milestone 21 — Vereinsdatenbank & Spielplan-Import
+
+- `src/data/vereine.ts` — Neues Feld `liga: Liga`, 5 Ligen, ~80 Vereine gesamt
+  - Ligen: `1. Bundesliga`, `2. Bundesliga`, `3. Bundesliga`, `Regionalliga`, `Frauen-Bundesliga`
+  - `ALLE_VEREINE` kombiniert, `filterVereine` sucht über alle Ligen incl. Liga-Name
+  - Liga-Badge im `VereinAutocomplete`-Dropdown
+- **56 Wappen-PNGs** in `public/wappen/` — einmalig geladen via api-football.com
+  - Script: `scripts/fetch-wappen.mjs`, `npm run fetch-wappen`
+  - api-football Team-ID Hertha: 159, API-Key in `.env` als `VITE_API_FOOTBALL_KEY`
+- **Spielplan-Import:** `src/components/SpielplanImport.tsx` + `src/lib/apiFootballFixtures.ts`
+  - Weißes Card oben auf `FahrtAnlegenPage`, "📅 Laden" → Preview mit Checkboxen → Bulk-Import
+  - Nur Hertha-Auswärtsspiele (2. BL + DFB Pokal), bereits vorhandene Fahrten ausgegraut
+  - **Einschränkung:** api-football Free Plan nur Saisons 2022–2024
+  - **Geplant:** Wechsel auf OpenLiga DB (kostenlos, kein Key) wenn Spielplan 2026/27 erscheint
+
 ---
 
 ## Datenbankmigrationen (Supabase)
@@ -155,7 +228,9 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
 | `20250517120000_treffpunkt_bestaetigt.sql` | treffpunkt_bestaetigt auf fahrten |
 | `20250517130000_abfahrt_abstimmungen.sql` | abfahrt_abstimmungen-Tabelle |
 | `20260518104802_milestone10_auswaertsstatistik.sql` | route_distance_meters auf fahrten |
-| `20260522140000_milestone11_spieltagsberichte.sql` | spieltagsberichte-Tabelle (noch nicht applied) |
+| `20260522140000_milestone11_spieltagsberichte.sql` | spieltagsberichte-Tabelle |
+| `20260525120000_milestone12_futbology.sql` | futbology_spiele-Tabelle |
+| `20260602120000_milestone20_bewertungen.sql` | Bewertungsspalten auf spieltagsberichte |
 
 ---
 
@@ -168,11 +243,24 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
 - **Styling:** Tailwind utility classes, Mobile-First
 - **Farben:** `hertha-blue` = `#003264`, `hertha-mid` = `#005BAC` (in Tailwind config definiert)
 - **RLS:** Alle Tabellen haben Row Level Security aktiviert
+- **Animationen:** Framer Motion für UI-Transitions, CSS Keyframes für reine Hintergrund-Effekte
+
+---
+
+### ✅ Milestone 22-Vorstufe — Spieltagsbericht Polish
+
+- **Ergebnis-Anzeige**: Wappen (Gegner links, Hertha rechts), custom Stepper +/− statt native number-Input, korrekte Auswärts-Reihenfolge
+- **Tiptap-Editor**: `bericht-prose` CSS (Obsidian-ähnlich) — h2/h3, ul/ol, blockquote mit Akzentfarbe, Links, line-height 1.75
+- **Bug behoben**: `BerichtViewer` prop hieß `content`, wurde aber als `contentJson` übergeben → Viewer zeigte nie Inhalt
+- **Bild aus Editor entfernt** — separater Bildbereich stattdessen
+- **`BerichtBilderGalerie`**: 3-spaltiges Grid, Multi-Upload, Hover-× zum Löschen, Lightbox, unabhängig vom Text-Speichern
+- **Migration**: `20260602140000_bericht_bilder.sql` — `bericht_bilder`-Tabelle (id, fahrt_id, uploaded_by, path, url, position) mit RLS — **muss manuell im Supabase Dashboard angewendet werden**
 
 ---
 
 ## Nächster Schritt
 
-- Textur-Bilder für weitere Themes von User einsammeln (Photoshop-Export), dann analog zu Schwarzer Beton einbauen
-- M15: Karten & Layout-Polish
-- M16: Scrollbar & Background-Effekte (optional)
+- **M22 — Saisonexport als .docx**: Alle Spieltagsberichte einer Saison exportieren (Ergebnis, Bewertungen, Freitext, eingebettete Bilder). Archivierungsfunktion: Bilder aus Storage löschen, Text bleibt. `docx` npm-Package. Saisonauswahl per Datum (Aug–Mai).
+- **Deploy (Vercel)** — Google Maps URL-Restriction auf finale Domain anpassen, alle Supabase-Migrations prüfen
+- **OpenLiga DB** — Wenn Spielplan 2026/27 erscheint (Mai/Juni): `src/lib/apiFootballFixtures.ts` durch `src/lib/openligaFixtures.ts` ersetzen (kostenlos, kein Key, nur deutsche Ligen)
+- **Fahnenmeer-Theme** — wenn hochauflösende Version verfügbar: in `public/textures/Fahnenmeer.png` ersetzen und Theme wieder eintragen

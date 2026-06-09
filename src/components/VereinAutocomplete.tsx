@@ -3,13 +3,15 @@ import { filterVereine, type Verein } from '../data/vereine'
 import { VereinWappen } from './VereinWappen'
 
 const inputClass =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-hertha-mid focus:ring-2 focus:ring-hertha-mid/30'
+  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-card-accent focus:ring-2 focus:ring-card-accent/30'
 
 type VereinAutocompleteProps = {
   value: string
   onChange: (value: string) => void
-  onVereinSelect: (verein: Verein) => void
+  onVereinSelect: (verein: Verein | null) => void
   required?: boolean
+  label?: string
+  inputId?: string
 }
 
 export function VereinAutocomplete({
@@ -17,6 +19,8 @@ export function VereinAutocomplete({
   onChange,
   onVereinSelect,
   required,
+  label = 'Gegner',
+  inputId = 'gegner',
 }: VereinAutocompleteProps) {
   const listId = useId()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -70,11 +74,11 @@ export function VereinAutocomplete({
 
   return (
     <div ref={containerRef} className="relative">
-      <label className="mb-1 block text-sm font-medium" htmlFor="gegner">
-        Gegner <span className="text-red-500">*</span>
+      <label className="mb-1 block text-sm font-medium" htmlFor={inputId}>
+        {label}{required && <span className="text-red-500"> *</span>}
       </label>
       <input
-        id="gegner"
+        id={inputId}
         type="text"
         role="combobox"
         aria-expanded={open}
@@ -103,17 +107,24 @@ export function VereinAutocomplete({
             <li key={verein.name} role="option" aria-selected={index === highlightIndex}>
               <button
                 type="button"
-                className={`flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition hover:bg-hertha-blue/5 ${
-                  index === highlightIndex ? 'bg-hertha-blue/10' : ''
+                className={`flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition hover:bg-card-accent/5 ${
+                  index === highlightIndex ? 'bg-card-accent/10' : ''
                 }`}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => selectVerein(verein)}
                 onMouseEnter={() => setHighlightIndex(index)}
               >
                 <VereinWappen src={verein.wappenUrl} />
-                <span>
-                  <span className="font-medium text-slate-900">{verein.name}</span>
-                  <span className="mt-0.5 block text-xs text-slate-500">{verein.stadion}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <span className="font-medium text-slate-900">{verein.name}</span>
+                    <span className="shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                      {verein.liga}
+                    </span>
+                  </span>
+                  {verein.stadion && (
+                    <span className="mt-0.5 block truncate text-xs text-slate-500">{verein.stadion}</span>
+                  )}
                 </span>
               </button>
             </li>

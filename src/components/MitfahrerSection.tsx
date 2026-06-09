@@ -77,7 +77,7 @@ export function MitfahrerSection({ fahrtId, currentUserId }: MitfahrerSectionPro
               className={`mt-4 w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:opacity-60 ${
                 isJoined
                   ? 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                  : 'bg-hertha-mid text-white hover:bg-hertha-blue'
+                  : 'bg-card-accent text-white hover:opacity-90'
               }`}
             >
               {busy ? 'Bitte warten …' : isJoined ? 'Abmelden' : 'Ich fahre mit'}

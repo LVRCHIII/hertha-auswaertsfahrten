@@ -42,19 +42,29 @@ type QuickActionProps = {
   href: string
   label: string
   detail: string
+  icon: string
   external?: boolean
   disabled?: boolean
 }
 
-function QuickAction({ href, label, detail, external = true, disabled = false }: QuickActionProps) {
+function QuickAction({ href, label, detail, icon, external = true, disabled = false }: QuickActionProps) {
   const className =
-    'rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-left transition hover:bg-white/15'
+    'flex items-start gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-left transition hover:bg-white/15'
+
+  const content = (
+    <>
+      <span className="mt-0.5 text-xl leading-none">{icon}</span>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-white">{label}</p>
+        <p className="mt-0.5 truncate text-xs text-white/65">{detail}</p>
+      </div>
+    </>
+  )
 
   if (disabled) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left opacity-60">
-        <p className="text-sm font-semibold text-white">{label}</p>
-        <p className="mt-1 text-xs text-white/65">{detail}</p>
+      <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left opacity-50">
+        {content}
       </div>
     )
   }
@@ -62,16 +72,14 @@ function QuickAction({ href, label, detail, external = true, disabled = false }:
   if (external) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
-        <p className="text-sm font-semibold text-white">{label}</p>
-        <p className="mt-1 text-xs text-white/65">{detail}</p>
+        {content}
       </a>
     )
   }
 
   return (
     <Link to={href} className={className}>
-      <p className="text-sm font-semibold text-white">{label}</p>
-      <p className="mt-1 text-xs text-white/65">{detail}</p>
+      {content}
     </Link>
   )
 }
@@ -92,7 +100,7 @@ function TimelineList({
             key={item.id}
             className={`rounded-2xl border px-4 py-3 ${
               active
-                ? 'border-hertha-mid bg-hertha-mid/10'
+                ? 'border-card-accent bg-card-accent/10'
                 : 'border-slate-200 bg-slate-50'
             }`}
           >
@@ -101,7 +109,7 @@ function TimelineList({
                 <p className="text-sm font-semibold text-slate-900">{item.label}</p>
                 {item.detail ? <p className="mt-1 text-xs text-slate-500">{item.detail}</p> : null}
               </div>
-              <p className="shrink-0 text-sm font-bold text-hertha-blue">{formatUhrzeit(item.time)} Uhr</p>
+              <p className="shrink-0 text-sm font-bold text-card-accent">{formatUhrzeit(item.time)} Uhr</p>
             </div>
           </li>
         )
@@ -232,7 +240,7 @@ export function SpieltagPage() {
           </p>
           <Link
             to="/fahrten/neu"
-            className="mt-6 inline-block rounded-lg bg-white px-5 py-2.5 font-semibold text-hertha-blue transition hover:bg-white/90"
+            className="mt-6 inline-block rounded-lg bg-shell-cta-bg px-5 py-2.5 font-semibold text-shell-cta-fg transition hover:opacity-90"
           >
             Fahrt anlegen
           </Link>
@@ -245,7 +253,7 @@ export function SpieltagPage() {
     <AppShell title="Spieltag" wide>
       <div className="space-y-4">
         <section className="rounded-3xl bg-white p-5 text-slate-900 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-wide text-hertha-mid">
+          <p className="text-sm font-semibold uppercase tracking-wide text-card-accent/70">
             {formatSpieltagDayLabel(trip.spiel_at, now)}
           </p>
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -254,10 +262,10 @@ export function SpieltagPage() {
               <p className="mt-3 text-sm text-slate-500">
                 {formatSpielDatum(trip.spiel_at)}, {formatAnpfiff(trip.spiel_at)} Uhr
               </p>
-              <h2 className="mt-1 text-3xl font-bold text-hertha-blue">{trip.gegner}</h2>
+              <h2 className="mt-1 text-3xl font-bold text-card-accent">{trip.gegner}</h2>
               <p className="mt-1 text-sm text-slate-600">{trip.stadion}</p>
             </div>
-            <div className="rounded-2xl bg-hertha-blue px-5 py-4 text-white sm:min-w-64">
+            <div className="rounded-2xl bg-card-accent px-5 py-4 text-white sm:min-w-64">
               <p className="text-sm text-white/75">
                 {winningDeparture ? 'Abgestimmte Abfahrt' : 'Nächster wichtiger Zeitpunkt'}
               </p>
@@ -272,19 +280,22 @@ export function SpieltagPage() {
         </section>
 
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <QuickAction href={routeUrl} label="Route öffnen" detail={routeEndpoints?.destinationLabel ?? trip.stadion} />
+          <QuickAction icon="🗺️" href={routeUrl} label="Route öffnen" detail={routeEndpoints?.destinationLabel ?? trip.stadion} />
           <QuickAction
+            icon="📍"
             href={getTreffpunktMapsUrl(trip)}
             label="Treffpunkt"
             detail={getTreffpunktLabel(trip)}
           />
           <QuickAction
+            icon="🅿️"
             href={parkplatzUrl}
             label="Parkplatz"
             detail={selectedParkplatz?.name ?? 'Noch kein Parkplatz gewählt'}
             disabled={!selectedParkplatz}
           />
           <QuickAction
+            icon="⚙️"
             href={`/fahrten/${trip.id}`}
             label="Dashboard"
             detail="Details bearbeiten"
@@ -300,7 +311,7 @@ export function SpieltagPage() {
                 <p className="text-sm text-slate-500">Mobile Kurzfassung für den Fahrtag</p>
               </div>
               {route.status === 'ready' ? (
-                <span className="rounded-full bg-hertha-blue/10 px-3 py-1 text-xs font-semibold text-hertha-blue">
+                <span className="rounded-full bg-card-accent/10 px-3 py-1 text-xs font-semibold text-card-accent">
                   {formatDuration(route.plan.durationSeconds)} · {formatDistance(route.plan.distanceMeters)}
                 </span>
               ) : null}
@@ -346,7 +357,7 @@ export function SpieltagPage() {
                     {mitbringliste.loading ? 'Wird geladen …' : `${mitbringliste.entries.length} Einträge`}
                   </p>
                 </div>
-                <Link to={`/fahrten/${trip.id}`} className="text-sm font-semibold text-hertha-mid hover:underline">
+                <Link to={`/fahrten/${trip.id}`} className="text-sm font-semibold text-card-accent hover:underline">
                   Öffnen
                 </Link>
               </div>

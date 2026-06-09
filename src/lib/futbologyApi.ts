@@ -24,6 +24,7 @@ export async function fetchAllFutbologySpiele(): Promise<{
 
   const mapped: FutbologySpiel[] = (data ?? []).map((row) => ({
     ...(row as Omit<typeof row, 'profile'>),
+    source: ((row as Record<string, unknown>).source as 'csv' | 'manual') ?? 'csv',
     profile: normalizeProfile(row.profile as ProfileJoin),
   }))
 
@@ -36,18 +37,53 @@ export async function replaceFutbologySpiele(
 ): Promise<{ count: number; error: string | null }> {
   const sb = requireSupabase()
 
+  // Nur CSV-Einträge löschen, manuelle Einträge bleiben erhalten
   const { error: deleteError } = await sb
     .from('futbology_spiele')
     .delete()
     .eq('user_id', userId)
+    .eq('source', 'csv')
 
   if (deleteError) return { count: 0, error: deleteError.message }
   if (rows.length === 0) return { count: 0, error: null }
 
   const { error: insertError } = await sb
     .from('futbology_spiele')
-    .insert(rows.map((row) => ({ ...row, user_id: userId })))
+    .insert(rows.map((row) => ({ ...row, user_id: userId, source: 'csv' })))
 
   if (insertError) return { count: 0, error: insertError.message }
   return { count: rows.length, error: null }
+}
+
+export type ManuellerSpielEintrag = {
+  datum: string
+  heim_team: string
+  gast_team: string
+  stadion: string
+  ergebnis: string | null
+  liga: string | null
+}
+
+export async function insertFutbologySpielManuell(
+  userId: string,
+  spiel: ManuellerSpielEintrag,
+): Promise<{ error: string | null }> {
+  const { error } = await requireSupabase()
+    .from('futbology_spiele')
+    .insert({ ...spiel, user_id: userId, source: 'manual' })
+
+  if (error) return { error: error.message }
+  return { error: null }
+}
+
+export async function deleteFutbologySpiel(
+  id: string,
+): Promise<{ error: string | null }> {
+  const { error } = await requireSupabase()
+    .from('futbology_spiele')
+    .delete()
+    .eq('id', id)
+
+  if (error) return { error: error.message }
+  return { error: null }
 }

@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
 import { FutbologyCsvUpload } from '../components/FutbologyCsvUpload'
+import { SaisonExport } from '../components/SaisonExport'
 import { ProfileAvatar } from '../components/ProfileAvatar'
 import { useAuth } from '../contexts/AuthContext'
 import { THEMES, useTheme } from '../contexts/ThemeContext'
@@ -18,7 +19,6 @@ export function ProfilPage() {
     loading,
     error,
     saving,
-    saveError,
     uploadingAvatar,
     avatarError,
     saveProfile,
@@ -89,7 +89,7 @@ export function ProfilPage() {
                     type="button"
                     disabled={uploadingAvatar}
                     onClick={() => fileInputRef.current?.click()}
-                    className="rounded-lg bg-hertha-mid px-4 py-2 text-sm font-semibold text-white transition hover:bg-hertha-blue disabled:opacity-60"
+                    className="rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
                   >
                     {uploadingAvatar ? 'Lädt …' : 'Bild hochladen'}
                   </button>
@@ -151,7 +151,7 @@ export function ProfilPage() {
                 }}
                 maxLength={40}
                 required
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-hertha-mid focus:outline-none focus:ring-2 focus:ring-hertha-mid/30"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-card-accent focus:outline-none focus:ring-2 focus:ring-card-accent/30"
               />
             </div>
 
@@ -172,14 +172,14 @@ export function ProfilPage() {
                 }}
                 maxLength={200}
                 placeholder="z. B. Kantstraße 12, 10623 Berlin"
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-hertha-mid focus:outline-none focus:ring-2 focus:ring-hertha-mid/30"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-card-accent focus:outline-none focus:ring-2 focus:ring-card-accent/30"
               />
             </div>
 
             <button
               type="submit"
               disabled={saving || !displayName.trim()}
-              className="rounded-lg bg-hertha-mid px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-hertha-blue disabled:opacity-60"
+              className="rounded-lg bg-card-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
             >
               {saving ? 'Speichern …' : 'Speichern'}
             </button>
@@ -197,7 +197,7 @@ export function ProfilPage() {
                     title={t.label}
                     className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-2 transition ${
                       theme === t.id
-                        ? 'border-hertha-mid shadow-sm'
+                        ? 'border-card-accent shadow-sm'
                         : 'border-transparent hover:border-slate-200'
                     }`}
                   >
@@ -221,6 +221,10 @@ export function ProfilPage() {
             {user?.id ? (
               <FutbologyCsvUpload userId={user.id} />
             ) : null}
+
+            <hr className="border-slate-200" />
+
+            <SaisonExport />
           </form>
         ) : null}
       </div>

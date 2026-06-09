@@ -1,8 +1,18 @@
+import { motion } from 'framer-motion'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { AuthLayout } from '../components/AuthLayout'
 import { useAuth } from '../contexts/AuthContext'
+
+const fieldVariants = {
+  hidden: { opacity: 0, x: -12 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: { delay: 0.25 + i * 0.08, duration: 0.35, ease: 'easeOut' as const },
+  }),
+}
 
 export function LoginPage() {
   const { user, signIn } = useAuth()
@@ -38,60 +48,91 @@ export function LoginPage() {
       subtitle="Melde dich an, um Auswärtsfahrten zu planen."
     >
       <form className="space-y-5" onSubmit={handleSubmit}>
-        <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="email">
-            E-Mail
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-hertha-mid focus:ring-2 focus:ring-hertha-mid/30"
-          />
-        </div>
-
-        <div>
-          <label
-            className="mb-1 block text-sm font-medium text-slate-700"
-            htmlFor="password"
-          >
-            Passwort
-          </label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-hertha-mid focus:ring-2 focus:ring-hertha-mid/30"
-          />
-        </div>
+        {(['email', 'password'] as const).map((field, i) => (
+          <motion.div key={field} custom={i} variants={fieldVariants} initial="hidden" animate="visible">
+            <label
+              className="mb-1 block text-sm font-medium text-slate-700"
+              htmlFor={field}
+            >
+              {field === 'email' ? 'E-Mail' : 'Passwort'}
+            </label>
+            <input
+              id={field}
+              type={field}
+              autoComplete={field === 'email' ? 'email' : 'current-password'}
+              required
+              value={field === 'email' ? email : password}
+              onChange={(e) =>
+                field === 'email' ? setEmail(e.target.value) : setPassword(e.target.value)
+              }
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none transition focus:border-card-accent focus:ring-2 focus:ring-card-accent/30"
+            />
+          </motion.div>
+        ))}
 
         {error ? (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+          <motion.p
+            className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+            role="alert"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+          >
             {error}
-          </p>
+          </motion.p>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-lg bg-hertha-blue px-4 py-2.5 font-semibold text-white transition hover:bg-hertha-mid disabled:cursor-not-allowed disabled:opacity-60"
+        <motion.div
+          custom={2}
+          variants={fieldVariants}
+          initial="hidden"
+          animate="visible"
         >
-          {submitting ? 'Wird angemeldet …' : 'Anmelden'}
-        </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="relative w-full rounded-lg bg-card-accent px-4 py-2.5 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {submitting ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12" cy="12" r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
+                </svg>
+                Wird angemeldet …
+              </span>
+            ) : (
+              'Anmelden'
+            )}
+          </button>
+        </motion.div>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-600">
+      <motion.p
+        className="mt-6 text-center text-sm text-slate-600"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.55, duration: 0.4 }}
+      >
         Noch kein Konto?{' '}
-        <Link className="font-semibold text-hertha-mid hover:underline" to="/register">
+        <Link className="font-semibold text-card-accent hover:underline" to="/register">
           Registrieren
         </Link>
-      </p>
+      </motion.p>
     </AuthLayout>
   )
 }

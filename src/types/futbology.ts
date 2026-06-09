@@ -7,6 +7,7 @@ export type FutbologySpiel = {
   gast_team: string
   ergebnis: string | null
   liga: string | null
+  source: 'csv' | 'manual'
   created_at: string
   profile?: { display_name: string; avatar_url: string | null } | null
 }
@@ -25,6 +26,8 @@ export type GroupedSpiel = {
   ergebnis: string | null
   liga: string | null
   attendees: FutbologyAttendee[]
+  /** IDs aller Einträge für diese Begegnung (zum Löschen) */
+  ids: { id: string; user_id: string; source: 'csv' | 'manual' }[]
 }
 
 export type SpielKategorie = 'alle' | 'auswaerts' | 'heim' | 'andere'

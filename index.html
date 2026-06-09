@@ -19,6 +19,13 @@
   <body>
     <div id="root"></div>
     <script>
+      // Theme vor erstem Paint setzen — verhindert Flash
+      ;(function () {
+        var t = localStorage.getItem('hertha-theme')
+        if (t && t !== 'klassisch') document.documentElement.classList.add('theme-' + t)
+      })()
+    </script>
+    <script>
       window.gm_authFailure = function () {
         console.error(
           '[Google Maps] API-Key abgelehnt (Referrer). Aktuelle URL:',

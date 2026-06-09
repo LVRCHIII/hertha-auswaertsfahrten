@@ -40,7 +40,7 @@ export function CalendarView({ fahrten, abfahrtByFahrt }: CalendarViewProps) {
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
             Kalender
           </p>
-          <h2 className="text-xl font-bold capitalize text-hertha-blue">
+          <h2 className="text-xl font-bold capitalize text-card-accent">
             {monthLabel(visibleMonth)}
           </h2>
         </div>
@@ -56,7 +56,7 @@ export function CalendarView({ fahrten, abfahrtByFahrt }: CalendarViewProps) {
           <button
             type="button"
             onClick={goToToday}
-            className="rounded-lg bg-hertha-blue px-3 py-2 text-sm font-semibold text-white transition hover:bg-hertha-mid"
+            className="rounded-lg bg-card-accent px-3 py-2 text-sm font-semibold text-white transition hover:opacity-90"
           >
             Heute
           </button>
@@ -95,7 +95,7 @@ export function CalendarView({ fahrten, abfahrtByFahrt }: CalendarViewProps) {
                 <span
                   className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-semibold sm:h-6 sm:min-w-6 sm:text-xs ${
                     day.isToday
-                      ? 'bg-hertha-blue text-white'
+                      ? 'bg-card-accent text-white'
                       : day.inCurrentMonth
                         ? 'text-slate-600'
                         : 'text-slate-300'
@@ -105,7 +105,7 @@ export function CalendarView({ fahrten, abfahrtByFahrt }: CalendarViewProps) {
                 </span>
 
                 {dayFahrten.length > 0 ? (
-                  <span className="rounded-full bg-hertha-blue px-1.5 py-0.5 text-[10px] font-bold text-white sm:text-xs">
+                  <span className="rounded-full bg-card-accent px-1.5 py-0.5 text-[10px] font-bold text-white sm:text-xs">
                     {dayFahrten.length}
                   </span>
                 ) : null}
@@ -117,14 +117,14 @@ export function CalendarView({ fahrten, abfahrtByFahrt }: CalendarViewProps) {
                     <Link
                       key={fahrt.id}
                       to={`/fahrten/${fahrt.id}`}
-                      className="flex justify-center rounded-lg bg-hertha-blue/5 px-0.5 py-1 transition hover:bg-hertha-blue/10"
+                      className="flex justify-center rounded-lg bg-card-accent/5 px-0.5 py-1 transition hover:bg-card-accent/10"
                       aria-label={`${formatAnpfiff(fahrt.spiel_at)} ${fahrt.gegner}`}
                     >
                       <MatchupWappen gegner={fahrt.gegner} size="sm" />
                     </Link>
                   ))}
                   {dayFahrten.length > 2 ? (
-                    <p className="text-center text-[10px] font-semibold text-hertha-blue">
+                    <p className="text-center text-[10px] font-semibold text-card-accent">
                       +{dayFahrten.length - 2}
                     </p>
                   ) : null}
@@ -152,18 +152,18 @@ export function CalendarView({ fahrten, abfahrtByFahrt }: CalendarViewProps) {
                 <li key={fahrt.id}>
                   <Link
                     to={`/fahrten/${fahrt.id}`}
-                    className="block rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-hertha-mid/50 hover:bg-white"
+                    className="block rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-card-accent/50 hover:bg-white"
                   >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-slate-500">
                           {formatSpielDatum(fahrt.spiel_at)} · {formatAnpfiff(fahrt.spiel_at)} Uhr
                         </p>
-                        <p className="mt-1 text-lg font-bold text-hertha-blue">{fahrt.gegner}</p>
+                        <p className="mt-1 text-lg font-bold text-card-accent">{fahrt.gegner}</p>
                         <p className="mt-0.5 text-sm text-slate-600">{fahrt.stadion}</p>
                       </div>
                       {abfahrt ? (
-                        <div className="rounded-lg bg-hertha-blue/10 px-3 py-2 text-sm font-semibold text-hertha-blue">
+                        <div className="rounded-lg bg-card-accent/10 px-3 py-2 text-sm font-semibold text-card-accent">
                           Abfahrt {formatUhrzeit(abfahrt.time)} Uhr
                         </div>
                       ) : null}

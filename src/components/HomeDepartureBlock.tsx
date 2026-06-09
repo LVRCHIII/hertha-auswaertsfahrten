@@ -37,7 +37,7 @@ export function HomeDepartureBlock({
         <p className="text-sm font-medium text-slate-700">Deine Abfahrt von zu Hause</p>
         <p className="mt-1 text-sm text-slate-500">
           Trage im{' '}
-          <Link to="/profil" className="font-semibold text-hertha-mid hover:underline">
+          <Link to="/profil" className="font-semibold text-card-accent hover:underline">
             Profil
           </Link>{' '}
           ein, von wo du losfährst — dann siehst du hier, wann du Zuhause los musst, um rechtzeitig
@@ -55,7 +55,7 @@ export function HomeDepartureBlock({
   const mapsUrl = buildGoogleMapsDirectionsUrl(homeOrigin, treffpunktDestination)
 
   return (
-    <div className="mt-4 rounded-xl border border-hertha-mid/25 bg-hertha-mid/5 px-4 py-3">
+    <div className="mt-4 rounded-xl border border-card-accent/25 bg-card-accent/5 px-4 py-3">
       <p className="text-sm font-medium text-slate-700">Deine Abfahrt von zu Hause</p>
       <p className="mt-0.5 text-xs text-slate-500">
         Treffpunkt {treffpunktLabel} · Abfahrt dort {formatUhrzeit(treffpunktAbfahrt)} Uhr
@@ -71,7 +71,7 @@ export function HomeDepartureBlock({
 
       {homeAbfahrt ? (
         <>
-          <p className="mt-2 text-3xl font-bold text-hertha-mid">{formatUhrzeit(homeAbfahrt)} Uhr</p>
+          <p className="mt-2 text-3xl font-bold text-card-accent">{formatUhrzeit(homeAbfahrt)} Uhr</p>
           <p className="mt-1 text-xs text-slate-500">
             {formatDuration(routePlan!.durationSeconds)} Fahrt bis {treffpunktLabel}
           </p>
@@ -79,7 +79,7 @@ export function HomeDepartureBlock({
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 inline-flex rounded-lg border border-hertha-mid/40 px-3 py-1.5 text-sm font-semibold text-hertha-mid transition hover:bg-hertha-mid/10"
+            className="mt-3 inline-flex rounded-lg border border-card-accent/40 px-3 py-1.5 text-sm font-semibold text-card-accent transition hover:bg-card-accent/10"
           >
             Route Zuhause → Treffpunkt
           </a>

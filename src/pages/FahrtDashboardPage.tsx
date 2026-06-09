@@ -9,6 +9,7 @@ import { RouteMap } from '../components/RouteMap'
 import { MitbringlisteSection } from '../components/MitbringlisteSection'
 import { MitfahrerSection } from '../components/MitfahrerSection'
 import { ParkplatzSection } from '../components/ParkplatzSection'
+import { SpieltagsberichtSection } from '../components/SpieltagsberichtSection'
 import { useAuth } from '../contexts/AuthContext'
 import { useFahrt } from '../hooks/useFahrt'
 import { useProfile } from '../hooks/useProfile'
@@ -151,66 +152,69 @@ export function FahrtDashboardPage() {
 
   return (
     <AppShell title={trip.gegner} wide>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <Link to="/" className="text-sm font-medium text-white/80 hover:text-white">
-          ← Alle Fahrten
-        </Link>
-        {canDelete ? (
-          <button
-            type="button"
-            onClick={() => void handleDelete()}
-            disabled={deleting}
-            className="text-sm font-medium text-red-200 transition hover:text-white disabled:opacity-60"
-          >
-            {deleting ? 'Wird gelöscht …' : 'Fahrt löschen'}
-          </button>
+      {/* Hero-Header */}
+      <div className="mb-4 overflow-hidden rounded-3xl bg-white text-slate-900 shadow-sm ring-1 ring-card-accent/20">
+        <div className="flex items-center justify-between gap-3 px-5 pt-4">
+          <Link to="/" className="text-sm font-medium text-slate-400 transition hover:text-slate-700">
+            ← Alle Fahrten
+          </Link>
+          {canDelete ? (
+            <button
+              type="button"
+              onClick={() => void handleDelete()}
+              disabled={deleting}
+              className="text-sm font-medium text-red-400 transition hover:text-red-600 disabled:opacity-60"
+            >
+              {deleting ? 'Wird gelöscht …' : 'Fahrt löschen'}
+            </button>
+          ) : null}
+        </div>
+
+        {deleteError ? (
+          <p className="mx-5 mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+            {deleteError}
+          </p>
         ) : null}
-      </div>
 
-      {deleteError ? (
-        <p className="mb-4 rounded-lg bg-red-500/20 px-3 py-2 text-sm text-red-100" role="alert">
-          {deleteError}
-        </p>
-      ) : null}
-
-      <DashboardSection title="Spielinfo">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="px-5 pb-5 pt-3">
           <MatchupWappen gegner={trip.gegner} size="md" />
-          <dl className="grid flex-1 gap-x-8 gap-y-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
+          <h1 className="mt-3 text-2xl font-bold text-slate-900">{trip.gegner}</h1>
+
+          <dl className="mt-4 grid gap-x-8 gap-y-3 text-sm sm:grid-cols-3">
             <div>
-              <dt className="text-slate-500">Anpfiff</dt>
-              <dd className="font-semibold text-slate-900">
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Anpfiff</dt>
+              <dd className="mt-0.5 font-semibold text-slate-900">
                 {formatSpielDatum(trip.spiel_at)}, {formatAnpfiff(trip.spiel_at)} Uhr
               </dd>
             </div>
-            <div className="sm:col-span-2 lg:col-span-1">
-              <dt className="text-slate-500">Stadion</dt>
-              <dd className="font-semibold text-slate-900">{trip.stadion}</dd>
+            <div>
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Stadion</dt>
+              <dd className="mt-0.5 font-semibold text-slate-900">{trip.stadion}</dd>
             </div>
             <div>
-              <dt className="text-slate-500">Treffpunkt</dt>
-              <dd className="font-semibold text-slate-900">
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Treffpunkt</dt>
+              <dd className="mt-0.5 font-semibold text-slate-900">
                 {getTreffpunktLabel(trip)}
                 <a
                   href={getTreffpunktMapsUrl(trip)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-2 font-medium text-hertha-mid hover:underline"
+                  className="ml-2 text-xs font-medium text-card-accent hover:underline"
                 >
                   Karte
                 </a>
               </dd>
             </div>
           </dl>
-        </div>
 
-        {trip.notizen ? (
-          <p className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-            <span className="font-medium text-slate-500">Notizen · </span>
-            {trip.notizen}
-          </p>
-        ) : null}
-      </DashboardSection>
+          {trip.notizen ? (
+            <p className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+              <span className="font-medium text-slate-500">Notizen · </span>
+              {trip.notizen}
+            </p>
+          ) : null}
+        </div>
+      </div>
 
       <div className="mt-4 space-y-4">
         <DashboardSection title="Abfahrt" compact>
@@ -227,7 +231,7 @@ export function FahrtDashboardPage() {
                       onClick={() => setPufferMinuten(option.minutes)}
                       className={`flex flex-1 flex-col items-center rounded-lg px-3 py-2 text-sm font-semibold transition ${
                         pufferMinuten === option.minutes
-                          ? 'bg-hertha-blue text-white'
+                          ? 'bg-card-accent text-white'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -263,7 +267,7 @@ export function FahrtDashboardPage() {
 
               {abfahrtszeit && route.status === 'ready' ? (
                 <>
-                  <div className="rounded-xl bg-hertha-blue/10 px-4 py-3">
+                  <div className="rounded-xl bg-card-accent/10 px-4 py-3">
                     <p className="text-sm text-slate-600">
                       {abstimmung.winning
                         ? 'Abgestimmte Abfahrt am Treffpunkt'
@@ -271,7 +275,7 @@ export function FahrtDashboardPage() {
                           ? HERTHA_TREFFPUNKT.departureHeading
                           : 'Empfohlene Abfahrt am Treffpunkt'}
                     </p>
-                    <p className="text-4xl font-bold text-hertha-blue">
+                    <p className="text-4xl font-bold text-card-accent">
                       {formatUhrzeit(effectiveAbfahrt!)} Uhr
                     </p>
                     <p className="mt-1 text-xs text-slate-500">
@@ -317,7 +321,7 @@ export function FahrtDashboardPage() {
         {route.status === 'ready' ? (
           <DashboardSection title="Route" compact>
             {routeEndpoints?.destinationViaParkplatz ? (
-              <p className="mb-3 rounded-lg bg-hertha-blue/10 px-3 py-2 text-sm text-hertha-blue">
+              <p className="mb-3 rounded-lg bg-card-accent/10 px-3 py-2 text-sm text-card-accent">
                 Routenziel: gewählter Parkplatz „{routeEndpoints.destinationLabel}“
               </p>
             ) : null}
@@ -345,7 +349,7 @@ export function FahrtDashboardPage() {
                 href={mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex rounded-lg bg-hertha-mid px-4 py-2 text-sm font-semibold text-white transition hover:bg-hertha-blue"
+                className="inline-flex rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 In Google Maps öffnen
               </a>
@@ -378,6 +382,14 @@ export function FahrtDashboardPage() {
           stadion={trip.stadion}
           currentUserId={user?.id}
           parkplaetze={parkplaetze}
+        />
+      </div>
+
+      <div className="mt-4">
+        <SpieltagsberichtSection
+          fahrtId={trip.id}
+          currentUserId={user?.id}
+          gegner={trip.gegner}
         />
       </div>
     </AppShell>

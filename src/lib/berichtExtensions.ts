@@ -1,4 +1,3 @@
-import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
@@ -17,12 +16,6 @@ export function getBerichtExtensions(): Extensions {
         class: 'text-hertha-mid underline hover:text-hertha-blue',
         rel: 'noopener noreferrer',
         target: '_blank',
-      },
-    }),
-    Image.configure({
-      inline: false,
-      HTMLAttributes: {
-        class: 'my-3 max-w-full rounded-lg',
       },
     }),
     Placeholder.configure({

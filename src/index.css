@@ -1,14 +1,251 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&display=swap');
 @import 'tailwindcss';
 
 @theme {
   --color-hertha-blue: #003264;
   --color-hertha-mid: #005bac;
   --color-hertha-white: #ffffff;
+
+  /* Shell-Farben — werden per Theme-Klasse überschrieben */
+  --color-shell-bg: #003264;
+  --color-shell-fg: #ffffff;
+  --color-shell-cta-bg: #ffffff;
+  --color-shell-cta-fg: #003264;
+
+  /* Akzentfarbe innerhalb weißer Karten (z.B. DashboardSection, AwayStatsCard) */
+  --color-card-accent: #003264;
+}
+
+/* ── Hertha-Themes ─────────────────────────────────────── */
+
+/* Klassisch (Standard) — Hertha-Dunkelblau */
+:root {
+  --color-shell-bg: #003264;
+  --color-shell-fg: #ffffff;
+  --color-shell-cta-bg: #ffffff;
+  --color-shell-cta-fg: #003264;
+  --color-card-accent: #003264;
+}
+
+/* Aufwärm Shirt — Castore: dunkles Teal + Cyan + Lila */
+.theme-aufwaerm {
+  --color-shell-bg: #0d1c25;
+  --color-shell-fg: #6dcfe4;
+  --color-shell-cta-bg: #7233b0;
+  --color-shell-cta-fg: #ffffff;
+  --color-card-accent: #7233b0;
+  --shell-texture-url: url('/textures/splatter-hell.png');
+  --shell-texture-opacity: 0.28;
+  --shell-texture-repeat: repeat;
+  --shell-texture-size: 380px;
+}
+
+/* Auswärts 20/21 — fast-schwarzes Navy + elektrisch-Blau */
+.theme-auswaerts2021 {
+  --color-shell-bg: #050c18;
+  --color-shell-fg: #4d72ff;
+  --color-shell-cta-bg: #2244cc;
+  --color-shell-cta-fg: #ffffff;
+  --color-card-accent: #2244cc;
+  --shell-texture-url: url('/textures/splatter-dunkel.png');
+  --shell-texture-opacity: 0.35;
+  --shell-texture-repeat: repeat;
+  --shell-texture-size: 380px;
+}
+
+/* Auswärts 24/25 — schwarzes Third-Kit mit blauen Querstreifen */
+.theme-auswaerts2425 {
+  --color-shell-bg: #0f1215;
+  --color-shell-fg: #c8d8f0;
+  --color-shell-cta-bg: #1e5fa8;
+  --color-shell-cta-fg: #ffffff;
+  --color-card-accent: #1e5fa8;
+  --shell-texture-url: url('/textures/streifen.png');
+  --shell-texture-opacity: 0.20;
+  --shell-texture-repeat: repeat;
+  --shell-texture-size: 220px;
+}
+
+/* Schwarzer Beton — mattes Schwarz, Graffiti-Feeling */
+.theme-schwarzerbeton {
+  --color-shell-bg: #0d0d0d;
+  --color-shell-fg: #ebebeb;
+  --color-shell-cta-bg: #1a55cc;
+  --color-shell-cta-fg: #ffffff;
+  --color-card-accent: #1a55cc;
+  --shell-texture-url: url('/textures/schwarzer-beton.png');
+  --shell-texture-opacity: 0.18;
+}
+
+
+/* ── Custom Easing Curves (Emil Kowalski) ──────────────── */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+html {
+  /* Shell-Hintergrundfarbe auf html-Ebene — TextureOverlay (z-0) liegt darüber */
+  background-color: var(--color-shell-bg);
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    sans-serif;
+  min-height: 100dvh;
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Stagger Entry Animation ───────────────────────────── */
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Auth-Hintergrund Blobs ─────────────────────────────── */
+
+@keyframes blob-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(40px, -30px) scale(1.08); }
+  66%       { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes blob-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(-50px, 25px) scale(1.05); }
+  66%       { transform: translate(30px, -40px) scale(0.97); }
+}
+
+@keyframes blob-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(25px, 35px) scale(1.06); }
+}
+
+.auth-blob-1 { animation: blob-drift-1 14s ease-in-out infinite; }
+.auth-blob-2 { animation: blob-drift-2 18s ease-in-out infinite; }
+.auth-blob-3 { animation: blob-drift-3 22s ease-in-out infinite; }
+
+/* ── Spieltagsbericht Editor / Viewer ───────────────────── */
+
+.bericht-prose {
+  line-height: 1.75;
+  color: #1e293b;
+}
+
+.bericht-prose h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid var(--color-card-accent);
+}
+
+.bericht-prose h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-top: 1.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.bericht-prose h2:first-child,
+.bericht-prose h3:first-child {
+  margin-top: 0;
+}
+
+.bericht-prose p {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.bericht-prose p:last-child {
+  margin-bottom: 0;
+}
+
+.bericht-prose strong {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.bericht-prose em {
+  font-style: italic;
+  color: #475569;
+}
+
+.bericht-prose u {
+  text-decoration-color: var(--color-card-accent);
+  text-underline-offset: 3px;
+}
+
+.bericht-prose ul {
+  list-style-type: disc;
+  padding-left: 1.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.bericht-prose ol {
+  list-style-type: decimal;
+  padding-left: 1.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.bericht-prose li {
+  margin-bottom: 0.2rem;
+}
+
+.bericht-prose li p {
+  margin-bottom: 0.2rem;
+}
+
+.bericht-prose blockquote {
+  border-left: 3px solid var(--color-card-accent);
+  background: #f1f5f9;
+  margin: 1rem 0;
+  padding: 0.6rem 1rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: #475569;
+  font-style: italic;
+}
+
+.bericht-prose blockquote p {
+  margin-bottom: 0;
+}
+
+.bericht-prose a {
+  color: var(--color-card-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.bericht-prose a:hover {
+  opacity: 0.75;
+}
+
+.bericht-prose img {
+  display: block;
+  max-width: 100%;
+  border-radius: 0.625rem;
+  margin: 1rem 0;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+}
+
+/* Placeholder */
+.bericht-prose p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #94a3b8;
+  pointer-events: none;
+  height: 0;
 }

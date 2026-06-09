@@ -35,7 +35,7 @@ export function Toaster() {
     <div
       aria-live="polite"
       aria-label="Benachrichtigungen"
-      className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2"
+      className="fixed bottom-20 left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2 sm:bottom-6"
     >
       {toasts.map((toast) => (
         <button

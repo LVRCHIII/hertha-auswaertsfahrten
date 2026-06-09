@@ -15,6 +15,7 @@ function groupSpiele(spiele: FutbologySpiel[]): GroupedSpiel[] {
     const existing = map.get(key)
     if (existing) {
       existing.attendees.push(attendee)
+      existing.ids.push({ id: spiel.id, user_id: spiel.user_id, source: spiel.source })
     } else {
       map.set(key, {
         datum: spiel.datum,
@@ -24,6 +25,7 @@ function groupSpiele(spiele: FutbologySpiel[]): GroupedSpiel[] {
         ergebnis: spiel.ergebnis,
         liga: spiel.liga,
         attendees: [attendee],
+        ids: [{ id: spiel.id, user_id: spiel.user_id, source: spiel.source }],
       })
     }
   }

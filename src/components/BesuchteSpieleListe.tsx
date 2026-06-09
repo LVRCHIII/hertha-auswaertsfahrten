@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { BesuchteSpielCard } from './BesuchteSpielCard'
+import { SpielHinzufuegenForm } from './SpielHinzufuegenForm'
 import type { GroupedSpiel, SpielKategorie } from '../types/futbology'
 
 function kategorisiere(spiel: GroupedSpiel): 'auswaerts' | 'heim' | 'andere' {
@@ -21,9 +22,10 @@ type Props = {
   spiele: GroupedSpiel[]
   loading: boolean
   error: string | null
+  onReload: () => void
 }
 
-export function BesuchteSpieleListe({ spiele, loading, error }: Props) {
+export function BesuchteSpieleListe({ spiele, loading, error, onReload }: Props) {
   const [kategorie, setKategorie] = useState<SpielKategorie>('alle')
 
   const filtered = useMemo(() => {
@@ -53,8 +55,8 @@ export function BesuchteSpieleListe({ spiele, loading, error }: Props) {
             onClick={() => setKategorie(k)}
             className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
               kategorie === k
-                ? 'bg-white text-hertha-blue shadow-sm'
-                : 'bg-white/15 text-white hover:bg-white/25'
+                ? 'bg-shell-cta-bg text-shell-cta-fg shadow-sm'
+                : 'bg-shell-fg/15 text-shell-fg hover:bg-shell-fg/25'
             }`}
           >
             {FILTER_LABELS[k]}
@@ -77,6 +79,8 @@ export function BesuchteSpieleListe({ spiele, loading, error }: Props) {
           ))}
         </ul>
       )}
+
+      <SpielHinzufuegenForm onAdded={onReload} />
     </div>
   )
 }

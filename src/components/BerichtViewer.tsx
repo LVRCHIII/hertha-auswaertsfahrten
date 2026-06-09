@@ -4,13 +4,13 @@ import type { JSONContent } from '@tiptap/core'
 import { getBerichtExtensions } from '../lib/berichtExtensions'
 
 type BerichtViewerProps = {
-  content: JSONContent
+  contentJson: JSONContent
 }
 
-export function BerichtViewer({ content }: BerichtViewerProps) {
+export function BerichtViewer({ contentJson }: BerichtViewerProps) {
   const editor = useEditor({
     extensions: getBerichtExtensions(),
-    content,
+    content: contentJson,
     editable: false,
     editorProps: {
       attributes: {
@@ -22,11 +22,11 @@ export function BerichtViewer({ content }: BerichtViewerProps) {
   useEffect(() => {
     if (!editor) return
     const current = JSON.stringify(editor.getJSON())
-    const next = JSON.stringify(content)
+    const next = JSON.stringify(contentJson)
     if (current !== next) {
-      editor.commands.setContent(content)
+      editor.commands.setContent(contentJson)
     }
-  }, [content, editor])
+  }, [contentJson, editor])
 
   return <EditorContent editor={editor} />
 }
