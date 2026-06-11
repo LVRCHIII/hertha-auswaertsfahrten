@@ -52,8 +52,8 @@ export function FutbologyCsvUpload({ userId, onUploaded }: Props) {
 
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium text-slate-700">Futbology CSV</label>
-      <p className="mb-3 text-xs text-slate-500">
+      <label className="mb-1 block text-sm font-medium text-shell-fg/80">Futbology CSV</label>
+      <p className="mb-3 text-xs text-shell-fg/55">
         Exportiere deine besuchten Spiele aus Futbology als CSV und lade sie hier hoch. Ein
         erneuter Upload ersetzt deine vorherigen Einträge vollständig.
       </p>
@@ -62,7 +62,7 @@ export function FutbologyCsvUpload({ userId, onUploaded }: Props) {
           type="button"
           disabled={status === 'loading'}
           onClick={() => fileInputRef.current?.click()}
-          className="rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+          className="rounded-lg bg-shell-cta-bg px-4 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90 disabled:opacity-60"
         >
           {status === 'loading' ? 'Wird importiert …' : 'CSV hochladen'}
         </button>
@@ -74,10 +74,10 @@ export function FutbologyCsvUpload({ userId, onUploaded }: Props) {
           onChange={(e) => void handleFile(e)}
         />
         {status === 'success' && count !== null ? (
-          <p className="text-sm font-medium text-green-700">{count} Spiele importiert.</p>
+          <p className="text-sm font-medium text-emerald-200">{count} Spiele importiert.</p>
         ) : null}
         {status === 'error' && message ? (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-red-300" role="alert">
             {message}
           </p>
         ) : null}

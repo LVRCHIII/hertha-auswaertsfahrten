@@ -1,7 +1,7 @@
 const PRESET_ZEITEN = ['13:30', '15:30', '18:30', '20:30'] as const
 
 const inputClass =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-card-accent focus:ring-2 focus:ring-card-accent/30'
+  'w-full rounded-lg border border-shell-fg/20 bg-shell-fg/8 px-3 py-2 text-shell-fg outline-none focus:border-shell-cta-bg focus:ring-2 focus:ring-shell-cta-bg/40'
 
 type AnpfiffPickerProps = {
   value: string
@@ -32,8 +32,8 @@ export function AnpfiffPicker({ value, onChange, required = false }: AnpfiffPick
               onClick={() => onChange(zeit)}
               className={`rounded-lg border px-3 py-1.5 text-sm font-medium transition ${
                 selected
-                  ? 'border-card-accent bg-card-accent text-white'
-                  : 'border-slate-300 bg-white text-slate-700 hover:border-card-accent hover:bg-card-accent/5'
+                  ? 'border-shell-cta-bg bg-shell-cta-bg text-shell-cta-fg'
+                  : 'border-shell-fg/20 bg-shell-fg/8 text-shell-fg/80 hover:border-shell-cta-bg hover:bg-shell-cta-bg/10'
               }`}
               aria-pressed={selected}
             >
@@ -52,7 +52,7 @@ export function AnpfiffPicker({ value, onChange, required = false }: AnpfiffPick
         aria-hidden
       />
 
-      <label className="mb-1 block text-xs font-medium text-slate-600" htmlFor="anpfiff-custom">
+      <label className="mb-1 block text-xs font-medium text-shell-fg/70" htmlFor="anpfiff-custom">
         Eigene Zeit
       </label>
       <input
@@ -63,7 +63,7 @@ export function AnpfiffPicker({ value, onChange, required = false }: AnpfiffPick
         className={inputClass}
         aria-describedby="anpfiff-hint"
       />
-      <p id="anpfiff-hint" className="mt-1 text-xs text-slate-500">
+      <p id="anpfiff-hint" className="mt-1 text-xs text-shell-fg/55">
         Typische Anstoßzeiten per Klick — oder hier eine andere Uhrzeit wählen.
       </p>
     </div>

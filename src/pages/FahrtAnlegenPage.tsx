@@ -13,7 +13,7 @@ import { insertFahrt } from '../lib/fahrtenApi'
 import { useFahrten } from '../hooks/useFahrten'
 
 const inputClass =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-card-accent focus:ring-2 focus:ring-card-accent/30'
+  'w-full rounded-lg border border-shell-fg/20 bg-shell-fg/8 px-3 py-2 text-shell-fg outline-none focus:border-shell-cta-bg focus:ring-2 focus:ring-shell-cta-bg/40'
 
 export function FahrtAnlegenPage() {
   const { user } = useAuth()
@@ -76,12 +76,12 @@ export function FahrtAnlegenPage() {
         />
       </div>
 
-      <p className="mb-3 text-center text-xs font-medium uppercase tracking-widest text-slate-400">
+      <p className="mb-3 text-center text-xs font-medium uppercase tracking-widest text-shell-fg/45">
         oder manuell anlegen
       </p>
 
       <form
-        className="space-y-5 rounded-2xl bg-white p-6 text-slate-900 shadow-lg"
+        className="space-y-5 rounded-2xl bg-shell-fg/8 p-6 text-shell-fg shadow-lg"
         onSubmit={handleSubmit}
       >
         <VereinAutocomplete
@@ -103,7 +103,7 @@ export function FahrtAnlegenPage() {
             onChange={(e) => setStadion(e.target.value)}
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-shell-fg/55">
             Wird beim Vereins-Picker automatisch befüllt — lässt sich jederzeit anpassen.
           </p>
         </div>
@@ -165,7 +165,7 @@ export function FahrtAnlegenPage() {
         </div>
 
         {error ? (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+          <p className="rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200" role="alert">
             {error}
           </p>
         ) : null}
@@ -174,13 +174,13 @@ export function FahrtAnlegenPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="flex-1 rounded-lg bg-card-accent px-4 py-2.5 font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+            className="flex-1 rounded-lg bg-shell-cta-bg px-4 py-2.5 font-semibold text-shell-cta-fg transition hover:opacity-90 disabled:opacity-60"
           >
             {submitting ? 'Speichern …' : 'Fahrt speichern'}
           </button>
           <Link
             to="/"
-            className="rounded-lg border border-slate-300 px-4 py-2.5 text-center font-medium text-slate-700 transition hover:bg-slate-50"
+            className="rounded-lg border border-shell-fg/20 px-4 py-2.5 text-center font-medium text-shell-fg/80 transition hover:bg-shell-fg/10"
           >
             Abbrechen
           </Link>

@@ -23,11 +23,12 @@ export function AppShell({ children, title = 'Hertha Auswärtsfahrten', wide = f
 
   return (
     <div className="relative z-10 min-h-dvh bg-transparent text-shell-fg">
-      <header className="relative z-10 sticky top-0 border-b border-shell-fg/15 bg-shell-bg/90 backdrop-blur-md">
+      <header className="relative z-10 sticky top-0 border-b border-shell-fg/10 bg-shell-bg/85 backdrop-blur-xl">
+        <div className="accent-line absolute inset-x-0 top-0 h-px opacity-60" />
         <div className={`mx-auto flex ${maxWidth} items-center justify-between gap-3 px-4 py-3 sm:px-6`}>
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold tracking-[0.12em] uppercase text-shell-fg/40">Hertha BSC</p>
-            <h1 className="truncate text-base font-bold tracking-tight sm:text-lg">{title}</h1>
+            <p className="font-display-wide text-[9px] text-shell-fg/40">Hertha BSC</p>
+            <h1 className="font-display truncate text-lg leading-tight sm:text-xl">{title}</h1>
           </div>
           {/* Desktop-Navigation */}
           <div className="hidden sm:flex shrink-0 items-center gap-1">

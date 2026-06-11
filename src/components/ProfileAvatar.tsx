@@ -38,7 +38,7 @@ export function ProfileAvatar({
 
   return (
     <span
-      className={`flex shrink-0 items-center justify-center rounded-full bg-card-accent/10 font-bold text-card-accent ${sizeClass} ${className}`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-card-accent font-bold text-white ${sizeClass} ${className}`}
       style={style}
       aria-hidden
     >

@@ -33,11 +33,11 @@ export function HomeDepartureBlock({
 
   if (!hasHome) {
     return (
-      <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3">
-        <p className="text-sm font-medium text-slate-700">Deine Abfahrt von zu Hause</p>
-        <p className="mt-1 text-sm text-slate-500">
+      <div className="mt-4 rounded-xl border border-dashed border-shell-fg/15 bg-shell-fg/6 px-4 py-3">
+        <p className="text-sm font-medium text-shell-fg/80">Deine Abfahrt von zu Hause</p>
+        <p className="mt-1 text-sm text-shell-fg/55">
           Trage im{' '}
-          <Link to="/profil" className="font-semibold text-card-accent hover:underline">
+          <Link to="/profil" className="font-semibold text-shell-fg hover:underline">
             Profil
           </Link>{' '}
           ein, von wo du losfährst — dann siehst du hier, wann du Zuhause los musst, um rechtzeitig
@@ -55,37 +55,37 @@ export function HomeDepartureBlock({
   const mapsUrl = buildGoogleMapsDirectionsUrl(homeOrigin, treffpunktDestination)
 
   return (
-    <div className="mt-4 rounded-xl border border-card-accent/25 bg-card-accent/5 px-4 py-3">
-      <p className="text-sm font-medium text-slate-700">Deine Abfahrt von zu Hause</p>
-      <p className="mt-0.5 text-xs text-slate-500">
+    <div className="mt-4 rounded-xl border border-shell-cta-bg/25 bg-shell-cta-bg/10 px-4 py-3">
+      <p className="text-sm font-medium text-shell-fg/80">Deine Abfahrt von zu Hause</p>
+      <p className="mt-0.5 text-xs text-shell-fg/55">
         Treffpunkt {treffpunktLabel} · Abfahrt dort {formatUhrzeit(treffpunktAbfahrt)} Uhr
       </p>
 
       {routeStatus === 'loading' ? (
-        <p className="mt-2 text-sm text-slate-500">Route von Zuhause wird berechnet …</p>
+        <p className="mt-2 text-sm text-shell-fg/55">Route von Zuhause wird berechnet …</p>
       ) : null}
 
       {routeStatus === 'error' ? (
-        <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{routeMessage}</p>
+        <p className="mt-2 rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200">{routeMessage}</p>
       ) : null}
 
       {homeAbfahrt ? (
         <>
-          <p className="mt-2 text-3xl font-bold text-card-accent">{formatUhrzeit(homeAbfahrt)} Uhr</p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-2 text-3xl font-bold text-shell-fg">{formatUhrzeit(homeAbfahrt)} Uhr</p>
+          <p className="mt-1 text-xs text-shell-fg/55">
             {formatDuration(routePlan!.durationSeconds)} Fahrt bis {treffpunktLabel}
           </p>
           <a
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 inline-flex rounded-lg border border-card-accent/40 px-3 py-1.5 text-sm font-semibold text-card-accent transition hover:bg-card-accent/10"
+            className="mt-3 inline-flex rounded-lg border border-shell-cta-bg/40 px-3 py-1.5 text-sm font-semibold text-shell-fg transition hover:bg-shell-cta-bg/15"
           >
             Route Zuhause → Treffpunkt
           </a>
         </>
       ) : routeStatus !== 'loading' && routeStatus !== 'error' ? (
-        <p className="mt-2 text-sm text-slate-500">Abfahrtszeit erscheint nach der Routenberechnung.</p>
+        <p className="mt-2 text-sm text-shell-fg/55">Abfahrtszeit erscheint nach der Routenberechnung.</p>
       ) : null}
     </div>
   )

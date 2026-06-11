@@ -53,10 +53,10 @@ export function BesuchteSpieleListe({ spiele, loading, error, onReload }: Props)
             key={k}
             type="button"
             onClick={() => setKategorie(k)}
-            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition active:scale-[0.96] ${
               kategorie === k
                 ? 'bg-shell-cta-bg text-shell-cta-fg shadow-sm'
-                : 'bg-shell-fg/15 text-shell-fg hover:bg-shell-fg/25'
+                : 'border border-shell-fg/15 bg-shell-fg/5 text-shell-fg/70 hover:bg-shell-fg/12 hover:text-shell-fg'
             }`}
           >
             {FILTER_LABELS[k]}

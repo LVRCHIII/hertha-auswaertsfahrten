@@ -215,6 +215,46 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
 
 ---
 
+### ✅ Redesign — „Matchday Editorial" (2026-06-11)
+
+Komplettes visuelles Redesign der App. Das Theme-System (5 Trikot-Themes) bleibt unverändert funktionsfähig.
+
+**Design-Sprache:**
+- **Typografie:** Archivo Variable Font (Google Fonts, `wdth`-Achse) zusätzlich zu Outfit
+  - `.font-display` — condensed Uppercase für Headlines (wie Stadion-Anzeigetafeln)
+  - `.font-display-wide` — weit gesperrte Caps für Labels/Eyebrows
+  - `.font-score` — extra-condensed tabular-nums für Zahlen (Ergebnisse, Uhrzeiten, km)
+- **Oberflächen** (in `src/index.css`):
+  - `.glass-card` — dunkle Karten im Glas-Look, **opak** (color-mix mit shell-bg statt transparent, kein backdrop-blur → Lesbarkeit + Mobile-Performance; Texturen scheinen nur im Seitenhintergrund durch)
+  - `.accent-line` — Akzent-Verlaufslinie für Kartenköpfe
+  - `.noise-overlay` — feines SVG-Korn gegen digitale Flachheit
+  - `.light-card` — weiße Karte mit theme-getöntem Schatten (aktuell kaum noch genutzt)
+  - `--color-card-bg` / `--color-card-border` — Vars für Komponenten wie SaisonExport
+
+**GSAP** (`gsap` npm-Package, `src/lib/gsapFx.ts`):
+- `useCountUp(value, {suffix})` — Zahlen zählen beim Sichtbarwerden hoch (ScrollTrigger, once)
+- `useStaggerReveal(deps)` — Kinder mit `[data-reveal]` staggern beim Mount herein
+- Beide respektieren `prefers-reduced-motion`
+
+**Umgebaute Flächen:**
+- **HomePage:** AwayStatsCard dunkel mit Count-up-Kacheln, Stagger-Reveal, Glas-Tab-Switcher
+- **Hero-FahrtCard:** „Matchday Board" — riesiger condensed Gegner-Name, Ghost-Schriftzug im Hintergrund, **Live-Countdown bis Anpfiff** (Tage:Std:Min, 30s-Intervall), Abfahrt-Badge in CTA-Farbe
+- **SpieltagPage:** Glas-Matchday-Hero, QuickActions als Glas-Karten, Ablauf/Mitfahrer/Mitbringliste dunkel
+- **FahrtDashboardPage:** Glas-Hero wie Spieltag, alle DashboardSections dunkel (Abfahrt, Route, Parkplatz, Abstimmung, Bericht)
+- **CalendarView:** komplett dunkel (Glas-Grid, CTA-Farbe für Heute/Badges)
+- **BesuchteSpieleListe/-Card:** Glas-Karten, Filter-Pills im Border-Stil
+- **ProfilPage:** Glas-Seitenkopf + 4 getrennte Glas-Karten (Profil-Formular, App-Design, Futbology, Saisonexport), Inputs im Auth-Stil
+- **Auth (Login/Register):** dunkle Glas-Karte, „AUSWÄRTS"-Ghost-Wordmark, dunkle Formularfelder
+- **AppShell/BottomNav:** Header mit Accent-Hairline + Display-Wordmark; BottomNav als schwebende Glas-Leiste (inset, rounded, safe-area)
+- **BerichtToolbar:** SVG-Icons statt Textlabels (H2/H3, B, I, U, Listen, Zitat, Link), 32px-Targets, aria-labels, Gruppen-Trenner
+- **ProfileAvatar:** Initialen-Fallback jetzt solide `card-accent` mit weißem Text (war auf dunklem Grund unsichtbar)
+
+**Bewusste Ausnahme:** BerichtEditor + BerichtViewer bleiben weiße „Schreibblätter" (lange Texte auf hellem Grund lesbarer); Toolbar entsprechend hell.
+
+**Dev-Preview:** Route `/design-preview` (nur `import.meta.env.DEV`, nie im Prod-Build) — rendert Stats, Hero-Card, Kalender, Spiel-Karte und Editor mit Mock-Daten ohne Login. Praktisch für Design-Checks.
+
+---
+
 ## Datenbankmigrationen (Supabase)
 
 | Datei | Inhalt |
@@ -258,9 +298,83 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
 
 ---
 
-## Nächster Schritt
+## Offene Milestones (geplant)
 
-- **M22 — Saisonexport als .docx**: Alle Spieltagsberichte einer Saison exportieren (Ergebnis, Bewertungen, Freitext, eingebettete Bilder). Archivierungsfunktion: Bilder aus Storage löschen, Text bleibt. `docx` npm-Package. Saisonauswahl per Datum (Aug–Mai).
-- **Deploy (Vercel)** — Google Maps URL-Restriction auf finale Domain anpassen, alle Supabase-Migrations prüfen
-- **OpenLiga DB** — Wenn Spielplan 2026/27 erscheint (Mai/Juni): `src/lib/apiFootballFixtures.ts` durch `src/lib/openligaFixtures.ts` ersetzen (kostenlos, kein Key, nur deutsche Ligen)
-- **Fahnenmeer-Theme** — wenn hochauflösende Version verfügbar: in `public/textures/Fahnenmeer.png` ersetzen und Theme wieder eintragen
+### ✅ Abgeschlossen
+Alle Milestones M1–M23 sind fertig und deployed. Siehe Milestone-Status oben.
+
+---
+
+### 🐛 Bugfix — bericht_bilder FK
+- Migration `20260609120000_fix_bericht_bilder_fkey.sql` erstellt
+- **Muss manuell im Supabase SQL Editor ausgeführt werden** bevor Bilder ohne vorherigen Bericht hochgeladen werden können
+- FK von `spieltagsberichte(fahrt_id)` → `fahrten(id)` umbiegen
+
+---
+
+### M24 — Dateianhänge pro Fahrt
+**Ziel:** Tickets, Parkplatz-Screenshots, PDFs und andere Dateien direkt an einer Fahrt speichern — kein Discord-Chaos mehr.
+- Neue Tabelle `fahrt_anhaenge` (id, fahrt_id, uploaded_by, name, path, url, mime_type, size_bytes, created_at)
+- Neuer Supabase Storage Bucket `fahrt-anhaenge` (max 10 MB, alle gängigen Typen)
+- Neue Komponente `FahrtAnhaengeSection` auf `FahrtDashboardPage`
+  - Upload per Drag & Drop oder Datei-Dialog
+  - Liste aller Anhänge mit Dateiname, Größe, Datum, Löschen-Button
+  - Direkter Download-Link / Öffnen im Browser
+- RLS: Authenticated users können sehen, eigene löschen
+- Migration: `20260609130000_milestone24_anhaenge.sql`
+
+---
+
+### M25 — Zwischenstopps / Reiseplan
+**Ziel:** Raststätten, Fan-Treffs, Essensstopps auf der Route festhalten — alle wissen wo und wann gehalten wird.
+- Neue Tabelle `fahrt_stopps` (id, fahrt_id, position, name, adresse, ankunft_offset_min, notiz)
+- Neue Komponente `StoppsSection` auf `FahrtDashboardPage` (nach Abfahrtszeit)
+  - Stopp hinzufügen: Name + optionale Adresse + geschätzte Zeit nach Abfahrt
+  - Sortierbare Liste (position-Feld), Stopp löschen
+  - Optional: Google Maps Link zur Adresse
+- Migration: `20260609140000_milestone25_stopps.sql`
+
+---
+
+### M26 — Stadioninfos pro Fahrt
+**Ziel:** Praktische Infos zum Auswärtsspiel zentral: Gästeblock-Eingang, Catering, ÖPNV, Hinweise.
+- Neues Freitext-Feld `stadion_infos` (text, nullable) auf `fahrten`-Tabelle
+- Festes Struktur-Template als Placeholder: "Gästeblock-Eingang: …\nCatering: …\nÖPNV: …\nHinweise: …"
+- Edit-Möglichkeit auf `FahrtDashboardPage` (inline Edit, kein eigener Editor nötig)
+- Migration: `20260609150000_milestone26_stadioninfos.sql`
+
+---
+
+### M27 — PWA Offline-Cache
+**Ziel:** Abfahrtszeit, Adresse, Mitfahrerliste und Parkplatz auch ohne Internet abrufbar — im Stadion oder im Zug.
+- Service Worker mit Workbox (bereits PWA-Grundlage vorhanden)
+- Cache-Strategie:
+  - Statische Assets: Cache First
+  - Supabase-Queries für aktuelle Fahrt: Stale-While-Revalidate, 24h Cache
+  - Bilder: Cache First mit Limit
+- Offline-Fallback-Seite wenn komplett kein Cache vorhanden
+- `vite-plugin-pwa` konfigurieren (bereits installiert prüfen)
+
+---
+
+### M28 — Bewertungen & Berichte auf manuell angelegten Spielen
+**Ziel:** Spieltagsberichte und Bewertungen funktionieren auch für Spiele die manuell (nicht via Spielplan-Import) angelegt wurden.
+- Bugfix/Feature: `SpieltagsberichtSection` prüft ob `spieltagsberichte`-Eintrag existiert und legt ihn automatisch an
+- Sicherstellen dass `fahrt_id` immer verfügbar ist (auch bei manuellen Fahrten ohne Supabase-Spielreferenz)
+
+---
+
+### M29 — Aktivitätsverlauf pro Fahrt
+**Ziel:** Wer hat wann zugesagt, abgesagt, den Treffpunkt geändert? Reduziert Rückfragen in der Gruppe.
+- Neue Tabelle `fahrt_aktivitaeten` (id, fahrt_id, user_id, typ, details jsonb, created_at)
+- Typen: `mitfahrer_an`, `mitfahrer_ab`, `parkplatz_gewaehlt`, `treffpunkt_geaendert`, `bericht_gespeichert`
+- Trigger in den jeweiligen Hooks beim Schreiben (useMitfahrer, useParkplatz etc.)
+- Kompakte Timeline-Komponente `AktivitaetsLog` auf `FahrtDashboardPage` (zusammenklappbar)
+
+---
+
+### Backlog (nice to have)
+
+- **Fahnenmeer-Theme** — wenn hochauflösende Version verfügbar: `public/textures/Fahnenmeer.png` ersetzen und Theme eintragen
+- **OpenLiga DB** — `src/lib/apiFootballFixtures.ts` durch `src/lib/openligaFixtures.ts` ersetzen wenn Spielplan 2026/27 erscheint
+- **Push-Notifications** — wenn jemand zusagt oder der Treffpunkt geändert wird (Supabase Realtime + Web Push API)

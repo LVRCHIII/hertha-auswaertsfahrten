@@ -57,7 +57,7 @@ export function FahrtSection({
   return (
     <section className="space-y-3">
       <div className="flex items-center gap-2">
-        <h2 className="text-sm font-semibold text-shell-fg/50">{title}</h2>
+        <h2 className="font-display-wide text-[11px] text-shell-fg/50">{title}</h2>
         {!loading && fahrten.length > 0 ? (
           <span className="rounded-md bg-shell-fg/10 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-shell-fg/50">
             {fahrten.length}

@@ -14,6 +14,7 @@ import { LoginPage } from './pages/LoginPage'
 import { ProfilPage } from './pages/ProfilPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { SpieltagPage } from './pages/SpieltagPage'
+import { DesignPreviewPage } from './pages/DesignPreviewPage'
 
 function AppRoutes() {
   return (
@@ -26,6 +27,7 @@ function AppRoutes() {
           <Route path="/fahrten/:id" element={<FahrtDashboardPage />} />
           <Route path="/profil" element={<ProfilPage />} />
         </Route>
+        {import.meta.env.DEV ? <Route path="/design-preview" element={<DesignPreviewPage />} /> : null}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

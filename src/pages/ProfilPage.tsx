@@ -60,15 +60,21 @@ export function ProfilPage() {
 
   return (
     <AppShell title="Profil">
-      <Link to="/" className="mb-4 inline-block text-sm font-medium text-white/80 hover:text-white">
+      <Link to="/" className="mb-4 inline-block text-sm font-medium text-shell-fg/60 transition hover:text-shell-fg">
         ← Zurück zur Übersicht
       </Link>
 
-      <div className="rounded-2xl bg-white p-5 text-slate-900 shadow-sm sm:p-6">
-        {loading ? <p className="text-sm text-slate-500">Profil wird geladen …</p> : null}
+      <div className="mb-6">
+        <p className="font-display-wide text-[10px] text-shell-fg/40">Einstellungen</p>
+        <h2 className="font-display mt-1 text-2xl text-shell-fg sm:text-3xl">Dein Profil</h2>
+      </div>
+
+      <div className="space-y-4">
+      <div className="glass-card rounded-2xl p-5 sm:p-6">
+        {loading ? <p className="text-sm text-shell-fg/55">Profil wird geladen …</p> : null}
 
         {error ? (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+          <p className="rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200" role="alert">
             {error}
           </p>
         ) : null}
@@ -82,14 +88,14 @@ export function ProfilPage() {
                 size="lg"
               />
               <div className="flex flex-col gap-2 text-center sm:text-left">
-                <p className="text-sm font-medium text-slate-700">Profilbild</p>
-                <p className="text-xs text-slate-500">JPG, PNG oder WebP, max. 2 MB</p>
+                <p className="text-sm font-medium text-shell-fg/80">Profilbild</p>
+                <p className="text-xs text-shell-fg/55">JPG, PNG oder WebP, max. 2 MB</p>
                 <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
                   <button
                     type="button"
                     disabled={uploadingAvatar}
                     onClick={() => fileInputRef.current?.click()}
-                    className="rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+                    className="rounded-lg bg-shell-cta-bg px-4 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90 disabled:opacity-60"
                   >
                     {uploadingAvatar ? 'Lädt …' : 'Bild hochladen'}
                   </button>
@@ -98,7 +104,7 @@ export function ProfilPage() {
                       type="button"
                       disabled={uploadingAvatar}
                       onClick={() => void deleteProfileAvatar()}
-                      className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-60"
+                      className="rounded-lg border border-shell-fg/15 px-4 py-2 text-sm font-medium text-shell-fg/70 transition hover:bg-shell-fg/10 disabled:opacity-60"
                     >
                       Entfernen
                     </button>
@@ -112,7 +118,7 @@ export function ProfilPage() {
                   onChange={(event) => void handleAvatarChange(event)}
                 />
                 {avatarError ? (
-                  <p className="text-sm text-red-600" role="alert">
+                  <p className="text-sm text-red-300" role="alert">
                     {avatarError}
                   </p>
                 ) : null}
@@ -120,7 +126,7 @@ export function ProfilPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-600">
+              <label htmlFor="email" className="mb-1 block text-sm font-medium text-shell-fg/70">
                 E-Mail
               </label>
               <input
@@ -128,18 +134,18 @@ export function ProfilPage() {
                 type="email"
                 value={user?.email ?? ''}
                 readOnly
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600"
+                className="w-full rounded-lg border border-shell-fg/15 bg-shell-fg/6 px-3 py-2 text-sm text-shell-fg/70"
               />
             </div>
 
             <div>
               <label
                 htmlFor="displayName"
-                className="mb-1 block text-sm font-medium text-slate-600"
+                className="mb-1 block text-sm font-medium text-shell-fg/70"
               >
                 Anzeigename
               </label>
-              <p className="mb-2 text-xs text-slate-500">
+              <p className="mb-2 text-xs text-shell-fg/55">
                 So erscheinst du in der Mitfahrer- und Mitbringliste.
               </p>
               <input
@@ -151,15 +157,15 @@ export function ProfilPage() {
                 }}
                 maxLength={40}
                 required
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-card-accent focus:outline-none focus:ring-2 focus:ring-card-accent/30"
+                className="w-full rounded-lg border border-shell-fg/15 px-3 py-2 text-sm text-shell-fg focus:border-shell-cta-bg focus:outline-none focus:ring-2 focus:ring-shell-cta-bg/40"
               />
             </div>
 
             <div>
-              <label htmlFor="homeAddress" className="mb-1 block text-sm font-medium text-slate-600">
+              <label htmlFor="homeAddress" className="mb-1 block text-sm font-medium text-shell-fg/70">
                 Abfahrt von Zuhause
               </label>
-              <p className="mb-2 text-xs text-slate-500">
+              <p className="mb-2 text-xs text-shell-fg/55">
                 Straße und Ort — z. B. „Musterstraße 1, 10115 Berlin“. Auf der Fahrt-Seite siehst du
                 dann, wann du losfahren musst, um rechtzeitig am Treffpunkt zu sein.
               </p>
@@ -172,22 +178,26 @@ export function ProfilPage() {
                 }}
                 maxLength={200}
                 placeholder="z. B. Kantstraße 12, 10623 Berlin"
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-card-accent focus:outline-none focus:ring-2 focus:ring-card-accent/30"
+                className="w-full rounded-lg border border-shell-fg/15 px-3 py-2 text-sm text-shell-fg placeholder:text-shell-fg/35 focus:border-shell-cta-bg focus:outline-none focus:ring-2 focus:ring-shell-cta-bg/40"
               />
             </div>
 
             <button
               type="submit"
               disabled={saving || !displayName.trim()}
-              className="rounded-lg bg-card-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+              className="rounded-lg bg-shell-cta-bg px-5 py-2.5 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90 active:scale-[0.97] disabled:opacity-60"
             >
               {saving ? 'Speichern …' : 'Speichern'}
             </button>
+          </form>
+        ) : null}
+      </div>
 
-            <hr className="border-slate-200" />
-
+      {!loading && !error ? (
+        <>
+          <div className="glass-card rounded-2xl p-5 sm:p-6">
             <div>
-              <p className="mb-3 text-sm font-medium text-slate-700">App-Design</p>
+              <p className="font-display mb-3 text-lg text-shell-fg">App-Design</p>
               <div className="grid grid-cols-5 gap-2">
                 {THEMES.map((t) => (
                   <button
@@ -197,8 +207,8 @@ export function ProfilPage() {
                     title={t.label}
                     className={`flex flex-col items-center gap-1.5 rounded-xl border-2 p-2 transition ${
                       theme === t.id
-                        ? 'border-card-accent shadow-sm'
-                        : 'border-transparent hover:border-slate-200'
+                        ? 'border-shell-cta-bg shadow-sm'
+                        : 'border-transparent hover:border-shell-fg/15'
                     }`}
                   >
                     <span
@@ -210,23 +220,24 @@ export function ProfilPage() {
                         <span className="w-2/5" style={{ background: t.previewFg }} />
                       </span>
                     </span>
-                    <span className="text-[11px] font-medium text-slate-600">{t.label}</span>
+                    <span className="text-[11px] font-medium text-shell-fg/70">{t.label}</span>
                   </button>
                 ))}
               </div>
             </div>
+          </div>
 
-            <hr className="border-slate-200" />
-
-            {user?.id ? (
+          {user?.id ? (
+            <div className="glass-card rounded-2xl p-5 sm:p-6">
               <FutbologyCsvUpload userId={user.id} />
-            ) : null}
+            </div>
+          ) : null}
 
-            <hr className="border-slate-200" />
-
+          <div className="glass-card rounded-2xl p-5 sm:p-6">
             <SaisonExport />
-          </form>
-        ) : null}
+          </div>
+        </>
+      ) : null}
       </div>
     </AppShell>
   )

@@ -114,31 +114,31 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
     if (!hasErgebnis && !hasBewertungen && !b.zuschauer) return null
 
     return (
-      <div className="rounded-xl bg-slate-50 p-4 space-y-3">
+      <div className="rounded-xl bg-shell-fg/6 p-4 space-y-3">
         {hasErgebnis ? (
           <div className="flex items-center justify-center gap-4">
             <div className="flex flex-col items-center gap-1">
               <VereinWappen src={resolveGegnerWappen(gegner ?? '') ?? ''} size="md" />
-              <span className="text-[10px] text-slate-400">{gegner ?? 'Gegner'}</span>
+              <span className="text-[10px] text-shell-fg/45">{gegner ?? 'Gegner'}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-3xl font-black tabular-nums text-slate-900 tracking-tight leading-none">
+              <span className="text-3xl font-black tabular-nums text-shell-fg tracking-tight leading-none">
                 {b.ergebnis_heim}
               </span>
-              <span className="text-3xl font-black text-slate-400 leading-none">:</span>
-              <span className="text-3xl font-black tabular-nums text-slate-900 tracking-tight leading-none">
+              <span className="text-3xl font-black text-shell-fg/45 leading-none">:</span>
+              <span className="text-3xl font-black tabular-nums text-shell-fg tracking-tight leading-none">
                 {b.ergebnis_gast}
               </span>
             </div>
             <div className="flex flex-col items-center gap-1">
               <VereinWappen src={HERTHA_WAPPEN_URL} size="md" />
-              <span className="text-[10px] text-slate-400">Hertha BSC</span>
+              <span className="text-[10px] text-shell-fg/45">Hertha BSC</span>
             </div>
           </div>
         ) : null}
 
         {b.zuschauer ? (
-          <p className="text-center text-xs text-slate-500">
+          <p className="text-center text-xs text-shell-fg/55">
             👥 {b.zuschauer.toLocaleString('de-DE')} Zuschauer
           </p>
         ) : null}
@@ -163,30 +163,30 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
   // --- Edit: Spielinfo inputs ---
   function renderSpielinfoEdit() {
     return (
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Spielinfo</p>
+      <div className="rounded-xl border border-shell-fg/15 bg-shell-fg/6 p-4 space-y-4">
+        <p className="text-xs font-semibold uppercase tracking-widest text-shell-fg/45">Spielinfo</p>
 
         {/* Ergebnis */}
         <div>
-          <p className="mb-2 text-sm font-medium text-slate-700">Ergebnis</p>
+          <p className="mb-2 text-sm font-medium text-shell-fg/80">Ergebnis</p>
           <div className="flex items-center gap-3">
             <VereinWappen src={resolveGegnerWappen(gegner ?? '') ?? ''} size="sm" />
             {(['ergebnis_heim', 'ergebnis_gast'] as const).map((field, i) => (
               <div key={field} className={`flex items-center gap-3 ${i === 0 ? '' : ''}`}>
-                {i === 1 && <span className="text-xl font-bold text-slate-400">:</span>}
+                {i === 1 && <span className="text-xl font-bold text-shell-fg/45">:</span>}
                 <div className="flex flex-col items-center gap-0.5">
                   <button
                     type="button"
                     onClick={() => setMetaField(field, Math.min(99, (meta[field] ?? 0) + 1))}
-                    className="flex h-6 w-8 items-center justify-center rounded-md bg-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-300 active:bg-slate-400 transition"
+                    className="flex h-6 w-8 items-center justify-center rounded-md bg-shell-fg/15 text-sm font-bold text-shell-fg/70 hover:bg-shell-fg/25 active:bg-shell-fg/30 transition"
                   >+</button>
-                  <span className="flex h-10 w-8 items-center justify-center rounded-lg border border-slate-300 bg-white text-xl font-bold text-slate-900 tabular-nums">
+                  <span className="flex h-10 w-8 items-center justify-center rounded-lg border border-shell-fg/20 bg-shell-fg/8 text-xl font-bold text-shell-fg tabular-nums">
                     {meta[field] ?? '–'}
                   </span>
                   <button
                     type="button"
                     onClick={() => setMetaField(field, meta[field] !== null && meta[field]! > 0 ? meta[field]! - 1 : null)}
-                    className="flex h-6 w-8 items-center justify-center rounded-md bg-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-300 active:bg-slate-400 transition"
+                    className="flex h-6 w-8 items-center justify-center rounded-md bg-shell-fg/15 text-sm font-bold text-shell-fg/70 hover:bg-shell-fg/25 active:bg-shell-fg/30 transition"
                   >−</button>
                 </div>
               </div>
@@ -197,7 +197,7 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
 
         {/* Zuschauer */}
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">
+          <label className="mb-1 block text-sm font-medium text-shell-fg/80">
             Zuschauer (optional)
           </label>
           <input
@@ -208,13 +208,13 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
               setMetaField('zuschauer', e.target.value === '' ? null : Number(e.target.value))
             }
             placeholder="z. B. 28000"
-            className="w-full max-w-xs rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-card-accent focus:ring-2 focus:ring-card-accent/30"
+            className="w-full max-w-xs rounded-lg border border-shell-fg/20 bg-shell-fg/8 px-3 py-2 text-shell-fg outline-none focus:border-shell-cta-bg focus:ring-2 focus:ring-shell-cta-bg/40"
           />
         </div>
 
         {/* Bewertungen */}
         <div>
-          <p className="mb-3 text-sm font-medium text-slate-700">Bewertungen</p>
+          <p className="mb-3 text-sm font-medium text-shell-fg/80">Bewertungen</p>
           <div className="flex justify-around">
             <StarRating
               value={meta.bewertung_spiel}
@@ -242,10 +242,10 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
 
   return (
     <DashboardSection title="Spieltagsbericht" compact>
-      {loading ? <p className="text-sm text-slate-500">Wird geladen …</p> : null}
+      {loading ? <p className="text-sm text-shell-fg/55">Wird geladen …</p> : null}
 
       {error ? (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+        <p className="rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200" role="alert">
           {error}
         </p>
       ) : null}
@@ -262,8 +262,8 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
                   size="sm"
                 />
                 <div className="min-w-0 text-sm">
-                  <p className="font-medium text-slate-900">{authorName}</p>
-                  <p className="text-slate-500">
+                  <p className="font-medium text-shell-fg">{authorName}</p>
+                  <p className="text-shell-fg/55">
                     Zuletzt bearbeitet{' '}
                     {updatedFormatter.format(new Date(bericht.updated_at))}
                   </p>
@@ -285,7 +285,7 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
                   <button
                     type="button"
                     onClick={startEditing}
-                    className="rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                    className="rounded-lg bg-shell-cta-bg px-4 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90"
                   >
                     Bearbeiten
                   </button>
@@ -293,7 +293,7 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
                     type="button"
                     disabled={busy}
                     onClick={() => void handleDelete()}
-                    className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:opacity-60"
+                    className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-500/15 disabled:opacity-60"
                   >
                     Löschen
                   </button>
@@ -305,19 +305,19 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
           {/* EMPTY STATE */}
           {!bericht && !editing ? (
             <div className="space-y-3">
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-shell-fg/70">
                 Halte Erinnerungen an den Spieltag fest — Ergebnis, Bewertungen und einen Bericht.
               </p>
               {canCreate ? (
                 <button
                   type="button"
                   onClick={startEditing}
-                  className="rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                  className="rounded-lg bg-shell-cta-bg px-4 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90"
                 >
                   Bericht schreiben
                 </button>
               ) : (
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-shell-fg/55">
                   Melde dich an, um einen Bericht zu schreiben.
                 </p>
               )}
@@ -330,7 +330,7 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
               {renderSpielinfoEdit()}
 
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-shell-fg/45">
                   Freitext
                 </p>
                 <BerichtEditor
@@ -345,7 +345,7 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
               />
 
               {actionError ? (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+                <p className="rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200" role="alert">
                   {actionError}
                 </p>
               ) : null}
@@ -355,7 +355,7 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
                   type="button"
                   disabled={busy || !hasSaveableContent()}
                   onClick={() => void handleSave()}
-                  className="rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+                  className="rounded-lg bg-shell-cta-bg px-4 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90 disabled:opacity-60"
                 >
                   {busy ? 'Wird gespeichert …' : 'Speichern'}
                 </button>
@@ -363,7 +363,7 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
                   type="button"
                   disabled={busy}
                   onClick={cancelEditing}
-                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                  className="rounded-lg border border-shell-fg/15 px-4 py-2 text-sm font-semibold text-shell-fg/80 transition hover:bg-shell-fg/10 disabled:opacity-60"
                 >
                   Abbrechen
                 </button>

@@ -83,11 +83,11 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
 
   if (step === 'idle' || step === 'loading') {
     return (
-      <div className="rounded-2xl bg-white p-4 shadow-lg">
+      <div className="rounded-2xl bg-shell-fg/8 p-4 shadow-lg">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-slate-800">Spielplan importieren</p>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="text-sm font-semibold text-shell-fg/90">Spielplan importieren</p>
+            <p className="mt-0.5 text-xs text-shell-fg/55">
               Hertha-Auswärtsspiele automatisch aus der Datenbank laden
             </p>
           </div>
@@ -95,7 +95,7 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
             type="button"
             onClick={handleLaden}
             disabled={step === 'loading'}
-            className="shrink-0 rounded-lg bg-card-accent px-3 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+            className="shrink-0 rounded-lg bg-shell-cta-bg px-3 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90 disabled:opacity-60"
           >
             {step === 'loading' ? (
               <span className="flex items-center gap-1.5">
@@ -111,31 +111,31 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
           </button>
         </div>
         {error ? (
-          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>
+          <p className="mt-3 rounded-lg bg-red-500/15 px-3 py-2 text-xs text-red-200">{error}</p>
         ) : null}
       </div>
     )
   }
 
   return (
-    <div className="rounded-2xl border border-card-accent/30 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+    <div className="rounded-2xl border border-shell-cta-bg/30 bg-shell-fg/8 shadow-sm">
+      <div className="flex items-center justify-between border-b border-shell-fg/10 px-4 py-3">
         <div>
-          <p className="text-sm font-semibold text-slate-800">Spielplan 2024/25</p>
-          <p className="text-xs text-slate-500">
+          <p className="text-sm font-semibold text-shell-fg/90">Spielplan 2024/25</p>
+          <p className="text-xs text-shell-fg/55">
             {spiele.filter((s) => !s.exists).length} neue · {spiele.filter((s) => s.exists).length} bereits vorhanden
           </p>
         </div>
         <button
           type="button"
           onClick={() => setStep('idle')}
-          className="text-xs text-slate-400 hover:text-slate-600"
+          className="text-xs text-shell-fg/45 hover:text-shell-fg/70"
         >
           Schließen
         </button>
       </div>
 
-      <ul className="max-h-72 divide-y divide-slate-100 overflow-y-auto">
+      <ul className="max-h-72 divide-y divide-shell-fg/10 overflow-y-auto">
         {spiele.map((spiel) => {
           const datum = new Date(spiel.spiel_at)
           const isSelected = selected.has(spiel.spiel_at)
@@ -143,7 +143,7 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
           return (
             <li key={spiel.spiel_at}>
               <label
-                className={`flex cursor-pointer items-center gap-3 px-4 py-3 transition hover:bg-slate-50 ${
+                className={`flex cursor-pointer items-center gap-3 px-4 py-3 transition hover:bg-shell-fg/10 ${
                   spiel.exists ? 'opacity-40' : ''
                 }`}
               >
@@ -156,10 +156,10 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
                 />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline gap-2">
-                    <span className="font-medium text-slate-900 text-sm">{spiel.gegner}</span>
-                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">{spiel.liga}</span>
+                    <span className="font-medium text-shell-fg text-sm">{spiel.gegner}</span>
+                    <span className="text-[10px] font-medium text-shell-fg/45 uppercase tracking-wide">{spiel.liga}</span>
                   </span>
-                  <span className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
+                  <span className="mt-0.5 flex items-center gap-1.5 text-xs text-shell-fg/55">
                     <span>
                       {datum.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit' })}
                       {', '}
@@ -169,7 +169,7 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
                   </span>
                 </span>
                 {spiel.exists ? (
-                  <span className="shrink-0 text-xs text-slate-400">✓ vorhanden</span>
+                  <span className="shrink-0 text-xs text-shell-fg/45">✓ vorhanden</span>
                 ) : null}
               </label>
             </li>
@@ -177,13 +177,13 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
         })}
       </ul>
 
-      <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3">
-        <p className="text-xs text-slate-500">{neuCount} ausgewählt</p>
+      <div className="flex items-center justify-between border-t border-shell-fg/10 px-4 py-3">
+        <p className="text-xs text-shell-fg/55">{neuCount} ausgewählt</p>
         <button
           type="button"
           onClick={handleImport}
           disabled={neuCount === 0 || step === 'importing'}
-          className="rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+          className="rounded-lg bg-shell-cta-bg px-4 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90 disabled:opacity-60"
         >
           {step === 'importing' ? 'Importiere…' : `${neuCount} Spiel${neuCount !== 1 ? 'e' : ''} importieren`}
         </button>

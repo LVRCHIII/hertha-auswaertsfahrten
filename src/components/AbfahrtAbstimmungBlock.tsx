@@ -35,17 +35,17 @@ export function AbfahrtAbstimmungBlock({
   }
 
   return (
-    <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-      <p className="text-sm font-medium text-slate-800">Abfahrtszeit abstimmen</p>
-      <p className="mt-1 text-xs text-slate-500">
+    <div className="mt-4 rounded-xl border border-shell-fg/15 bg-shell-fg/6 px-4 py-3">
+      <p className="text-sm font-medium text-shell-fg/90">Abfahrtszeit abstimmen</p>
+      <p className="mt-1 text-xs text-shell-fg/55">
         Berechnet: {formatUhrzeit(empfohleneAbfahrt)} Uhr — wähle eine Zeit in 15-Minuten-Schritten.
         Erneut tippen hebt deine Auswahl auf. Die Mehrheit erscheint in der Übersicht.
       </p>
 
-      {loading ? <p className="mt-3 text-sm text-slate-500">Stimmen werden geladen …</p> : null}
+      {loading ? <p className="mt-3 text-sm text-shell-fg/55">Stimmen werden geladen …</p> : null}
 
       {error ? (
-        <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+        <p className="mt-3 rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200" role="alert">
           {error}
         </p>
       ) : null}
@@ -66,16 +66,16 @@ export function AbfahrtAbstimmungBlock({
                 onClick={() => onVote(slot)}
                 className={`flex min-w-[4.5rem] flex-col items-center rounded-lg px-3 py-2 text-sm font-semibold transition disabled:opacity-60 ${
                   isMine
-                    ? 'bg-card-accent text-white ring-2 ring-card-accent/40'
+                    ? 'bg-shell-cta-bg text-shell-cta-fg ring-2 ring-card-accent/40'
                     : isWinning
-                      ? 'border-2 border-card-accent bg-white text-card-accent'
-                      : 'border border-slate-200 bg-white text-slate-800 hover:border-card-accent/50'
+                      ? 'border-2 border-shell-cta-bg bg-shell-fg/8 text-shell-fg'
+                      : 'border border-shell-fg/15 bg-shell-fg/8 text-shell-fg/90 hover:border-shell-cta-bg/50'
                 }`}
               >
                 <span>{formatUhrzeit(slot)}</span>
                 <span
                   className={`text-xs font-medium ${
-                    isMine ? 'text-white/85' : 'text-slate-500'
+                    isMine ? 'text-shell-cta-fg/85' : 'text-shell-fg/55'
                   }`}
                 >
                   {count === 1 ? '1 Stimme' : `${count} Stimmen`}
@@ -87,11 +87,11 @@ export function AbfahrtAbstimmungBlock({
       ) : null}
 
       {!currentUserId ? (
-        <p className="mt-2 text-xs text-slate-500">Zum Abstimmen bitte anmelden.</p>
+        <p className="mt-2 text-xs text-shell-fg/55">Zum Abstimmen bitte anmelden.</p>
       ) : null}
 
       {actionError ? (
-        <p className="mt-2 text-sm text-red-600" role="alert">
+        <p className="mt-2 text-sm text-red-300" role="alert">
           {actionError}
         </p>
       ) : null}

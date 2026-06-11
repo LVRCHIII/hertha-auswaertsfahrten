@@ -14,7 +14,7 @@ export function BerichtViewer({ contentJson }: BerichtViewerProps) {
     editable: false,
     editorProps: {
       attributes: {
-        class: 'bericht-prose bericht-viewer text-sm text-slate-800',
+        class: 'bericht-prose bericht-viewer rounded-lg bg-white px-4 py-3 text-sm text-slate-800',
       },
     },
   })

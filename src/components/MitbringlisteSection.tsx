@@ -26,12 +26,12 @@ function MitbringRow({
   const name = displayNameFromProfile(entry.profile)
 
   return (
-    <li className="flex items-start justify-between gap-3 rounded-lg bg-slate-50 px-3 py-2">
+    <li className="flex items-start justify-between gap-3 rounded-lg bg-shell-fg/6 px-3 py-2">
       <div className="flex min-w-0 flex-1 items-start gap-3">
         <ProfileAvatar name={name} avatarUrl={entry.profile?.avatar_url} size="sm" />
         <div className="min-w-0">
-          <p className="font-medium text-slate-900">{entry.item}</p>
-          <p className="text-xs text-slate-500">{name}</p>
+          <p className="font-medium text-shell-fg">{entry.item}</p>
+          <p className="text-xs text-shell-fg/55">{name}</p>
         </div>
       </div>
       {canDelete ? (
@@ -39,7 +39,7 @@ function MitbringRow({
           type="button"
           disabled={busy}
           onClick={() => void onDelete(entry.id)}
-          className="shrink-0 text-xs font-medium text-red-600 hover:text-red-800 disabled:opacity-60"
+          className="shrink-0 text-xs font-medium text-red-300 hover:text-red-200 disabled:opacity-60"
           aria-label={`${entry.item} entfernen`}
         >
           Entfernen
@@ -83,10 +83,10 @@ export function MitbringlisteSection({ fahrtId, currentUserId }: MitbringlisteSe
       badge={loading ? undefined : `${entries.length}`}
       compact
     >
-      {loading ? <p className="text-sm text-slate-500">Wird geladen …</p> : null}
+      {loading ? <p className="text-sm text-shell-fg/55">Wird geladen …</p> : null}
 
       {error ? (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+        <p className="rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200" role="alert">
           {error}
         </p>
       ) : null}
@@ -94,7 +94,7 @@ export function MitbringlisteSection({ fahrtId, currentUserId }: MitbringlisteSe
       {!loading && !error ? (
         <>
           {entries.length === 0 ? (
-            <p className="text-sm text-slate-500">Noch nichts eingetragen.</p>
+            <p className="text-sm text-shell-fg/55">Noch nichts eingetragen.</p>
           ) : (
             <ul className="space-y-2">
               {entries.map((entry) => (
@@ -117,12 +117,12 @@ export function MitbringlisteSection({ fahrtId, currentUserId }: MitbringlisteSe
                 onChange={(event) => setItem(event.target.value)}
                 placeholder="z. B. Nudelsalat, Spezi, Apfelsaft, Brownies"
                 maxLength={120}
-                className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-card-accent focus:outline-none focus:ring-2 focus:ring-card-accent/30"
+                className="min-w-0 flex-1 rounded-lg border border-shell-fg/15 px-3 py-2 text-sm text-shell-fg placeholder:text-shell-fg/35 focus:border-shell-cta-bg focus:outline-none focus:ring-2 focus:ring-shell-cta-bg/40"
               />
               <button
                 type="submit"
                 disabled={busy || !item.trim()}
-                className="shrink-0 rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+                className="shrink-0 rounded-lg bg-shell-cta-bg px-4 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90 disabled:opacity-60"
               >
                 {busy ? '…' : 'Hinzufügen'}
               </button>
@@ -130,7 +130,7 @@ export function MitbringlisteSection({ fahrtId, currentUserId }: MitbringlisteSe
           ) : null}
 
           {actionError ? (
-            <p className="mt-2 text-sm text-red-600" role="alert">
+            <p className="mt-2 text-sm text-red-300" role="alert">
               {actionError}
             </p>
           ) : null}

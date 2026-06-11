@@ -3,7 +3,7 @@ import { filterVereine, type Verein } from '../data/vereine'
 import { VereinWappen } from './VereinWappen'
 
 const inputClass =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none focus:border-card-accent focus:ring-2 focus:ring-card-accent/30'
+  'w-full rounded-lg border border-shell-fg/20 bg-shell-fg/8 px-3 py-2 text-shell-fg outline-none focus:border-shell-cta-bg focus:ring-2 focus:ring-shell-cta-bg/40'
 
 type VereinAutocompleteProps = {
   value: string
@@ -101,14 +101,14 @@ export function VereinAutocomplete({
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
+          className="absolute z-20 mt-1 max-h-64 w-full overflow-auto glass-card rounded-lg py-1 shadow-lg"
         >
           {suggestions.map((verein, index) => (
             <li key={verein.name} role="option" aria-selected={index === highlightIndex}>
               <button
                 type="button"
-                className={`flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition hover:bg-card-accent/5 ${
-                  index === highlightIndex ? 'bg-card-accent/10' : ''
+                className={`flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition hover:bg-shell-cta-bg/10 ${
+                  index === highlightIndex ? 'bg-shell-cta-bg/15' : ''
                 }`}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => selectVerein(verein)}
@@ -117,13 +117,13 @@ export function VereinAutocomplete({
                 <VereinWappen src={verein.wappenUrl} />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2">
-                    <span className="font-medium text-slate-900">{verein.name}</span>
-                    <span className="shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                    <span className="font-medium text-shell-fg">{verein.name}</span>
+                    <span className="shrink-0 rounded-full bg-shell-fg/10 px-1.5 py-0.5 text-[10px] font-medium text-shell-fg/55">
                       {verein.liga}
                     </span>
                   </span>
                   {verein.stadion && (
-                    <span className="mt-0.5 block truncate text-xs text-slate-500">{verein.stadion}</span>
+                    <span className="mt-0.5 block truncate text-xs text-shell-fg/55">{verein.stadion}</span>
                   )}
                 </span>
               </button>
@@ -131,7 +131,7 @@ export function VereinAutocomplete({
           ))}
         </ul>
       ) : open && value.trim() ? (
-        <p className="absolute z-20 mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-500 shadow-lg">
+        <p className="absolute z-20 mt-1 w-full glass-card rounded-lg px-3 py-2 text-sm text-shell-fg/55 shadow-lg">
           Kein Verein gefunden — Freitext wird übernommen.
         </p>
       ) : null}

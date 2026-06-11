@@ -54,8 +54,8 @@ const NAV_ITEMS: NavItem[] = [
 
 export function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 sm:hidden border-t border-shell-fg/15 bg-shell-bg/92 backdrop-blur-md">
-      <div className="flex h-16 items-stretch">
+    <nav className="fixed inset-x-3 bottom-3 z-50 sm:hidden">
+      <div className="glass-card flex h-16 items-stretch overflow-hidden rounded-2xl bg-shell-bg/80 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
         {NAV_ITEMS.map((item) =>
           item.cta ? (
             <NavLink

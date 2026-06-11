@@ -113,7 +113,7 @@ export function FahrtDashboardPage() {
   if (error || !fahrt) {
     return (
       <AppShell title="Fahrt" wide>
-        <p className="rounded-lg bg-red-500/20 px-4 py-3 text-sm text-red-100" role="alert">
+        <p className="rounded-lg bg-red-500/15 px-4 py-3 text-sm text-red-100" role="alert">
           {error ?? 'Fahrt nicht gefunden.'}
         </p>
         <Link to="/" className="mt-4 inline-block text-sm font-semibold text-white underline">
@@ -153,9 +153,17 @@ export function FahrtDashboardPage() {
   return (
     <AppShell title={trip.gegner} wide>
       {/* Hero-Header */}
-      <div className="mb-4 overflow-hidden rounded-3xl bg-white text-slate-900 shadow-sm ring-1 ring-card-accent/20">
-        <div className="flex items-center justify-between gap-3 px-5 pt-4">
-          <Link to="/" className="text-sm font-medium text-slate-400 transition hover:text-slate-700">
+      <div className="glass-card noise-overlay relative mb-4 overflow-hidden rounded-3xl">
+        <div className="accent-line h-1" />
+        <div
+          aria-hidden
+          className="font-display pointer-events-none absolute -right-3 -bottom-5 select-none text-[7rem] leading-none text-shell-fg/[0.05] sm:text-[9rem]"
+        >
+          {trip.gegner.split(' ').pop()}
+        </div>
+
+        <div className="relative flex items-center justify-between gap-3 px-5 pt-4">
+          <Link to="/" className="text-sm font-medium text-shell-fg/50 transition hover:text-shell-fg">
             ← Alle Fahrten
           </Link>
           {canDelete ? (
@@ -163,7 +171,7 @@ export function FahrtDashboardPage() {
               type="button"
               onClick={() => void handleDelete()}
               disabled={deleting}
-              className="text-sm font-medium text-red-400 transition hover:text-red-600 disabled:opacity-60"
+              className="text-sm font-medium text-red-300/70 transition hover:text-red-300 disabled:opacity-60"
             >
               {deleting ? 'Wird gelöscht …' : 'Fahrt löschen'}
             </button>
@@ -171,35 +179,35 @@ export function FahrtDashboardPage() {
         </div>
 
         {deleteError ? (
-          <p className="mx-5 mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+          <p className="relative mx-5 mt-3 rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200" role="alert">
             {deleteError}
           </p>
         ) : null}
 
-        <div className="px-5 pb-5 pt-3">
+        <div className="relative px-5 pb-5 pt-3 sm:px-6 sm:pb-6">
           <MatchupWappen gegner={trip.gegner} size="md" />
-          <h1 className="mt-3 text-2xl font-bold text-slate-900">{trip.gegner}</h1>
+          <h1 className="font-display mt-4 text-3xl leading-[0.95] text-shell-fg sm:text-4xl">{trip.gegner}</h1>
 
-          <dl className="mt-4 grid gap-x-8 gap-y-3 text-sm sm:grid-cols-3">
+          <dl className="mt-5 grid gap-x-8 gap-y-3 text-sm sm:grid-cols-3">
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Anpfiff</dt>
-              <dd className="mt-0.5 font-semibold text-slate-900">
+              <dt className="font-display-wide text-[9px] text-shell-fg/40">Anpfiff</dt>
+              <dd className="mt-1 font-semibold text-shell-fg">
                 {formatSpielDatum(trip.spiel_at)}, {formatAnpfiff(trip.spiel_at)} Uhr
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Stadion</dt>
-              <dd className="mt-0.5 font-semibold text-slate-900">{trip.stadion}</dd>
+              <dt className="font-display-wide text-[9px] text-shell-fg/40">Stadion</dt>
+              <dd className="mt-1 font-semibold text-shell-fg">{trip.stadion}</dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Treffpunkt</dt>
-              <dd className="mt-0.5 font-semibold text-slate-900">
+              <dt className="font-display-wide text-[9px] text-shell-fg/40">Treffpunkt</dt>
+              <dd className="mt-1 font-semibold text-shell-fg">
                 {getTreffpunktLabel(trip)}
                 <a
                   href={getTreffpunktMapsUrl(trip)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-2 text-xs font-medium text-card-accent hover:underline"
+                  className="ml-2 text-xs font-medium text-shell-fg/60 underline underline-offset-2 hover:text-shell-fg"
                 >
                   Karte
                 </a>
@@ -208,8 +216,8 @@ export function FahrtDashboardPage() {
           </dl>
 
           {trip.notizen ? (
-            <p className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-              <span className="font-medium text-slate-500">Notizen · </span>
+            <p className="mt-4 rounded-lg border border-shell-fg/10 bg-shell-fg/5 px-3 py-2 text-sm text-shell-fg/75">
+              <span className="font-medium text-shell-fg/50">Notizen · </span>
               {trip.notizen}
             </p>
           ) : null}
@@ -220,7 +228,7 @@ export function FahrtDashboardPage() {
         <DashboardSection title="Abfahrt" compact>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
             <div className="shrink-0 sm:w-56">
-              <p className="mb-2 text-xs font-medium text-slate-500">Puffer vor Anpfiff</p>
+              <p className="mb-2 text-xs font-medium text-shell-fg/55">Puffer vor Anpfiff</p>
               <div className="flex gap-2">
                 {PUFFER_OPTIONS.map((option) => {
                   const ankunft = calculateAnkunftszeit(trip.spiel_at, option.minutes)
@@ -231,14 +239,14 @@ export function FahrtDashboardPage() {
                       onClick={() => setPufferMinuten(option.minutes)}
                       className={`flex flex-1 flex-col items-center rounded-lg px-3 py-2 text-sm font-semibold transition ${
                         pufferMinuten === option.minutes
-                          ? 'bg-card-accent text-white'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          ? 'bg-shell-cta-bg text-shell-cta-fg'
+                          : 'bg-shell-fg/10 text-shell-fg/80 hover:bg-shell-fg/15'
                       }`}
                     >
                       <span>{option.label}</span>
                       <span
                         className={`text-xs font-medium ${
-                          pufferMinuten === option.minutes ? 'text-white/85' : 'text-slate-500'
+                          pufferMinuten === option.minutes ? 'text-white/85' : 'text-shell-fg/55'
                         }`}
                       >
                         Ankunft {formatUhrzeit(ankunft)}
@@ -251,34 +259,34 @@ export function FahrtDashboardPage() {
 
             <div className="min-w-0 flex-1">
               {route.status === 'loading' ? (
-                <p className="text-sm text-slate-500">Route wird berechnet …</p>
+                <p className="text-sm text-shell-fg/55">Route wird berechnet …</p>
               ) : null}
 
               {route.status === 'no_key' ? (
-                <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
-                  Trage <code className="rounded bg-amber-100 px-1">VITE_GOOGLE_MAPS_API_KEY</code>{' '}
+                <p className="rounded-lg bg-amber-400/15 px-3 py-2 text-sm text-amber-200">
+                  Trage <code className="rounded bg-amber-400/25 px-1">VITE_GOOGLE_MAPS_API_KEY</code>{' '}
                   in die .env ein.
                 </p>
               ) : null}
 
               {route.status === 'error' ? (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{route.message}</p>
+                <p className="rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200">{route.message}</p>
               ) : null}
 
               {abfahrtszeit && route.status === 'ready' ? (
                 <>
-                  <div className="rounded-xl bg-card-accent/10 px-4 py-3">
-                    <p className="text-sm text-slate-600">
+                  <div className="rounded-xl bg-shell-cta-bg/15 px-4 py-3">
+                    <p className="text-sm text-shell-fg/70">
                       {abstimmung.winning
                         ? 'Abgestimmte Abfahrt am Treffpunkt'
                         : isDefaultTreffpunkt(trip.treffpunkt_berlin)
                           ? HERTHA_TREFFPUNKT.departureHeading
                           : 'Empfohlene Abfahrt am Treffpunkt'}
                     </p>
-                    <p className="text-4xl font-bold text-card-accent">
+                    <p className="text-4xl font-bold text-shell-fg">
                       {formatUhrzeit(effectiveAbfahrt!)} Uhr
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-shell-fg/55">
                       {abstimmung.winning ? (
                         <>
                           {abstimmung.winning.count} von {abstimmung.winning.totalVotes} Stimmen
@@ -309,7 +317,7 @@ export function FahrtDashboardPage() {
                   />
                 </>
               ) : route.status !== 'loading' && route.status !== 'error' && route.status !== 'no_key' ? (
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-shell-fg/55">
                   Abfahrtszeit erscheint nach der Routenberechnung.
                 </p>
               ) : null}
@@ -321,7 +329,7 @@ export function FahrtDashboardPage() {
         {route.status === 'ready' ? (
           <DashboardSection title="Route" compact>
             {routeEndpoints?.destinationViaParkplatz ? (
-              <p className="mb-3 rounded-lg bg-card-accent/10 px-3 py-2 text-sm text-card-accent">
+              <p className="mb-3 rounded-lg bg-shell-cta-bg/15 px-3 py-2 text-sm text-shell-fg">
                 Routenziel: gewählter Parkplatz „{routeEndpoints.destinationLabel}“
               </p>
             ) : null}
@@ -330,26 +338,26 @@ export function FahrtDashboardPage() {
 
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
               <p>
-                <span className="text-slate-500">Fahrtzeit </span>
+                <span className="text-shell-fg/55">Fahrtzeit </span>
                 <span className="font-semibold">{formatDuration(route.plan.durationSeconds)}</span>
               </p>
               <p>
-                <span className="text-slate-500">Distanz </span>
+                <span className="text-shell-fg/55">Distanz </span>
                 <span className="font-semibold">{formatDistance(route.plan.distanceMeters)}</span>
               </p>
               {routeDistanceError ? (
-                <p className="w-full rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                <p className="w-full rounded-lg bg-amber-400/15 px-3 py-2 text-sm text-amber-200">
                   Distanz für Statistik konnte nicht gespeichert werden: {routeDistanceError}
                 </p>
               ) : null}
-              <p className="w-full text-slate-500">
+              <p className="w-full text-shell-fg/55">
                 {routeEndpoints?.originLabel} → {routeEndpoints?.destinationLabel}
               </p>
               <a
                 href={mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                className="inline-flex rounded-lg bg-shell-cta-bg px-4 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90"
               >
                 In Google Maps öffnen
               </a>

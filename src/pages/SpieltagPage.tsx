@@ -49,21 +49,21 @@ type QuickActionProps = {
 
 function QuickAction({ href, label, detail, icon, external = true, disabled = false }: QuickActionProps) {
   const className =
-    'flex items-start gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-left transition hover:bg-white/15'
+    'glass-card flex items-start gap-3 rounded-2xl px-4 py-3 text-left transition-transform duration-200 hover:-translate-y-px active:scale-[0.98]'
 
   const content = (
     <>
       <span className="mt-0.5 text-xl leading-none">{icon}</span>
       <div className="min-w-0">
-        <p className="text-sm font-semibold text-white">{label}</p>
-        <p className="mt-0.5 truncate text-xs text-white/65">{detail}</p>
+        <p className="text-sm font-semibold text-shell-fg">{label}</p>
+        <p className="mt-0.5 truncate text-xs text-shell-fg/55">{detail}</p>
       </div>
     </>
   )
 
   if (disabled) {
     return (
-      <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left opacity-50">
+      <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-shell-fg/8/5 px-4 py-3 text-left opacity-50">
         {content}
       </div>
     )
@@ -100,16 +100,16 @@ function TimelineList({
             key={item.id}
             className={`rounded-2xl border px-4 py-3 ${
               active
-                ? 'border-card-accent bg-card-accent/10'
-                : 'border-slate-200 bg-slate-50'
+                ? 'border-shell-cta-bg bg-shell-cta-bg/15'
+                : 'border-shell-fg/15 bg-shell-fg/6'
             }`}
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-slate-900">{item.label}</p>
-                {item.detail ? <p className="mt-1 text-xs text-slate-500">{item.detail}</p> : null}
+                <p className="text-sm font-semibold text-shell-fg">{item.label}</p>
+                {item.detail ? <p className="mt-1 text-xs text-shell-fg/55">{item.detail}</p> : null}
               </div>
-              <p className="shrink-0 text-sm font-bold text-card-accent">{formatUhrzeit(item.time)} Uhr</p>
+              <p className="shrink-0 text-sm font-bold text-shell-fg">{formatUhrzeit(item.time)} Uhr</p>
             </div>
           </li>
         )
@@ -223,7 +223,7 @@ export function SpieltagPage() {
   if (error) {
     return (
       <AppShell title="Spieltag">
-        <p className="rounded-lg bg-red-500/20 px-4 py-3 text-sm text-red-100" role="alert">
+        <p className="rounded-lg bg-red-500/15 px-4 py-3 text-sm text-red-100" role="alert">
           {error}
         </p>
       </AppShell>
@@ -233,7 +233,7 @@ export function SpieltagPage() {
   if (!trip) {
     return (
       <AppShell title="Spieltag">
-        <div className="rounded-2xl border border-dashed border-white/30 bg-white/5 px-6 py-10 text-center">
+        <div className="rounded-2xl border border-dashed border-white/30 bg-shell-fg/8/5 px-6 py-10 text-center">
           <p className="text-lg font-semibold">Keine kommende Auswärtsfahrt</p>
           <p className="mt-2 text-sm text-white/70">
             Lege die nächste Fahrt an, dann erscheint hier dein Spieltag-Dashboard.
@@ -252,27 +252,33 @@ export function SpieltagPage() {
   return (
     <AppShell title="Spieltag" wide>
       <div className="space-y-4">
-        <section className="rounded-3xl bg-white p-5 text-slate-900 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-wide text-card-accent/70">
+        <section className="glass-card noise-overlay relative overflow-hidden rounded-3xl p-5 sm:p-6">
+          <div className="accent-line absolute inset-x-0 top-0 h-1" />
+          <div
+            aria-hidden
+            className="font-display pointer-events-none absolute -right-3 -bottom-5 select-none text-[7rem] leading-none text-shell-fg/[0.05] sm:text-[9rem]"
+          >
+            {trip.gegner.split(' ').pop()}
+          </div>
+          <p className="font-display-wide relative text-[10px] text-shell-fg/50">
             {formatSpieltagDayLabel(trip.spiel_at, now)}
           </p>
-          <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <MatchupWappen gegner={trip.gegner} size="md" />
-              <p className="mt-3 text-sm text-slate-500">
-                {formatSpielDatum(trip.spiel_at)}, {formatAnpfiff(trip.spiel_at)} Uhr
+              <h2 className="font-display mt-4 text-3xl leading-[0.95] text-shell-fg sm:text-5xl">{trip.gegner}</h2>
+              <p className="mt-2 text-sm text-shell-fg/50">
+                {trip.stadion} · {formatSpielDatum(trip.spiel_at)} · {formatAnpfiff(trip.spiel_at)} Uhr
               </p>
-              <h2 className="mt-1 text-3xl font-bold text-card-accent">{trip.gegner}</h2>
-              <p className="mt-1 text-sm text-slate-600">{trip.stadion}</p>
             </div>
-            <div className="rounded-2xl bg-card-accent px-5 py-4 text-white sm:min-w-64">
-              <p className="text-sm text-white/75">
-                {winningDeparture ? 'Abgestimmte Abfahrt' : 'Nächster wichtiger Zeitpunkt'}
+            <div className="rounded-2xl bg-shell-cta-bg px-5 py-4 text-shell-cta-fg shadow-lg shadow-black/25 sm:min-w-64">
+              <p className="font-display-wide text-[9px] opacity-60">
+                {winningDeparture ? 'Abgestimmte Abfahrt' : 'Nächster Zeitpunkt'}
               </p>
-              <p className="mt-1 text-4xl font-bold">
+              <p className="font-score mt-1 text-4xl">
                 {nextItem ? formatUhrzeit(nextItem.time) : formatAnpfiff(trip.spiel_at)}
               </p>
-              <p className="mt-1 text-sm text-white/80">
+              <p className="mt-1 text-sm opacity-80">
                 {nextItem?.label ?? `Anpfiff um ${formatAnpfiff(trip.spiel_at)} Uhr`}
               </p>
             </div>
@@ -304,14 +310,14 @@ export function SpieltagPage() {
         </section>
 
         <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-          <section className="rounded-3xl bg-white p-5 text-slate-900 shadow-sm">
+          <section className="glass-card rounded-3xl p-5">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-lg font-bold">Ablauf</h3>
-                <p className="text-sm text-slate-500">Mobile Kurzfassung für den Fahrtag</p>
+                <h3 className="font-display text-lg text-shell-fg">Ablauf</h3>
+                <p className="text-sm text-shell-fg/55">Mobile Kurzfassung für den Fahrtag</p>
               </div>
               {route.status === 'ready' ? (
-                <span className="rounded-full bg-card-accent/10 px-3 py-1 text-xs font-semibold text-card-accent">
+                <span className="rounded-full bg-shell-cta-bg/15 px-3 py-1 text-xs font-semibold text-shell-fg">
                   {formatDuration(route.plan.durationSeconds)} · {formatDistance(route.plan.distanceMeters)}
                 </span>
               ) : null}
@@ -320,57 +326,57 @@ export function SpieltagPage() {
             {timelineItems.length > 0 ? (
               <TimelineList items={timelineItems} nextItem={nextItem} />
             ) : (
-              <p className="text-sm text-slate-500">Der Ablauf erscheint, sobald die Fahrt geladen ist.</p>
+              <p className="text-sm text-shell-fg/55">Der Ablauf erscheint, sobald die Fahrt geladen ist.</p>
             )}
 
             {route.status === 'loading' ? (
-              <p className="mt-3 text-sm text-slate-500">Route wird berechnet …</p>
+              <p className="mt-3 text-sm text-shell-fg/55">Route wird berechnet …</p>
             ) : null}
             {route.status === 'no_key' ? (
-              <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+              <p className="mt-3 rounded-lg bg-amber-400/15 px-3 py-2 text-sm text-amber-200">
                 Google Maps API-Key fehlt. Schnelllinks funktionieren trotzdem eingeschränkt.
               </p>
             ) : null}
             {route.status === 'error' ? (
-              <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+              <p className="mt-3 rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200">
                 {route.message}
               </p>
             ) : null}
           </section>
 
           <aside className="space-y-4">
-            <section className="rounded-3xl bg-white p-5 text-slate-900 shadow-sm">
+            <section className="glass-card rounded-3xl p-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-bold">Mitfahrer</h3>
-                  <p className="text-sm text-slate-500">{mitfahrer.length} dabei</p>
+                  <h3 className="font-display text-lg text-shell-fg">Mitfahrer</h3>
+                  <p className="text-sm text-shell-fg/55">{mitfahrer.length} dabei</p>
                 </div>
                 {mitfahrer.length > 0 ? <MitfahrerAvatarStack entries={mitfahrer} /> : null}
               </div>
             </section>
 
-            <section className="rounded-3xl bg-white p-5 text-slate-900 shadow-sm">
+            <section className="glass-card rounded-3xl p-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-bold">Mitbringliste</h3>
-                  <p className="text-sm text-slate-500">
+                  <h3 className="font-display text-lg text-shell-fg">Mitbringliste</h3>
+                  <p className="text-sm text-shell-fg/55">
                     {mitbringliste.loading ? 'Wird geladen …' : `${mitbringliste.entries.length} Einträge`}
                   </p>
                 </div>
-                <Link to={`/fahrten/${trip.id}`} className="text-sm font-semibold text-card-accent hover:underline">
+                <Link to={`/fahrten/${trip.id}`} className="text-sm font-semibold text-shell-fg hover:underline">
                   Öffnen
                 </Link>
               </div>
               {mitbringPreview.length > 0 ? (
                 <ul className="mt-3 space-y-2">
                   {mitbringPreview.map((entry) => (
-                    <li key={entry.id} className="rounded-lg bg-slate-50 px-3 py-2 text-sm">
+                    <li key={entry.id} className="rounded-lg bg-shell-fg/6 px-3 py-2 text-sm">
                       {entry.item}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="mt-3 text-sm text-slate-500">Noch nichts eingetragen.</p>
+                <p className="mt-3 text-sm text-shell-fg/55">Noch nichts eingetragen.</p>
               )}
             </section>
           </aside>

@@ -32,32 +32,32 @@ function ParkplatzRow({
     <li
       className={`rounded-lg border px-3 py-2 transition ${
         entry.is_selected
-          ? 'border-card-accent bg-card-accent/10 ring-2 ring-card-accent/25'
-          : 'border-slate-200 bg-slate-50'
+          ? 'border-shell-cta-bg bg-shell-cta-bg/15 ring-2 ring-card-accent/25'
+          : 'border-shell-fg/15 bg-shell-fg/6'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium text-slate-900">{entry.name}</p>
+            <p className="font-medium text-shell-fg">{entry.name}</p>
             {entry.is_selected ? (
-              <span className="rounded-full bg-card-accent px-2 py-0.5 text-xs font-semibold text-white">
+              <span className="rounded-full bg-shell-cta-bg px-2 py-0.5 text-xs font-semibold text-shell-cta-fg">
                 Routenziel
               </span>
             ) : null}
             {entry.source === 'google' ? (
-              <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600">
+              <span className="rounded-full bg-shell-fg/15 px-2 py-0.5 text-xs font-medium text-shell-fg/70">
                 Google
               </span>
             ) : null}
           </div>
-          <p className="mt-0.5 text-xs text-slate-500">{entry.address}</p>
+          <p className="mt-0.5 text-xs text-shell-fg/55">{entry.address}</p>
           <ParkingMeta distanceMeters={entry.distance_meters} costKind={entry.cost_kind} />
           <a
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1 inline-block text-xs font-medium text-card-accent hover:underline"
+            className="mt-1 inline-block text-xs font-medium text-shell-fg hover:underline"
           >
             In Google Maps öffnen
           </a>
@@ -68,7 +68,7 @@ function ParkplatzRow({
               type="button"
               disabled={busy}
               onClick={() => void onClearSelection()}
-              className="rounded-lg border border-card-accent bg-white px-2.5 py-1 text-xs font-semibold text-card-accent transition hover:bg-card-accent/5 disabled:opacity-60"
+              className="rounded-lg border border-shell-cta-bg bg-shell-fg/8 px-2.5 py-1 text-xs font-semibold text-shell-fg transition hover:bg-shell-cta-bg/10 disabled:opacity-60"
             >
               Abwählen
             </button>
@@ -77,7 +77,7 @@ function ParkplatzRow({
               type="button"
               disabled={busy}
               onClick={() => void onChoose(entry.id)}
-              className="rounded-lg bg-card-accent px-2.5 py-1 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+              className="rounded-lg bg-shell-cta-bg px-2.5 py-1 text-xs font-semibold text-shell-cta-fg transition hover:opacity-90 disabled:opacity-60"
             >
               Wählen
             </button>
@@ -86,7 +86,7 @@ function ParkplatzRow({
             type="button"
             disabled={busy}
             onClick={() => void onRemove(entry.id)}
-            className="text-xs font-medium text-red-600 hover:text-red-800 disabled:opacity-60"
+            className="text-xs font-medium text-red-300 hover:text-red-200 disabled:opacity-60"
           >
             Entfernen
           </button>
@@ -108,17 +108,17 @@ function SuggestionRow({
   onAdd: (suggestion: ParkingSuggestion) => void
 }) {
   return (
-    <li className="flex items-start justify-between gap-3 rounded-lg border border-dashed border-slate-200 bg-white px-3 py-2">
+    <li className="flex items-start justify-between gap-3 rounded-lg border border-dashed border-shell-fg/15 bg-shell-fg/8 px-3 py-2">
       <div className="min-w-0">
-        <p className="font-medium text-slate-900">{suggestion.name}</p>
-        <p className="text-xs text-slate-500">{suggestion.address}</p>
+        <p className="font-medium text-shell-fg">{suggestion.name}</p>
+        <p className="text-xs text-shell-fg/55">{suggestion.address}</p>
         <ParkingMeta distanceMeters={suggestion.distanceMeters} costKind={suggestion.costKind} />
       </div>
       <button
         type="button"
         disabled={busy || alreadyAdded}
         onClick={() => void onAdd(suggestion)}
-        className="shrink-0 rounded-lg border border-card-accent px-2.5 py-1 text-xs font-semibold text-card-accent transition hover:bg-card-accent/10 disabled:opacity-50"
+        className="shrink-0 rounded-lg border border-shell-cta-bg px-2.5 py-1 text-xs font-semibold text-shell-fg transition hover:bg-shell-cta-bg/15 disabled:opacity-50"
       >
         {alreadyAdded ? 'In Liste' : 'Hinzufügen'}
       </button>
@@ -173,10 +173,10 @@ export function ParkplatzSection({ stadion, currentUserId, parkplaetze }: Parkpl
       badge={loading ? undefined : selected ? 'Gewählt' : entries.length > 0 ? `${entries.length}` : undefined}
       compact
     >
-      {loading ? <p className="text-sm text-slate-500">Wird geladen …</p> : null}
+      {loading ? <p className="text-sm text-shell-fg/55">Wird geladen …</p> : null}
 
       {error ? (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+        <p className="rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200" role="alert">
           {error}
         </p>
       ) : null}
@@ -184,7 +184,7 @@ export function ParkplatzSection({ stadion, currentUserId, parkplaetze }: Parkpl
       {!loading && !error ? (
         <>
           {entries.length > 0 && !selected ? (
-            <p className="mb-3 text-sm text-slate-500">
+            <p className="mb-3 text-sm text-shell-fg/55">
               Einen Parkplatz wählen — er wird oben markiert und für die Route genutzt.
             </p>
           ) : null}
@@ -203,30 +203,30 @@ export function ParkplatzSection({ stadion, currentUserId, parkplaetze }: Parkpl
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-slate-500">Noch kein Parkplatz hinterlegt.</p>
+            <p className="text-sm text-shell-fg/55">Noch kein Parkplatz hinterlegt.</p>
           )}
 
           {currentUserId ? (
-            <div className="mt-4 space-y-4 border-t border-slate-100 pt-4">
+            <div className="mt-4 space-y-4 border-t border-shell-fg/10 pt-4">
               <div>
-                <p className="text-xs font-medium text-slate-500">In der Nähe des Stadions</p>
+                <p className="text-xs font-medium text-shell-fg/55">In der Nähe des Stadions</p>
                 <button
                   type="button"
                   disabled={busy || searchState.status === 'loading'}
                   onClick={() => void search()}
-                  className="mt-2 rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-200 disabled:opacity-60"
+                  className="mt-2 rounded-lg bg-shell-fg/10 px-4 py-2 text-sm font-semibold text-shell-fg/90 transition hover:bg-shell-fg/15 disabled:opacity-60"
                 >
                   {searchState.status === 'loading'
                     ? 'Suche läuft …'
                     : 'Parkplätze in der Nähe suchen'}
                 </button>
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="mt-1 text-xs text-shell-fg/45">
                   Benötigt „Places API (New)“ (nicht die ältere „Places API“).
                 </p>
               </div>
 
               {searchState.status === 'error' ? (
-                <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900" role="alert">
+                <p className="rounded-lg bg-amber-400/15 px-3 py-2 text-sm text-amber-200" role="alert">
                   {searchState.message}
                 </p>
               ) : null}
@@ -234,11 +234,11 @@ export function ParkplatzSection({ stadion, currentUserId, parkplaetze }: Parkpl
               {searchState.status === 'ready' ? (
                 <div>
                   <div className="mb-2 flex items-center justify-between gap-2">
-                    <p className="text-xs font-medium text-slate-500">Vorschläge</p>
+                    <p className="text-xs font-medium text-shell-fg/55">Vorschläge</p>
                     <button
                       type="button"
                       onClick={reset}
-                      className="text-xs font-medium text-slate-500 hover:text-slate-800"
+                      className="text-xs font-medium text-shell-fg/55 hover:text-shell-fg/90"
                     >
                       Schließen
                     </button>
@@ -260,14 +260,14 @@ export function ParkplatzSection({ stadion, currentUserId, parkplaetze }: Parkpl
               ) : null}
 
               <form onSubmit={(event) => void handleManualSubmit(event)} className="space-y-2">
-                <p className="text-xs font-medium text-slate-500">Manuell hinzufügen</p>
+                <p className="text-xs font-medium text-shell-fg/55">Manuell hinzufügen</p>
                 <input
                   type="text"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   placeholder="Name, z. B. P+R Stadion"
                   maxLength={120}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-card-accent focus:outline-none focus:ring-2 focus:ring-card-accent/30"
+                  className="w-full rounded-lg border border-shell-fg/15 px-3 py-2 text-sm text-shell-fg placeholder:text-shell-fg/35 focus:border-shell-cta-bg focus:outline-none focus:ring-2 focus:ring-shell-cta-bg/40"
                 />
                 <input
                   type="text"
@@ -275,12 +275,12 @@ export function ParkplatzSection({ stadion, currentUserId, parkplaetze }: Parkpl
                   onChange={(event) => setAddress(event.target.value)}
                   placeholder="Adresse"
                   maxLength={200}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-card-accent focus:outline-none focus:ring-2 focus:ring-card-accent/30"
+                  className="w-full rounded-lg border border-shell-fg/15 px-3 py-2 text-sm text-shell-fg placeholder:text-shell-fg/35 focus:border-shell-cta-bg focus:outline-none focus:ring-2 focus:ring-shell-cta-bg/40"
                 />
                 <button
                   type="submit"
                   disabled={busy || !name.trim() || !address.trim()}
-                  className="rounded-lg bg-card-accent px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+                  className="rounded-lg bg-shell-cta-bg px-4 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90 disabled:opacity-60"
                 >
                   {busy ? '…' : 'Parkplatz hinzufügen'}
                 </button>
@@ -289,7 +289,7 @@ export function ParkplatzSection({ stadion, currentUserId, parkplaetze }: Parkpl
           ) : null}
 
           {actionError ? (
-            <p className="mt-2 text-sm text-red-600" role="alert">
+            <p className="mt-2 text-sm text-red-300" role="alert">
               {actionError}
             </p>
           ) : null}

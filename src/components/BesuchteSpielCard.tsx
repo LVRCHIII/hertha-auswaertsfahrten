@@ -25,21 +25,21 @@ export function BesuchteSpielCard({ spiel }: { spiel: GroupedSpiel }) {
   const gastWappen = resolveWappen(spiel.gast_team)
 
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm">
+    <div className="glass-card rounded-2xl p-4">
       <div className="flex items-center gap-3">
         {/* Matchup Wappen */}
         <div className="flex shrink-0 items-center gap-1">
           <VereinWappen src={heimWappen} size="sm" />
-          <span className="text-xs text-slate-400">–</span>
+          <span className="text-xs text-shell-fg/35">–</span>
           <VereinWappen src={gastWappen} size="sm" />
         </div>
 
         {/* Spielinfo */}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold text-slate-900">
+          <p className="truncate text-sm font-bold text-shell-fg">
             {spiel.heim_team} – {spiel.gast_team}
           </p>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-0.5 text-xs text-shell-fg/45">
             {formatDatum(spiel.datum)}
             {spiel.stadion ? ` · ${spiel.stadion}` : ''}
             {spiel.liga ? ` · ${spiel.liga}` : ''}
@@ -48,7 +48,7 @@ export function BesuchteSpielCard({ spiel }: { spiel: GroupedSpiel }) {
 
         {/* Ergebnis */}
         {spiel.ergebnis ? (
-          <span className="shrink-0 rounded-lg bg-card-accent/10 px-2.5 py-1 text-sm font-bold text-card-accent">
+          <span className="font-score shrink-0 rounded-lg bg-shell-cta-bg/15 px-2.5 py-1 text-sm text-shell-fg">
             {spiel.ergebnis}
           </span>
         ) : null}
@@ -69,14 +69,14 @@ export function BesuchteSpielCard({ spiel }: { spiel: GroupedSpiel }) {
             ))}
             {overflow > 0 ? (
               <span
-                className="-ml-2.5 relative flex h-9 w-9 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-700 ring-2 ring-white"
+                className="-ml-2.5 relative flex h-9 w-9 items-center justify-center rounded-full bg-shell-fg/15 text-xs font-bold text-shell-fg ring-2 ring-shell-bg"
                 style={{ zIndex: 0 }}
               >
                 +{overflow}
               </span>
             ) : null}
           </div>
-          <p className="truncate text-xs text-slate-500">
+          <p className="truncate text-xs text-shell-fg/45">
             {spiel.attendees.map((a) => a.display_name).join(', ')}
           </p>
         </div>

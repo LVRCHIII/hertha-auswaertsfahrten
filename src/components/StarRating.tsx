@@ -10,7 +10,7 @@ export function StarRating({ value, onChange, readonly = false, label, emoji = '
   return (
     <div className="flex flex-col items-center gap-1">
       {label ? (
-        <span className="text-xs text-slate-500 font-medium text-center leading-tight">{label}</span>
+        <span className="text-xs text-shell-fg/55 font-medium text-center leading-tight">{label}</span>
       ) : null}
       <div className="flex gap-0.5">
         {[1, 2, 3, 4, 5].map((star) => {
@@ -35,7 +35,7 @@ export function StarRating({ value, onChange, readonly = false, label, emoji = '
         <button
           type="button"
           onClick={() => onChange?.(0)}
-          className="text-[10px] text-slate-400 hover:text-slate-600"
+          className="text-[10px] text-shell-fg/45 hover:text-shell-fg/70"
         >
           zurücksetzen
         </button>

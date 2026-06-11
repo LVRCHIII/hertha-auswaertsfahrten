@@ -11,7 +11,7 @@ type Props = {
 }
 
 const inputClass =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 text-sm outline-none focus:border-card-accent focus:ring-2 focus:ring-card-accent/30'
+  'w-full rounded-lg border border-shell-fg/20 bg-shell-fg/8 px-3 py-2 text-shell-fg text-sm outline-none focus:border-shell-cta-bg focus:ring-2 focus:ring-shell-cta-bg/40'
 
 export function SpielHinzufuegenForm({ onAdded }: Props) {
   const { user } = useAuth()
@@ -88,13 +88,13 @@ export function SpielHinzufuegenForm({ onAdded }: Props) {
   }
 
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm">
+    <div className="glass-card rounded-2xl p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-bold text-slate-900">Spiel hinzufügen</h3>
+        <h3 className="text-sm font-bold text-shell-fg">Spiel hinzufügen</h3>
         <button
           type="button"
           onClick={reset}
-          className="text-slate-400 hover:text-slate-600 text-lg leading-none"
+          className="text-shell-fg/45 hover:text-shell-fg/70 text-lg leading-none"
         >
           ×
         </button>
@@ -122,7 +122,7 @@ export function SpielHinzufuegenForm({ onAdded }: Props) {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="spiel_datum">
+            <label className="mb-1 block text-sm font-medium text-shell-fg/80" htmlFor="spiel_datum">
               Datum <span className="text-red-500">*</span>
             </label>
             <input
@@ -135,7 +135,7 @@ export function SpielHinzufuegenForm({ onAdded }: Props) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="spiel_ergebnis">
+            <label className="mb-1 block text-sm font-medium text-shell-fg/80" htmlFor="spiel_ergebnis">
               Ergebnis
             </label>
             <input
@@ -150,7 +150,7 @@ export function SpielHinzufuegenForm({ onAdded }: Props) {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="spiel_stadion">
+          <label className="mb-1 block text-sm font-medium text-shell-fg/80" htmlFor="spiel_stadion">
             Stadion
           </label>
           <input
@@ -166,7 +166,7 @@ export function SpielHinzufuegenForm({ onAdded }: Props) {
         <button
           type="submit"
           disabled={saving}
-          className="w-full rounded-lg bg-card-accent py-2 text-sm font-semibold text-white disabled:opacity-50"
+          className="w-full rounded-lg bg-shell-cta-bg py-2 text-sm font-semibold text-shell-cta-fg disabled:opacity-50"
         >
           {saving ? 'Speichern…' : 'Spiel speichern'}
         </button>

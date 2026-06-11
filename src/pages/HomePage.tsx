@@ -12,6 +12,7 @@ import { useFutbologySpiele } from '../hooks/useFutbologySpiele'
 import { useMitfahrerOverview } from '../hooks/useMitfahrerOverview'
 import { buildAwayStats } from '../lib/awayStats'
 import { partitionFahrten } from '../lib/partitionFahrten'
+import { useStaggerReveal } from '../lib/gsapFx'
 
 type HomeView = 'calendar' | 'list' | 'spiele'
 
@@ -32,6 +33,8 @@ export function HomePage() {
     [fahrten, mitfahrerByFahrt, user?.id],
   )
   const { spiele, loading: spieleLoading, error: spieleError, reload: reloadSpiele } = useFutbologySpiele()
+  const ready = !loading && fahrten.length > 0
+  const revealRef = useStaggerReveal<HTMLDivElement>([ready, activeView])
 
   return (
     <AppShell title="Auswärtsfahrten">
@@ -64,10 +67,12 @@ export function HomePage() {
       ) : null}
 
       {!loading && fahrten.length > 0 ? (
-        <div className="space-y-8">
-          <AwayStatsCard stats={awayStats} loading={mitfahrerLoading} error={mitfahrerError} />
+        <div ref={revealRef} className="space-y-8">
+          <div data-reveal>
+            <AwayStatsCard stats={awayStats} loading={mitfahrerLoading} error={mitfahrerError} />
+          </div>
 
-          <div className="inline-flex rounded-xl bg-shell-fg/10 p-1 gap-0.5">
+          <div data-reveal className="glass-card inline-flex rounded-xl p-1 gap-0.5">
             {[
               { id: 'list', label: 'Fahrten' },
               { id: 'spiele', label: 'Spiele' },
@@ -88,6 +93,7 @@ export function HomePage() {
             ))}
           </div>
 
+          <div data-reveal>
           {activeView === 'calendar' ? (
             <CalendarView fahrten={fahrten} abfahrtByFahrt={abfahrtByFahrt} />
           ) : activeView === 'spiele' ? (
@@ -117,6 +123,7 @@ export function HomePage() {
               />
             </div>
           )}
+          </div>
         </div>
       ) : null}
     </AppShell>
