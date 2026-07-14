@@ -71,10 +71,10 @@ export function RegisterPage() {
       title="Registrieren"
       subtitle="Erstelle ein Konto für den Auswärtsfahrten-Planer."
     >
-      <form className="space-y-5" onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         {FIELDS.map((field, i) => (
           <motion.div key={field.id} custom={i} variants={fieldVariants} initial="hidden" animate="visible">
-            <label className="mb-1 block text-sm font-medium text-shell-fg/70" htmlFor={field.id}>
+            <label className="auth-label mb-2 block text-shell-fg/62" htmlFor={field.id}>
               {field.label}
             </label>
             <input
@@ -84,7 +84,7 @@ export function RegisterPage() {
               required
               value={values[field.id]}
               onChange={(e) => setters[field.id](e.target.value)}
-              className="w-full rounded-xl border border-shell-fg/15 bg-shell-fg/5 px-3 py-2.5 text-shell-fg placeholder:text-shell-fg/30 outline-none transition focus:border-shell-cta-bg focus:ring-2 focus:ring-shell-cta-bg/40"
+              className="auth-input w-full rounded-[0.9rem] border border-shell-fg/15 bg-shell-fg/[0.055] px-4 py-3 text-shell-fg outline-none"
             />
           </motion.div>
         ))}
@@ -105,7 +105,7 @@ export function RegisterPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="relative w-full rounded-xl bg-shell-cta-bg px-4 py-2.5 font-semibold text-shell-cta-fg shadow-lg shadow-black/25 transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+            className="auth-submit relative mt-1 w-full rounded-[0.9rem] bg-shell-cta-bg px-4 py-3 font-semibold text-shell-cta-fg shadow-lg shadow-black/20 transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {submitting ? (
               <span className="flex items-center justify-center gap-2">
@@ -123,13 +123,13 @@ export function RegisterPage() {
       </form>
 
       <motion.p
-        className="mt-6 text-center text-sm text-shell-fg/55"
+        className="mt-7 text-center text-sm text-shell-fg/55"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.4 }}
       >
         Bereits registriert?{' '}
-        <Link className="font-semibold text-shell-fg hover:underline" to="/login">
+        <Link className="font-semibold text-shell-fg underline-offset-4 hover:underline" to="/login">
           Anmelden
         </Link>
       </motion.p>

@@ -23,17 +23,26 @@ export function AppShell({ children, title = 'Hertha Auswärtsfahrten', wide = f
 
   return (
     <div className="relative z-10 min-h-dvh bg-transparent text-shell-fg">
-      <header className="relative z-10 sticky top-0 border-b border-shell-fg/10 bg-shell-bg/85 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-shell-fg/10 bg-shell-bg">
         <div className="accent-line absolute inset-x-0 top-0 h-px opacity-60" />
-        <div className={`mx-auto flex ${maxWidth} items-center justify-between gap-3 px-4 py-3 sm:px-6`}>
-          <div className="min-w-0">
-            <p className="font-display-wide text-[9px] text-shell-fg/40">Hertha BSC</p>
-            <h1 className="font-display truncate text-lg leading-tight sm:text-xl">{title}</h1>
-          </div>
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+          <Link
+            to="/"
+            aria-label="Hertha Auswärtsfahrten, zur Startseite"
+            className="group shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shell-cta-bg focus-visible:ring-offset-4 focus-visible:ring-offset-shell-bg"
+          >
+            <span className="font-display-wide block text-[9px] text-shell-fg/45 transition group-hover:text-shell-fg/65">
+              Hertha BSC
+            </span>
+            <span className="font-display block whitespace-nowrap text-lg leading-tight text-shell-fg transition group-hover:opacity-80 sm:text-xl">
+              Auswärtsfahrten
+            </span>
+          </Link>
           {/* Desktop-Navigation */}
-          <div className="hidden sm:flex shrink-0 items-center gap-1">
+          <div className="hidden shrink-0 items-center gap-1 lg:flex">
             <NavLink to="/" end className={navLinkClass}>Fahrten</NavLink>
             <NavLink to="/spieltag" className={navLinkClass}>Spieltag</NavLink>
+            <NavLink to="/rueckblicke" className={navLinkClass}>Rückblicke</NavLink>
             <NavLink to="/profil" className={navLinkClass}>Profil</NavLink>
             <Link
               to="/fahrten/neu"
@@ -53,13 +62,16 @@ export function AppShell({ children, title = 'Hertha Auswärtsfahrten', wide = f
           <button
             type="button"
             onClick={() => void signOut()}
-            className="sm:hidden rounded-lg px-3 py-1.5 text-sm font-medium text-shell-fg/50 transition-all duration-150 hover:bg-shell-fg/10 hover:text-shell-fg active:scale-[0.97]"
+            className="rounded-lg px-3 py-1.5 text-sm font-medium text-shell-fg/50 transition-all duration-150 hover:bg-shell-fg/10 hover:text-shell-fg active:scale-[0.97] lg:hidden"
           >
             Abmelden
           </button>
         </div>
       </header>
-      <main className={`relative z-10 mx-auto ${maxWidth} px-4 py-6 pb-24 sm:pb-8 sm:px-6`}>{children}</main>
+      <main className={`relative z-0 mx-auto ${maxWidth} px-4 py-6 pb-24 sm:px-6 lg:pb-8`}>
+        <h1 className="sr-only">{title}</h1>
+        {children}
+      </main>
       <BottomNav />
     </div>
   )

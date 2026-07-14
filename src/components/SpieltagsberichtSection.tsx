@@ -2,7 +2,6 @@ import { useState } from 'react'
 import type { JSONContent } from '@tiptap/core'
 import { BerichtEditor } from './BerichtEditor'
 import { BerichtViewer } from './BerichtViewer'
-import { BerichtBilderGalerie } from './BerichtBilderGalerie'
 import { DashboardSection } from './DashboardSection'
 import { ProfileAvatar } from './ProfileAvatar'
 import { StarRating } from './StarRating'
@@ -274,12 +273,6 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
 
               <BerichtViewer contentJson={bericht.content_json} />
 
-              <BerichtBilderGalerie
-                fahrtId={fahrtId}
-                currentUserId={isAuthor ? currentUserId : undefined}
-                readonly={!isAuthor}
-              />
-
               {isAuthor ? (
                 <div className="flex flex-wrap gap-2">
                   <button
@@ -338,11 +331,6 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
                   onChange={setDraft}
                 />
               </div>
-
-              <BerichtBilderGalerie
-                fahrtId={fahrtId}
-                currentUserId={currentUserId}
-              />
 
               {actionError ? (
                 <p className="rounded-lg bg-red-500/15 px-3 py-2 text-sm text-red-200" role="alert">

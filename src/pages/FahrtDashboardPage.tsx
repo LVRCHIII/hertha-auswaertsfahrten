@@ -10,6 +10,7 @@ import { MitbringlisteSection } from '../components/MitbringlisteSection'
 import { MitfahrerSection } from '../components/MitfahrerSection'
 import { ParkplatzSection } from '../components/ParkplatzSection'
 import { SpieltagsberichtSection } from '../components/SpieltagsberichtSection'
+import { FahrtFotoGalerie } from '../components/FahrtFotoGalerie'
 import { useAuth } from '../contexts/AuthContext'
 import { useFahrt } from '../hooks/useFahrt'
 import { useProfile } from '../hooks/useProfile'
@@ -186,7 +187,7 @@ export function FahrtDashboardPage() {
 
         <div className="relative px-5 pb-5 pt-3 sm:px-6 sm:pb-6">
           <MatchupWappen gegner={trip.gegner} size="md" />
-          <h1 className="font-display mt-4 text-3xl leading-[0.95] text-shell-fg sm:text-4xl">{trip.gegner}</h1>
+          <h2 className="font-display mt-4 text-3xl leading-[0.95] text-shell-fg sm:text-4xl">{trip.gegner}</h2>
 
           <dl className="mt-5 grid gap-x-8 gap-y-3 text-sm sm:grid-cols-3">
             <div>
@@ -399,6 +400,10 @@ export function FahrtDashboardPage() {
           currentUserId={user?.id}
           gegner={trip.gegner}
         />
+      </div>
+
+      <div className="mt-4">
+        <FahrtFotoGalerie fahrtId={trip.id} currentUserId={user?.id} />
       </div>
     </AppShell>
   )

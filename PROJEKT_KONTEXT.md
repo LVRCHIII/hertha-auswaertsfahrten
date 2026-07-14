@@ -1,24 +1,31 @@
 # Hertha Auswärtsfahrten Planer — Projekt-Kontext
 
-> **Ort:** `hertha-auswaertsfahrten/PROJEKT_KONTEXT.md` (im Repo, versioniert)
->
-> **Neuer Cursor-Chat:** `@PROJEKT_KONTEXT.md` anhängen oder Inhalt als erstes einfügen.
->
-> **Aktualisierung:** Nach größeren Features fragen: *„Aktualisiere PROJEKT_KONTEXT“*
+> **Verifizierter Stand:** 14. Juli 2026
+> Dieser Stand wurde gegen Quellcode, Migrationen, Tests und Git-Historie geprüft. Externe Zustände wie produktives Deployment oder bereits ausgeführte Supabase-Migrationen lassen sich aus dem Repository allein nicht sicher bestätigen.
 
 ---
 
 ## Projektbeschreibung
 
-Web-App für eine kleine Gruppe Hertha BSC Fans (3–6 Leute) aus Berlin: gemeinsame Auswärtsfahrten planen. Ersetzt Organisation über Discord — Kalender + Dashboard pro Fahrt.
+Mobile-first Web-App für eine kleine Gruppe Hertha-BSC-Fans aus Berlin. Sie bündelt Planung, Spieltag und Erinnerungen an gemeinsame Auswärtsfahrten und ersetzt die bisherige Organisation über Discord.
 
-**Kern-Features (Zielbild):**
-- Monatskalender + Listenübersicht aller Auswärtsfahrten
-- Fahrt-Dashboard: Spielinfo, Zeitplanung, Route, Mitfahrer, Mitbringliste, Parkplatz
-- Abfahrtszeit via Google Maps (Anpfiff − Fahrtzeit − Puffer)
-- Persönliche Abfahrt von Zuhause zum Treffpunkt
-- Gewählter Parkplatz als Routenziel (statt Stadion)
-- Login mit E-Mail + Passwort (Supabase)
+### Bereits umgesetzt
+
+- E-Mail-/Passwort-Login und Registrierung über Supabase
+- Fahrten als Liste und Monatskalender, inklusive hervorgehobener nächster Fahrt
+- Mobile Spieltag-Ansicht mit Ablauf und Schnellaktionen
+- Fahrt-Dashboard mit Anpfiff, Treffpunkt, Google-Route, Abfahrtsberechnung und Kartenansicht
+- Abfahrtszeit-Abstimmung, persönliche Abfahrt von Zuhause und auswählbarer Parkplatz als Routenziel
+- Mitfahrer, Mitbringliste, Profilbild und Anzeigename
+- Auswärtsstatistik mit Teilnahme, Kilometern und Ranking
+- Spieltagsberichte mit Tiptap, Ergebnis, Zuschauerzahl und drei Bewertungen
+- Eigenständige Fahrt-Fotogalerie mit Multi-Upload, Kamera, Drag-and-drop und Spotlight-Lightbox
+- Geschützte Rückblicke-Route mit allen Fotos als chronologischem Onepager, gruppiert nach Fahrt sowie durchsuch- und nach Datum filterbar
+- Futbology-CSV-Import sowie manuell erfasste besuchte Spiele
+- Saisonexport als DOCX
+- Spielplan-Import über API-Football und Vereinsdatenbank mit fünf Ligen
+- Fünf umschaltbare Hertha-Themes, PWA-Grundlage, Toasts, Mobile-Bottom-Navigation
+- „Matchday Editorial“-Design mit Archivo/Outfit, Glasflächen, Framer Motion und GSAP
 
 ---
 
@@ -26,337 +33,230 @@ Web-App für eine kleine Gruppe Hertha BSC Fans (3–6 Leute) aus Berlin: gemein
 
 | Bereich | Technologie |
 |---|---|
-| Frontend | React 19 + Vite 6 + TypeScript |
-| Styling | Tailwind CSS 4 |
+| Frontend | React 19, Vite 6, TypeScript 5.8 |
+| Styling | Tailwind CSS 4, CSS Custom Properties |
 | Routing | React Router 7 |
-| Backend / DB | Supabase (Postgres + RLS) |
+| Backend / DB | Supabase Postgres mit RLS |
 | Auth | Supabase Auth |
-| Routen | Google Maps JavaScript API + **Directions API** |
-| Parkplatz-Suche | **Places API (New)** — `Place.searchNearby()` (nicht Legacy `PlacesService`) |
-| Profilbilder | Supabase Storage (`avatars`) |
-| Mobile (geplant) | PWA |
-| Hosting | noch nicht deployed |
+| Storage | Supabase Storage für Avatare und Fahrtfotos |
+| Karten / Route | Google Maps JavaScript API, Directions API |
+| Parkplatz-Suche | Places API (New), `Place.searchNearby()` |
+| Rich Text | Tiptap 3 |
+| Dokumentexport | `docx` |
+| Fotogalerie | Spotlight.js 0.7.8 als lazy geladene Lightbox |
+| Animation | Framer Motion, GSAP + ScrollTrigger, CSS |
+| Tests | Vitest |
+| Mobile | Installierbare PWA-Grundlage mit eigenem Service Worker |
+| Hosting | `vercel.json` vorhanden; tatsächlicher Deployment-Status nicht aus dem Repo verifizierbar |
 
 ---
 
-## Repository & Branch
+## Repository und lokaler Start
 
 | | |
 |---|---|
-| **GitHub** | https://github.com/LVRCHIII/hertha-auswaertsfahrten |
-| **Hauptentwicklung** | `cursor/milestone-1-auth-calendar-fahrten` |
-| **Supabase-Projekt** | `hertha-auswaertsfahrten` · Ref `rjvffwjkdnbqevrkycem` · Region `eu-central-2` |
-
----
-
-## Lokale Entwicklung
+| GitHub | `https://github.com/LVRCHIII/hertha-auswaertsfahrten` |
+| Entwicklungsbranch | `cursor/milestone-1-auth-calendar-fahrten` |
+| Supabase-Projekt | `hertha-auswaertsfahrten`, Ref `rjvffwjkdnbqevrkycem`, Region `eu-central-2` |
 
 ```bash
 npm install
-cp .env.example .env   # Keys eintragen
-npm run dev            # Port 5173 (fest), beendet vorher alte Prozesse auf 5173
-npm test               # Vitest Unit-Tests
+cp .env.example .env
+npm run dev       # Port 5173, beendet vorher einen alten Prozess auf diesem Port
+npm test          # Vitest
+npm run build     # TypeScript + Produktions-Build
 ```
 
-- **URL:** http://localhost:5173
-- **Vite:** `strictPort: true`, Port 5173 — weicht nicht mehr auf 5174/5177 aus
-- **`npm run dev:stop`:** beendet Prozesse auf Port 5173 (wird von `npm run dev` automatisch aufgerufen)
+### Umgebungsvariablen
 
-### `.env`
-
-```
+```dotenv
 VITE_SUPABASE_URL=https://rjvffwjkdnbqevrkycem.supabase.co
-VITE_SUPABASE_ANON_KEY=<anon public key>
-VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
+VITE_SUPABASE_ANON_KEY=<anon-public-oder-publishable-key>
+VITE_GOOGLE_MAPS_API_KEY=<google-maps-api-key>
+VITE_API_FOOTBALL_KEY=<optional-fuer-spielplan-import>
 ```
 
-Nach `.env`-Änderungen: Dev-Server neu starten.
-
-### Google Cloud (API-Key)
-
-**APIs aktivieren:**
-- Maps JavaScript API
-- Directions API
-- **Places API (New)** — nicht die ältere „Places API“
-
-**HTTP referrers (einmalig, Port ist fest):**
-- `http://localhost:5173/*`
-- `http://127.0.0.1:5173/*`
-
-Kein Port-Wildcard möglich. Optional für Dev: zweiter Key nur mit API-Einschränkung (ohne Referrer).
-
-**Typische Fehler:**
-- `RefererNotAllowedMapError` → Referrer für aktuelle Origin ergänzen
-- Route hängt bei „wird berechnet“ → oft derselbe Referrer-Fehler (Callback kommt nicht)
-- Parkplatz 404 → Migration `parkplaetze` fehlt in Supabase
-
----
-
-## Supabase-Migrationen (Reihenfolge)
-
-Im SQL Editor ausführen (oder per Supabase MCP `apply_migration`):
-
-| Datei | Inhalt |
-|-------|--------|
-| `20250515120000_create_fahrten.sql` | Tabelle `fahrten` |
-| `20250516120000_milestone3_social.sql` | `profiles`, `mitfahrer`, `mitbringliste` |
-| `20250516130000_profile_avatar_home.sql` | `avatar_url`, `home_address`, Storage `avatars` |
-| `20250516140000_fix_social_profile_fkeys.sql` | FK `user_id` → `profiles` |
-| `20250516150000_milestone4_parkplaetze.sql` | Tabelle `parkplaetze` |
-| `20250516160000_parkplaetze_distance_cost.sql` | `distance_meters`, `cost_kind` |
-| `20260518104802_milestone10_auswaertsstatistik.sql` | `fahrten.route_distance_meters` |
-
-### Tabelle `parkplaetze`
-
-- Pro Fahrt mehrere Einträge; **max. einer** mit `is_selected = true` (Unique-Index)
-- `source`: `google` | `manual`
-- `place_id`, `lat`, `lng` (von Google)
-- `distance_meters` (Luftlinie zum geocodierten Stadion)
-- `cost_kind`: `free` | `paid` | `mixed` | `unknown` (aus Google `parkingOptions`)
-- RLS: alle Authenticated lesen/bearbeiten; Insert nur `created_by = auth.uid()`
+Für Google müssen Maps JavaScript API, Directions API und Places API (New) aktiviert sein. Lokale Referrer: `http://localhost:5173/*` und `http://127.0.0.1:5173/*`.
 
 ---
 
 ## App-Routen
 
-| Route | Beschreibung |
-|-------|--------------|
-| `/` | Startseite mit Umschalter Kalender/Liste: Monatskalender und kommend/vergangen |
-| `/spieltag` | Mobile-first Spieltag-Modus für die nächste Auswärtsfahrt |
-| `/fahrten/neu` | Fahrt anlegen (Gegner-Autocomplete, Wappen, Anpfiff) |
-| `/fahrten/:id` | Fahrt-Dashboard |
-| `/profil` | Anzeigename, Avatar, Abfahrt von Zuhause |
-| `/login`, `/register` | Supabase Auth |
+| Route | Status | Inhalt |
+|---|---|---|
+| `/` | geschützt | Fahrten, besuchte Spiele, Kalender, Statistik |
+| `/spieltag` | geschützt | Mobile Kurzansicht der nächsten Fahrt |
+| `/rueckblicke` | geschützt | Chronologisches Fotoarchiv nach Fahrt mit Suche und Datumsfilter |
+| `/fahrten/neu` | geschützt | Fahrt anlegen und Spielplan importieren |
+| `/fahrten/:id` | geschützt | Vollständiges Fahrt-Dashboard |
+| `/profil` | geschützt | Profil, Theme, Futbology-Import, Saisonexport |
+| `/login` | öffentlich | Anmeldung |
+| `/register` | öffentlich | Registrierung |
+| `/design-preview` | nur Development | Designprüfung mit Mock-Daten ohne Login |
+
+Alle unbekannten Routen werden aktuell auf `/` umgeleitet; eine eigene 404-Seite gibt es nicht.
 
 ---
 
-## Fahrt-Dashboard (`/fahrten/:id`) — Logik
+## Supabase-Migrationen in Reihenfolge
 
-### Abfahrt & Route (oben)
+| Datei | Inhalt |
+|---|---|
+| `20250515120000_create_fahrten.sql` | `fahrten` |
+| `20250516120000_milestone3_social.sql` | `profiles`, `mitfahrer`, `mitbringliste` |
+| `20250516130000_profile_avatar_home.sql` | Profilfelder und Avatar-Storage |
+| `20250516140000_fix_social_profile_fkeys.sql` | Profil-Fremdschlüssel |
+| `20250516150000_milestone4_parkplaetze.sql` | `parkplaetze` |
+| `20250516160000_parkplaetze_distance_cost.sql` | Entfernung und Kostenart für Parkplätze |
+| `20250517120000_treffpunkt_bestaetigt.sql` | Treffpunkt-Bestätigung |
+| `20250517130000_abfahrt_abstimmungen.sql` | Abfahrt-Voting |
+| `20260518104802_milestone10_auswaertsstatistik.sql` | gespeicherte Routendistanz |
+| `20260522140000_milestone11_spieltagsberichte.sql` | Tiptap-Berichte und Bericht-Storage |
+| `20260525120000_milestone12_futbology.sql` | importierte Spiele |
+| `20260602120000_milestone20_bewertungen.sql` | Ergebnis, Zuschauer, Bewertungen |
+| `20260602140000_bericht_bilder.sql` | separate Berichtbilder-Galerie |
+| `20260602160000_futbology_manual.sql` | manuelle Spiele und `source` |
+| `20260609120000_fix_bericht_bilder_fkey.sql` | Berichtbilder direkt an `fahrten` binden |
 
-1. **Treffpunkt → Ziel**
-   - Standard-Ziel: **Stadion** (`qualifyDestinationAddress`)
-   - Wenn ein Parkplatz **gewählt** (`is_selected`): Ziel = Parkplatz (Koordinaten oder Adresse)
-   - `getRouteEndpoints(fahrt, selectedParkplatz)` in `src/lib/routeAddresses.ts`
-   - Hinweis in UI: „Routenziel: gewählter Parkplatz …“
+Die Migration `20260609120000_fix_bericht_bilder_fkey.sql` wurde am 14. Juli 2026 laut Nutzer im Remote-Supabase-Projekt erfolgreich ausgeführt. Der Status der übrigen Remote-Migrationen muss bei Bedarf weiterhin separat geprüft werden.
 
-2. **Puffer** 1,5 h oder 2 h vor Anpfiff → empfohlene Abfahrtszeit am Treffpunkt
+---
 
-3. **Google Directions** via `useRoutePlan` + `DirectionsService` (Legacy; Deprecation-Warnung in Konsole — noch OK)
+## Fahrt-Dashboard — zentrale Logik
 
-4. **Zuhause → Treffpunkt** (`HomeDepartureBlock`), wenn `home_address` im Profil
+1. `getRouteEndpoints()` ermittelt Treffpunkt und Ziel. Ein gewählter Parkplatz ersetzt das Stadion als Routenziel.
+2. `useRoutePlan()` berechnet Strecke und Dauer über Google Directions.
+3. Abfahrtszeit = Anpfiff − Routendauer − 90/120 Minuten Puffer.
+4. Das Abstimmungsergebnis überschreibt die berechnete Empfehlung als effektive Abfahrt.
+5. Bei hinterlegter Wohnadresse wird zusätzlich Zuhause → Treffpunkt berechnet.
+6. Die Routendistanz wird für Statistiken auf `fahrten.route_distance_meters` gespeichert.
+7. Im selben Dashboard liegen Mitfahrer, Mitbringliste, Parkplatz, Bericht, Bewertungen und Bildergalerie.
 
-### Parkplatz (unten)
+---
 
-- State: `useParkplaetze(fahrtId)` wird in **FahrtDashboardPage** gehalten (für Route + UI)
-- **Suche:** `searchParkingNearStadium(stadion)` → `Place.searchNearby` mit `includedPrimaryTypes: ['parking']`
-- **Liste:** Einträge sortiert (gewählter oben), **keine Doppelanzeige**
-- Gewählter Eintrag: blau hervorgehoben, Badge „Routenziel“, Buttons „Abwählen“ / „Entfernen“
-- **Meta:** Entfernung (Luftlinie) + Kosten-Badge (`ParkingMeta`)
-- Manuell hinzugefügte Parkplätze: ohne Entfernung/Kosten, bis neu aus Google-Suche
+## Verifizierter Milestone-Stand
 
-### Social
+Die Nummerierung wurde im Lauf des Projekts mehrfach neu belegt. Der alte Projektkontext führte M11–M15 noch als Bericht, Bewertungen, Archiv, Erinnerungen und Gruppenverwaltung. Im aktuellen Code stehen dieselben Nummern teilweise für andere Features. Maßgeblich ist deshalb folgende aktuelle Zuordnung:
 
-- Mitfahrer, Mitbringliste (wie Milestone 3)
+| Bereich | Status | Verifizierter Inhalt |
+|---|---|---|
+| M1–M10 | fertig im Code | Basis, Dashboard, Social, Parkplatz, Kalender, PWA-Grundlage, Spieltag, Statistik |
+| M11 | fertig im Code | Spieltagsbericht mit Tiptap |
+| M12 | fertig im Code | Futbology-Integration |
+| M13 | fertig im Code | Theme-System mit fünf Themes |
+| M14 | fertig im Code | Toast-Notifications |
+| M15 | fertig im Code | Mobile Bottom-Navigation |
+| M16 | fertig im Code | Theme-Konsistenz über CSS-Variablen |
+| M17 | fertig im Code | Karten-, Skeleton- und Layout-Polish |
+| M18 | fertig im Code | Auth-Animation und Login-Polish |
+| M19 | fertig im Code | Theme-Texturen |
+| M20 | fertig im Code | Ergebnis, Zuschauer und drei Spieltagsbewertungen |
+| M21 | fertig im Code | Vereinsdatenbank und Spielplan-Import |
+| M22 | fertig im Code | Bericht-Polish, Bildergalerie, Saison-DOCX |
+| M23 | fertig im Code | Wappen in Spieleliste, manuelles Spiel |
+| M24 | fertig im Code | Eigenständige Fahrt-Fotogalerie mit Spotlight-Lightbox |
+| Foto-Rückblicke | fertig im Code | Eigene Archivroute, Fahrtgruppen, Suche, Datumsfilter und gemeinsame Lightbox |
+| Redesign | fertig im Code | „Matchday Editorial“ mit Archivo, Glasflächen und GSAP |
+
+Nicht gleichbedeutend mit „fertig deployed“: Repository-Code und Build sind vorhanden; Remote-Datenbank und Produktion müssen separat geprüft werden.
+
+---
+
+## Offene Roadmap
+
+### M25 — Zwischenstopps / Reiseplan
+
+Sortierbare Stopps mit Name, Adresse, Zeitversatz und Notiz. Noch nicht implementiert.
+
+### M26 — Stadioninfos
+
+Strukturiertes Freitextfeld für Gästeblock, Catering, ÖPNV und Hinweise. Noch nicht implementiert.
+
+### M27 — belastbarer PWA-Offline-Modus
+
+Workbox beziehungsweise `vite-plugin-pwa`, gezielte Cache-Strategien und Offline-Fallback. Die aktuelle PWA-Grundlage cached nur den App-Shell und bereits geladene Same-Origin-Ressourcen; Supabase-Daten der Fahrt sind nicht offline verfügbar.
+
+### M28 — manuelle Fahrten vollständig absichern
+
+Berichte und Bewertungen für jede manuell angelegte Fahrt zuverlässig automatisch anlegen. Der aktuelle API-Layer kann Berichte einfügen oder aktualisieren; der End-to-End-Fall bleibt laut Roadmap zu prüfen.
+
+### M29 — Aktivitätsverlauf
+
+Timeline für Zu-/Absagen sowie Änderungen an Parkplatz, Treffpunkt und Bericht. Noch nicht implementiert.
+
+### Backlog
+
+- Fahnenmeer-Theme bei ausreichend hochauflösendem Asset
+- API-Football durch OpenLigaDB ersetzen; der Free-Plan deckt aktuelle Saisons nicht zuverlässig ab
+- Push-Notifications via Supabase Realtime + Web Push
+- Echte Gruppen, Einladungen und Rollen/Berechtigungen aus der älteren Roadmap
+- Vollständiges Saisonarchiv mit Berichten, Bewertungen und Statistiken; die neue Rückblicke-Route deckt zunächst das gemeinsame Fotoarchiv ab
+- Discord-Integration vielleicht später: zunächst ausgehende Webhook-Benachrichtigungen; keine vollständige Chat-Synchronisierung
+
+---
+
+## Design-System
+
+- Standardfarben: Dunkelblau `#003264`, Mittelblau `#005BAC`, Weiß
+- Fünf Theme-Varianten über CSS Custom Properties und `ThemeContext`
+- Body-Schrift: Outfit; Display/Zahlen: Archivo Variable
+- Dunkle opake Glas-Karten, Akzentlinie, dezentes Noise und optionale Theme-Texturen
+- Framer Motion für Auth-/UI-Übergänge; GSAP für Count-up und Stagger-Reveals
+- Login/Registrierung: kein großer Hintergrundschriftzug mehr; kleine, zurückhaltende Hertha-Embleme und ein Lichtfeld reagieren auf feine Mausbewegungen. Touch und `prefers-reduced-motion` bleiben ruhig.
 
 ---
 
 ## Wichtige Dateien
 
-```
-src/
-├── pages/
-│   ├── HomePage.tsx              Startseite mit Kalender/Liste
-│   ├── SpieltagPage.tsx          Mobile Kurzansicht für nächste Fahrt
-│   ├── FahrtAnlegenPage.tsx      Formular + VereinAutocomplete
-│   ├── FahrtDashboardPage.tsx    Route, Parkplatz-State, Social
-│   ├── ProfilPage.tsx
-│   ├── LoginPage.tsx / RegisterPage.tsx
-├── components/
-│   ├── CalendarView.tsx          Monatskalender mit Fahrten
-│   ├── ParkplatzSection.tsx      Parkplatz-UI (Props von useParkplaetze)
-│   ├── ParkingMeta.tsx           Entfernung + Kosten-Badges
-│   ├── MitfahrerSection.tsx / MitbringlisteSection.tsx
-│   ├── HomeDepartureBlock.tsx
-│   ├── FahrtCard.tsx / MitfahrerAvatarStack.tsx
-│   └── DashboardSection.tsx
-├── hooks/
-│   ├── useFahrten.ts / useFahrt.ts
-│   ├── useRoutePlan.ts           Google Directions
-│   ├── useParkplaetze.ts         CRUD Parkplätze
-│   ├── useParkingSearch.ts       Places-Suche (lokal, kein DB)
-│   ├── useMitfahrer.ts / useMitbringliste.ts / useProfile.ts
-│   └── useMitfahrerOverview.ts   Avatare auf Übersicht
-├── lib/
-│   ├── routeAddresses.ts         getRouteEndpoints (+ Parkplatz-Ziel)
-│   ├── parkingPlaces.ts          Places API (New) Nearby Search
-│   ├── parkingApi.ts             Supabase parkplaetze
-│   ├── parkingInfo.ts            Haversine, cost_kind aus parkingOptions
-│   ├── googleMapsLoader.ts       routes + places + core Libraries
-│   ├── googleMapsErrors.ts       Referrer-Hinweise
-│   ├── calendar.ts               Monatsraster + Fahrten nach Tag
-│   ├── spieltag.ts               Nächste Fahrt, Tageslabel, Timeline
-│   ├── departureCalc.ts          Abfahrtszeit, formatDistance, Maps-URLs
-│   ├── socialApi.ts / profilesApi.ts / fahrtenApi.ts
-│   └── defaultTreffpunkt.ts      Pendlerparkplatz Schwielowsee
-├── types/
-│   ├── fahrt.ts / parking.ts / social.ts / profile.ts
-└── data/vereine.ts               2. Bundesliga 25/26 + Wappen
-public/
-├── manifest.webmanifest          PWA-Metadaten
-├── sw.js                         Service Worker für App-Shell/offline Fallback
-└── icons/hertha-app-icon.svg     App-/Favicon
+```text
+src/App.tsx                          Routing und Provider
+src/index.css                       Themes, Typografie, Oberflächen, Auth-Hintergrund
+src/components/AppShell.tsx         Desktop-Shell und Header
+src/components/BottomNav.tsx        Mobile Navigation
+src/components/AuthLayout.tsx       Login-/Register-Rahmen und Pointer-Reaktion
+src/pages/HomePage.tsx              Fahrten, Spiele, Kalender, Statistik
+src/pages/SpieltagPage.tsx          Spieltag-Kurzansicht
+src/pages/FahrtAnlegenPage.tsx      Fahrt und Spielplan-Import
+src/pages/FahrtDashboardPage.tsx    zentrale Fahrtlogik
+src/pages/RueckblickePage.tsx       chronologisches Fotoarchiv + Filter
+src/pages/ProfilPage.tsx             Profil, Themes, Import und Export
+src/components/SpieltagsberichtSection.tsx
+src/components/FahrtFotoGalerie.tsx  eigenständige Fotogalerie + Spotlight
+src/lib/fotoArchivApi.ts             Fahrten und Fotos für Rückblicke laden
+src/lib/photoLightbox.ts             gemeinsam genutzte Spotlight-Kapselung
+src/components/SaisonExport.tsx
+src/components/SpielplanImport.tsx
+src/hooks/                           Daten-/UI-Hooks
+src/lib/                             Supabase-APIs und Fachlogik
+src/data/vereine.ts                  Vereinsdatenbank
+supabase/migrations/                 Datenbankschema und RLS
+public/sw.js                         aktuelle PWA-Grundlage
 ```
 
 ---
 
-## Milestones & Status
+## Bekannte Risiken und technische Schulden
 
-### ✅ Milestone 1 — Basis
-Auth, Kalender `/`, Fahrt anlegen, Hertha-Design `#003264` / `#005BAC`
-
-### ✅ Milestone 2 — Fahrt-Dashboard
-Spielinfo, Abfahrtszeit (Treffpunkt → Stadion), Google Maps, Puffer, Standard-Treffpunkt Schwielowsee, Fahrt löschen
-
-### ✅ Milestone 3 — Social & Profil
-Mitfahrer, Mitbringliste, Profil (Avatar, Zuhause-Adresse), persönliche Abfahrt Zuhause → Treffpunkt, Mitfahrer-Avatare auf Karten, Vereins-Autocomplete + Wappen
-
-### ✅ Milestone 4 — Parkplatz (vollständig)
-- Google Places (New): Parkplätze nahe Stadion, zur Liste hinzufügen
-- Entfernung zum Stadion (Luftlinie) + Kosten-Hinweis (kostenlos/kostenpflichtig/unbekannt)
-- Manuell: Name + Adresse
-- **Gewählter Parkplatz = Routenziel** (Abfahrt & Route oben)
-- UI: eine Liste, Auswahl farbig oben, ohne Duplikat-Kasten
-
-### ✅ Milestone 5 — Kalenderansicht
-- Startseite mit Umschalter **Kalender / Liste**
-- Monatsansicht im Hertha-Design, Navigation vorheriger Monat / Heute / nächster Monat
-- Spiele als anklickbare Kalendereinträge (`Anpfiff + Gegner`)
-- Abgestimmte Abfahrtszeit erscheint im Kalendereintrag, wenn vorhanden
-
-### ✅ Milestone 6 — Polish-Basis
-- PWA-Metadaten: Manifest, Theme-Farbe, App-Icon, Mobile-App-Tags
-- Service Worker: App-Shell/offline Fallback nur für gleiche Origin; keine Supabase-/Google-API-Caches
-- Test-Setup mit Vitest (`npm test`)
-- Erste Unit-Tests für Kalenderlogik, Abfahrts-/Maps-URL-Helfer und Parkplatz-Metadaten
-
-### ✅ Milestone 9 — Spieltag-Modus
-- Neue Route `/spieltag` als mobile Kurzansicht für die nächste Auswärtsfahrt
-- Hero mit Gegner, Datum, Tageslabel („Heute/Morgen/in X Tagen“) und nächstem Zeitpunkt
-- Schnellaktionen: Route, Treffpunkt, gewählter Parkplatz, vollständiges Dashboard
-- Kompakter Ablauf aus Zuhause-Abfahrt (wenn Profiladresse + Route), Treffpunkt-Abfahrt, Ankunft/Puffer, Anpfiff
-- Kompakte Mitfahrer- und Mitbringliste-Vorschau
-- Unit-Tests für Spieltag-Helfer (`pickNextSpieltagFahrt`, Tageslabel, Timeline)
-
-### ✅ Milestone 10 — Auswärtsstatistik
-- Startseiten-Karte mit persönlicher und gruppenweiter Statistik
-- Ranking: Platz, Name, Anzahl Auswärtsfahrten, Kilometer
-- Statistik zählt nur Fahrten, bei denen der User in `mitfahrer` steht („Ich fahre mit“)
-- Längste Fahrt pro User und gruppenweit hervorgehoben
-- Kilometer pro Fahrt dauerhaft als `fahrten.route_distance_meters` gespeichert
-- Tests für Teilnahmefilter, Ranking-Sortierung, fehlende Distanzen und Kilometerformatierung
-
-### 🔲 Milestone 11 — Spieltagsbericht mit Rich-Text & Bildern
-- Neuer Erinnerungsbereich pro Fahrt im Dashboard
-- Rich-Text-Editor mit Toolbar (z. B. Tiptap): Überschriften, Fett/Kursiv, Listen, Zitate, Links
-- Bilder in den Fließtext hochladen und inline einfügen
-- Bericht strukturiert speichern (`content_json`), gerenderten Output kontrolliert/sicher anzeigen
-- Supabase Storage Bucket für Berichtbilder
-
-### 🔲 Milestone 12 — Bewertungen pro Fahrt
-- Teilnehmer bewerten Fahrt, Stadion, Mannschaft, Stimmung, Essen und Gesamt mit 1-5 Sternen
-- Nur Mitfahrer dürfen eine Fahrt bewerten
-- Eigene Bewertung bearbeiten, Durchschnitt je Kategorie anzeigen
-- Highlights später nutzbar: beste Stimmung, bestes Stadion, beste Gesamtfahrt
-
-### 🔲 Milestone 13 — Saisonarchiv & Erinnerungsseite
-- Neue Archiv-/Saisonroute für abgeschlossene Auswärtsfahrten
-- Erinnerungsseite pro Fahrt mit Bericht, Bildern, Bewertungen und Teilnehmern
-- Gruppenstatistik: gesamte Auswärtskilometer, besuchte Stadien, aktivste Mitfahrer
-- Top-Fahrten nach Bewertung und Saisonrückblick
-
-### 🔲 Milestone 14 — Erinnerungen & Hinweise
-- PWA-/Browser-Erinnerungen vor Fahrt und Abfahrt
-- Hinweise bei Änderungen an Treffpunkt, Parkplatz oder Anpfiff
-- Reminder für offene Mitbringliste
-
-### 🔲 Milestone 15 — Gruppenverwaltung
-- Feste Gruppe statt globaler Auth-User-Sicht
-- Einladungslinks für neue Mitglieder
-- Rollen/Berechtigungen für Löschen, finale Zeiten, Berichte und Verwaltung
+- Die letzte lokale Verifikation ergab 15 bestandene Tests in 5 Dateien und einen erfolgreichen Produktions-Build.
+- Der Haupt-JavaScript-Chunk liegt bei rund 1,61 MB minifiziert; Vite warnt vor fehlendem Code-Splitting.
+- Tests decken hauptsächlich reine Fachlogik ab; Komponenten-, Auth-, Supabase- und End-to-End-Tests fehlen.
+- `DirectionsService` ist veraltet und sollte mittelfristig migriert werden.
+- `VITE_API_FOOTBALL_KEY` wird clientseitig ausgeliefert und der Free-Plan ist saisonal eingeschränkt.
+- Spotlight.js ist sehr klein und gekapselt, wird upstream aber seit 2021 nicht mehr aktiv gepflegt; die Lightbox bleibt deshalb austauschbar.
+- Die Fahrtfotos nutzen vorerst den öffentlichen Legacy-Bucket `bericht-images`. Falls Bilder nur für Fahrtteilnehmer sichtbar sein sollen, sollte er später durch einen privaten Bucket mit signierten URLs ersetzt werden.
+- `npm audit` meldet eine hohe `ws`-Lücke im bestehenden Tiptap/`happy-dom`-Abhängigkeitsbaum; Spotlight selbst bringt keine weiteren Pakete mit.
+- `README.md` und Teile von `CLAUDE.md` enthalten weiterhin ältere oder widersprüchliche Statusangaben; diese Datei ist der aktuell verifizierte Überblick.
+- Keine eigene 404-Seite, keine Gruppenisolierung und keine Rollenverwaltung.
+- Remote-Migrationen und produktiver Deployment-Status müssen außerhalb des Repositories geprüft werden.
 
 ---
 
-## Geplantes Erinnerungsarchiv — Datenmodell-Leitplanken
+## Sinnvolle nächste Schritte
 
-### Auswärtsstatistik
-
-- Teilnahmequelle: `mitfahrer` bleibt maßgeblich. Nur „Ich fahre mit“ zählt für persönliche Spiele/Kilometer.
-- Distanzquelle: Kilometer pro Fahrt dauerhaft speichern, z. B. `route_distance_meters` auf `fahrten` oder als eigene Statistik-Basistabelle.
-- Keine Live-Abhängigkeit von Google Maps für Rankings: Routenberechnung darf Werte vorschlagen, Statistik liest gespeicherte Werte.
-- Startseite zeigt Ranking und persönliche Statistik; spätere Archivseite kann dieselben Aggregationen wiederverwenden.
-
-### Spieltagsberichte
-
-- Pro Fahrt ein Bericht in einer neuen Tabelle, z. B. `spieltagsberichte`.
-- Inhalt primär als strukturiertes Editor-JSON speichern (`content_json`), nicht nur als unsicherer HTML-String.
-- Optional zusätzlich `content_text` für Suche/Vorschau und `updated_at`/`author_id` für Historie.
-- Rich-Text-Editor geplant mit Toolbar und Inline-Bildern; Tiptap passt gut zu React und strukturiertem JSON.
-
-### Berichtbilder
-
-- Supabase Storage Bucket, z. B. `bericht-images`.
-- Bilder werden im Editor hochgeladen und als Nodes im Bericht referenziert.
-- RLS/Storage-Regeln: Lesen für authenticated; Upload/Löschen zunächst für authenticated bzw. Autor, später rollenbasiert über Gruppenverwaltung.
-
-### Bewertungen
-
-- Neue Tabelle `fahrt_bewertungen` mit Unique-Key `(fahrt_id, user_id)`.
-- Kategorien: `fahrt`, `stadion`, `mannschaft`, `stimmung`, `essen`, `gesamt` mit 1-5 Sternen.
-- Nur Mitfahrer sollen bewerten dürfen; das sollte in API und idealerweise per RLS abgesichert werden.
-- Durchschnittswerte werden im Dashboard angezeigt und später im Saisonarchiv für Highlights genutzt.
+1. Fahrtgalerie und Rückblicke mit echten Bildern auf Desktop, Mobile und in allen fünf Themes abnehmen.
+2. Entscheiden, ob Fahrtfotos künftig nur für Fahrtteilnehmer sichtbar sein sollen; dafür wäre privater Storage nötig.
+3. Danach M25 (Zwischenstopps) oder zuerst die technische Stabilisierung mit Code-Splitting und breiteren Tests angehen.
 
 ---
 
-## Design
-
-- Primär: `#003264` · Sekundär: `#005BAC` · Akzent: Weiß
-- Sprache: Deutsch · Mobile-first
-- `AppShell` mit Header (Spieltag, Profil, + Fahrt, Abmelden)
-
----
-
-## Bekannte Punkte / Fallstricke
-
-| Problem | Lösung |
-|---------|--------|
-| Auth „Failed to fetch“ | `.env` mit Supabase-URL + Anon-Key |
-| Maps `RefererNotAllowedMapError` | Referrer `http://localhost:5173/*` in Google Cloud |
-| Port 5173 belegt | `npm run dev` stoppt alten Prozess; sonst anderen Prozess beenden |
-| Parkplatz-Tabelle fehlt | Migration `20250516150000_…` |
-| Spalten `distance_meters`/`cost_kind` fehlen | Migration `20250516160000_…` |
-| Places-Suche schlägt fehl | **Places API (New)** aktivieren, nicht Legacy |
-| Adblocker | `maps.googleapis.com` für localhost erlauben |
-| Alte Parkplätze ohne Meta | Entfernen & neu aus Google-Suche hinzufügen |
-| `DirectionsService` deprecated | Warnung in Konsole; funktioniert noch |
-
----
-
-## Nicht im Scope (v1.0)
-
-Chat, Tickets, Kostenaufteilung/Fahrzeugverwaltung, native Apps, Discord, automatischer Spielplan-Import
-
-Kosten-/Auto-Features sind bewusst nicht im Milestone-Katalog, da die Gruppe mit einem festen Firmenwagen fährt und Spritkosten nicht relevant sind.
-
----
-
-## Nächster Schritt
-
-**Milestone 11:** Spieltagsbericht mit Rich-Text & Bildern umsetzen.
-
-**Beispiel-Prompt für neuen Chat:**
-> Ich arbeite an der Hertha Auswärtsfahrten App. Kontext: @PROJEKT_KONTEXT.md — Milestone 1–6, 9 und 10 sind fertig. Der neue Katalog sieht Milestone 11 Spieltagsberichte, 12 Bewertungen und 13 Saisonarchiv vor. Bitte Milestone 11 umsetzen.
-
----
-
-*Zuletzt aktualisiert: Mai 2026 (Katalog erweitert: Auswärtsstatistik & Erinnerungsarchiv)*
+*Zuletzt gegen den Code geprüft und aktualisiert: 14. Juli 2026.*

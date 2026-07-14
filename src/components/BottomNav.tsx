@@ -36,6 +36,16 @@ function PlusIcon() {
   )
 }
 
+function GalleryIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <circle cx="16.5" cy="8.5" r="1.5" />
+      <path d="m5.5 17 4.5-4.5 3.5 3 2.2-2.2 2.8 3.7" />
+    </svg>
+  )
+}
+
 function UserIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
@@ -49,12 +59,13 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Fahrten', icon: <HomeIcon /> },
   { to: '/spieltag', label: 'Spieltag', icon: <CalendarIcon /> },
   { to: '/fahrten/neu', label: 'Neu', icon: <PlusIcon />, cta: true },
+  { to: '/rueckblicke', label: 'Fotos', icon: <GalleryIcon /> },
   { to: '/profil', label: 'Profil', icon: <UserIcon /> },
 ]
 
 export function BottomNav() {
   return (
-    <nav className="fixed inset-x-3 bottom-3 z-50 sm:hidden">
+    <nav className="fixed inset-x-3 bottom-3 z-50 lg:hidden">
       <div className="glass-card flex h-16 items-stretch overflow-hidden rounded-2xl bg-shell-bg/80 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
         {NAV_ITEMS.map((item) =>
           item.cta ? (

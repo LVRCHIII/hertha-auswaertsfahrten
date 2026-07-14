@@ -17,7 +17,7 @@ Web-App für eine kleine Gruppe Hertha-BSC-Fans (3–6 Leute) zum gemeinsamen Pl
 | Rich Text | Tiptap v3 (Spieltagsberichte) |
 | Tests | Vitest |
 | Mobile | PWA (Progressive Web App) |
-| Hosting | Noch nicht deployed |
+| Hosting | `vercel.json` vorhanden; tatsächlicher Deployment-Status aus dem Repo nicht verifizierbar |
 
 ---
 
@@ -52,6 +52,7 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
 |---|---|
 | `/` | `HomePage` — Kalender + Fahrtübersicht |
 | `/spieltag` | `SpieltagPage` — Spieltag-Dashboard (nächste Fahrt) |
+| `/rueckblicke` | `RueckblickePage` — chronologisches Fotoarchiv mit Suche und Datumsfilter |
 | `/fahrten/neu` | `FahrtAnlegenPage` — Neue Fahrt anlegen |
 | `/fahrten/:id` | `FahrtDashboardPage` — Fahrt-Details, Zeitplanung, Parkplatz etc. |
 | `/profil` | `ProfilPage` — Anzeigename, Heimadresse |
@@ -168,8 +169,10 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
 
 - **Framer Motion** installiert (`npm install framer-motion`)
 - **AuthLayout**: animierter Card-Einblend (fade-in + slide-up, ease `[0.16,1,0.3,1]`), Header gestaffelt nachgezogen
-- **Hintergrund-Blobs**: 3 animierte CSS-Blobs (`.auth-blob-1/2/3`) in `src/index.css`
-  - `blob-drift-*` Keyframes, 14–22s Zyklen, `blur-3xl/2xl`, Theme-Farben (`shell-fg/10`, `shell-cta-bg/15`)
+- **Auth-Hintergrund (aktualisiert 2026-07-14)**: großer „AUSWÄRTS“-Schriftzug und alte Blobs entfernt
+  - Kleine Hertha-Embleme reagieren mit sehr geringer Parallaxe auf eine feine Maus; ein weiches Lichtfeld folgt verzögert
+  - Touch-Geräte und `prefers-reduced-motion` bleiben ruhig
+- **Auth-Typografie**: weniger stark kondensierter Archivo-Titel, ruhigere Labels und klarere Fokuszustände
 - **LoginPage**: gestaffelte Formfeld-Animationen (slide-in-left, 80ms Delay pro Feld), Error-Banner fade-in, Spinner-Button
 - **RegisterPage**: gleiche Behandlung, 3 Felder gestaffelt
 
@@ -244,7 +247,7 @@ Komplettes visuelles Redesign der App. Das Theme-System (5 Trikot-Themes) bleibt
 - **CalendarView:** komplett dunkel (Glas-Grid, CTA-Farbe für Heute/Badges)
 - **BesuchteSpieleListe/-Card:** Glas-Karten, Filter-Pills im Border-Stil
 - **ProfilPage:** Glas-Seitenkopf + 4 getrennte Glas-Karten (Profil-Formular, App-Design, Futbology, Saisonexport), Inputs im Auth-Stil
-- **Auth (Login/Register):** dunkle Glas-Karte, „AUSWÄRTS"-Ghost-Wordmark, dunkle Formularfelder
+- **Auth (Login/Register):** dunkle Glas-Karte, kompakte Markenkennung, ruhige Typografie, dunkle Formularfelder und dezente Pointer-Parallaxe
 - **AppShell/BottomNav:** Header mit Accent-Hairline + Display-Wordmark; BottomNav als schwebende Glas-Leiste (inset, rounded, safe-area)
 - **BerichtToolbar:** SVG-Icons statt Textlabels (H2/H3, B, I, U, Listen, Zitat, Link), 32px-Targets, aria-labels, Gruppen-Trenner
 - **ProfileAvatar:** Initialen-Fallback jetzt solide `card-accent` mit weißem Text (war auf dunklem Grund unsichtbar)
@@ -293,35 +296,42 @@ Komplettes visuelles Redesign der App. Das Theme-System (5 Trikot-Themes) bleibt
 - **Tiptap-Editor**: `bericht-prose` CSS (Obsidian-ähnlich) — h2/h3, ul/ol, blockquote mit Akzentfarbe, Links, line-height 1.75
 - **Bug behoben**: `BerichtViewer` prop hieß `content`, wurde aber als `contentJson` übergeben → Viewer zeigte nie Inhalt
 - **Bild aus Editor entfernt** — separater Bildbereich stattdessen
-- **`BerichtBilderGalerie`**: 3-spaltiges Grid, Multi-Upload, Hover-× zum Löschen, Lightbox, unabhängig vom Text-Speichern
-- **Migration**: `20260602140000_bericht_bilder.sql` — `bericht_bilder`-Tabelle (id, fahrt_id, uploaded_by, path, url, position) mit RLS — **muss manuell im Supabase Dashboard angewendet werden**
+- **Historischer Stand:** Bilder lagen zunächst als `BerichtBilderGalerie` im Bericht; seit M24 ist daraus eine eigenständige Fahrt-Fotogalerie geworden
+- **Migration**: `20260602140000_bericht_bilder.sql` — `bericht_bilder`-Tabelle (id, fahrt_id, uploaded_by, path, url, position) mit RLS
 
 ---
 
 ## Offene Milestones (geplant)
 
 ### ✅ Abgeschlossen
-Alle Milestones M1–M23 sind fertig und deployed. Siehe Milestone-Status oben.
+Alle Milestones M1–M24 sind im Repository umgesetzt. Produktives Deployment und Remote-Migrationen müssen separat verifiziert werden.
 
 ---
 
 ### 🐛 Bugfix — bericht_bilder FK
 - Migration `20260609120000_fix_bericht_bilder_fkey.sql` erstellt
-- **Muss manuell im Supabase SQL Editor ausgeführt werden** bevor Bilder ohne vorherigen Bericht hochgeladen werden können
+- Am 14. Juli 2026 laut Nutzer erfolgreich im Supabase SQL Editor ausgeführt
 - FK von `spieltagsberichte(fahrt_id)` → `fahrten(id)` umbiegen
 
 ---
 
-### M24 — Dateianhänge pro Fahrt
-**Ziel:** Tickets, Parkplatz-Screenshots, PDFs und andere Dateien direkt an einer Fahrt speichern — kein Discord-Chaos mehr.
-- Neue Tabelle `fahrt_anhaenge` (id, fahrt_id, uploaded_by, name, path, url, mime_type, size_bytes, created_at)
-- Neuer Supabase Storage Bucket `fahrt-anhaenge` (max 10 MB, alle gängigen Typen)
-- Neue Komponente `FahrtAnhaengeSection` auf `FahrtDashboardPage`
-  - Upload per Drag & Drop oder Datei-Dialog
-  - Liste aller Anhänge mit Dateiname, Größe, Datum, Löschen-Button
-  - Direkter Download-Link / Öffnen im Browser
-- RLS: Authenticated users können sehen, eigene löschen
-- Migration: `20260609130000_milestone24_anhaenge.sql`
+### ✅ M24 — Fahrt-Fotogalerie
+**Ziel:** Fotos von Fahrt, Stadion, Gruppe und Spieltag unabhängig vom Bericht sammeln — keine allgemeine Datei-/Ticketablage.
+- `FahrtFotoGalerie` als eigene volle DashboardSection nach dem Spieltagsbericht
+- Multi-Upload, Drag-and-drop und direkter Kamera-Upload auf Mobilgeräten
+- Asymmetrisches responsives Raster; alle sehen die Fotos, Nutzer löschen nur eigene Uploads
+- Spotlight.js 0.7.8 gekapselt und lazy geladen (eigener ~4,6-KB-gzip-Chunk)
+- Lightbox mit Touch, Tastatur, Zoom, Vollbild und Download; Hertha-Styling + ergänzte Dialog-/Fokussemantik
+- Bestehende Tabelle `bericht_bilder` und Bucket `bericht-images` werden vorerst weiterverwendet; die UI ist vom Bericht entkoppelt
+- Voraussetzung: `20260609120000_fix_bericht_bilder_fkey.sql`, damit Fotos direkt an `fahrten` hängen
+
+### ✅ Foto-Rückblicke
+**Ziel:** Alle Erinnerungen fahrtübergreifend wiederfinden, ohne jedes Fahrt-Dashboard einzeln zu öffnen.
+- Geschützte Route `/rueckblicke`, Desktop-Navigation „Rückblicke“, mobile Bottom-Nav „Fotos“
+- Chronologischer Onepager, nach Jahr und Fahrt getrennt; jede Fahrt zeigt Spieltag, Gegner, Stadion und Fotoanzahl
+- Responsive randarme Fotomosaike mit derselben gekapselten Spotlight-Lightbox wie im Fahrt-Dashboard
+- Suche nach Gegner, Stadion oder Datum sowie inklusiver Von-/Bis-Datumsfilter
+- Liest vorhandene `fahrten` und `bericht_bilder`; keine zusätzliche Migration erforderlich
 
 ---
 
@@ -378,3 +388,4 @@ Alle Milestones M1–M23 sind fertig und deployed. Siehe Milestone-Status oben.
 - **Fahnenmeer-Theme** — wenn hochauflösende Version verfügbar: `public/textures/Fahnenmeer.png` ersetzen und Theme eintragen
 - **OpenLiga DB** — `src/lib/apiFootballFixtures.ts` durch `src/lib/openligaFixtures.ts` ersetzen wenn Spielplan 2026/27 erscheint
 - **Push-Notifications** — wenn jemand zusagt oder der Treffpunkt geändert wird (Supabase Realtime + Web Push API)
+- **Discord vielleicht später** — bevorzugt ausgehende Webhook-Benachrichtigungen; keine vollständige Chat-Synchronisierung

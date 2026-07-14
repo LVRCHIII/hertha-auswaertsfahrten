@@ -13,6 +13,7 @@ import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { ProfilPage } from './pages/ProfilPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { RueckblickePage } from './pages/RueckblickePage'
 import { SpieltagPage } from './pages/SpieltagPage'
 import { DesignPreviewPage } from './pages/DesignPreviewPage'
 
@@ -23,6 +24,7 @@ function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/spieltag" element={<SpieltagPage />} />
+          <Route path="/rueckblicke" element={<RueckblickePage />} />
           <Route path="/fahrten/neu" element={<FahrtAnlegenPage />} />
           <Route path="/fahrten/:id" element={<FahrtDashboardPage />} />
           <Route path="/profil" element={<ProfilPage />} />

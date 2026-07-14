@@ -95,6 +95,13 @@ html {
   /* Shell-Hintergrundfarbe auf html-Ebene — TextureOverlay (z-0) liegt darüber */
   background-color: var(--color-shell-bg);
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
 }
 
 /* ── Display-Typografie (Archivo Variable, Stadiongrafik-Stil) ── */
@@ -169,6 +176,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.archive-date-input {
+  color-scheme: dark;
+}
+
 /* ── Stagger Entry Animation ───────────────────────────── */
 
 @keyframes fadeSlideIn {
@@ -182,28 +193,228 @@ body {
   }
 }
 
-/* ── Auth-Hintergrund Blobs ─────────────────────────────── */
+/* ── Auth: ruhige Typografie + dezente Pointer-Tiefe ────── */
 
-@keyframes blob-drift-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%       { transform: translate(40px, -30px) scale(1.08); }
-  66%       { transform: translate(-20px, 20px) scale(0.95); }
+.auth-title {
+  font-family: 'Archivo', 'Outfit', system-ui, sans-serif;
+  font-size: clamp(2rem, 7vw, 2.45rem);
+  font-variation-settings: 'wdth' 94;
+  font-weight: 720;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  text-wrap: balance;
 }
 
-@keyframes blob-drift-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%       { transform: translate(-50px, 25px) scale(1.05); }
-  66%       { transform: translate(30px, -40px) scale(0.97); }
+.auth-label {
+  font-family: 'Archivo', 'Outfit', system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-variation-settings: 'wdth' 105;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
 }
 
-@keyframes blob-drift-3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50%       { transform: translate(25px, 35px) scale(1.06); }
+.auth-input {
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: 0.98rem;
+  font-weight: 450;
+  transition:
+    background-color 180ms var(--ease-out),
+    border-color 180ms var(--ease-out),
+    box-shadow 180ms var(--ease-out);
 }
 
-.auth-blob-1 { animation: blob-drift-1 14s ease-in-out infinite; }
-.auth-blob-2 { animation: blob-drift-2 18s ease-in-out infinite; }
-.auth-blob-3 { animation: blob-drift-3 22s ease-in-out infinite; }
+.auth-input:hover {
+  background-color: color-mix(in srgb, var(--color-shell-fg) 8%, transparent);
+}
+
+.auth-input:focus-visible {
+  border-color: color-mix(in srgb, var(--color-shell-cta-bg) 70%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-shell-cta-bg) 22%, transparent);
+}
+
+.auth-submit {
+  letter-spacing: -0.01em;
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 180ms var(--ease-out),
+    box-shadow 180ms var(--ease-out);
+}
+
+.auth-submit:focus-visible {
+  outline: 2px solid var(--color-shell-fg);
+  outline-offset: 3px;
+}
+
+.auth-grid {
+  opacity: 0.17;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-shell-fg) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-shell-fg) 7%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at center, black, transparent 72%);
+}
+
+.auth-pointer-glow {
+  width: min(38rem, 80vw);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  opacity: 0.18;
+  background: color-mix(in srgb, var(--color-shell-cta-bg) 58%, var(--color-shell-fg));
+  filter: blur(110px);
+  will-change: transform;
+}
+
+.auth-emblem {
+  width: clamp(2.4rem, 5vw, 4.2rem);
+  will-change: transform;
+}
+
+.auth-emblem__image {
+  opacity: var(--auth-emblem-opacity);
+  filter: saturate(0.72) drop-shadow(0 8px 16px rgb(0 0 0 / 0.18));
+  animation: auth-emblem-drift 8s ease-in-out infinite;
+}
+
+.auth-emblem--1 { left: 8%; top: 14%; rotate: -9deg; }
+.auth-emblem--2 { right: 10%; top: 18%; rotate: 7deg; }
+.auth-emblem--3 { bottom: 12%; left: 13%; rotate: 5deg; }
+.auth-emblem--4 { bottom: 9%; right: 7%; rotate: -6deg; }
+.auth-emblem--5 { right: 22%; top: 48%; rotate: 10deg; }
+
+.auth-emblem--2 .auth-emblem__image { animation-delay: -1.8s; }
+.auth-emblem--3 .auth-emblem__image { animation-delay: -3.2s; }
+.auth-emblem--4 .auth-emblem__image { animation-delay: -5.1s; }
+.auth-emblem--5 .auth-emblem__image { animation-delay: -6.3s; }
+
+@keyframes auth-emblem-drift {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.015); }
+}
+
+@media (max-width: 640px) {
+  .auth-emblem--2,
+  .auth-emblem--3,
+  .auth-emblem--5 {
+    display: none;
+  }
+
+  .auth-emblem--1 { left: 4%; top: 7%; }
+  .auth-emblem--4 { bottom: 4%; right: 4%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-emblem,
+  .auth-pointer-glow {
+    will-change: auto;
+  }
+
+  .auth-emblem__image {
+    animation: none;
+  }
+}
+
+/* ── Fahrt-Fotogalerie: Spotlight im Matchday-Look ────── */
+
+#spotlight.hertha-spotlight {
+  z-index: 60;
+  color: var(--color-shell-fg);
+  background:
+    radial-gradient(circle at 50% 105%, color-mix(in srgb, var(--color-card-accent) 22%, transparent), transparent 44%),
+    color-mix(in srgb, var(--color-shell-bg) 94%, #020617);
+  font-family: 'Outfit', system-ui, sans-serif;
+}
+
+#spotlight.hertha-spotlight .spl-header {
+  height: 3.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-shell-fg) 12%, transparent);
+  background: color-mix(in srgb, var(--color-shell-bg) 82%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+#spotlight.hertha-spotlight .spl-header div {
+  width: 3.5rem;
+  height: 3.75rem;
+  opacity: 0.72;
+}
+
+#spotlight.hertha-spotlight .spl-page {
+  width: auto;
+  padding-left: 1.25rem;
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 82;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 3.75rem;
+  letter-spacing: 0.04em;
+}
+
+#spotlight.hertha-spotlight .spl-footer {
+  border-top: 1px solid color-mix(in srgb, var(--color-shell-fg) 10%, transparent);
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--color-shell-bg) 90%, transparent));
+  padding: 4rem 1.5rem max(1.5rem, env(safe-area-inset-bottom));
+}
+
+#spotlight.hertha-spotlight .spl-title {
+  margin-bottom: 0.35rem;
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-variation-settings: 'wdth' 86;
+  font-size: 1.25rem;
+  font-weight: 720;
+  letter-spacing: -0.025em;
+}
+
+#spotlight.hertha-spotlight .spl-description {
+  margin-bottom: 0;
+  color: color-mix(in srgb, var(--color-shell-fg) 58%, transparent);
+  font-size: 0.85rem;
+}
+
+#spotlight.hertha-spotlight .spl-prev,
+#spotlight.hertha-spotlight .spl-next {
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid color-mix(in srgb, var(--color-shell-fg) 14%, transparent);
+  border-radius: 0.9rem;
+  background-color: color-mix(in srgb, var(--color-shell-bg) 80%, transparent);
+  box-shadow: 0 12px 30px -18px color-mix(in srgb, var(--color-shell-bg) 80%, #000);
+  opacity: 0.72;
+  backdrop-filter: blur(14px);
+}
+
+#spotlight.hertha-spotlight [role='button']:focus-visible {
+  outline: 2px solid var(--color-shell-fg);
+  outline-offset: -4px;
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  #spotlight.hertha-spotlight .spl-header div {
+    width: 2.85rem;
+  }
+
+  #spotlight.hertha-spotlight .spl-page {
+    padding-left: 0.85rem;
+    font-size: 0.85rem;
+  }
+
+  #spotlight.hertha-spotlight .spl-prev {
+    left: 0.75rem;
+  }
+
+  #spotlight.hertha-spotlight .spl-next {
+    right: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #spotlight.hertha-spotlight,
+  #spotlight.hertha-spotlight .spl-scene,
+  #spotlight.hertha-spotlight .spl-pane,
+  #spotlight.hertha-spotlight .spl-pane > * {
+    transition-duration: 0.01ms;
+  }
+}
 
 /* ── Spieltagsbericht Editor / Viewer ───────────────────── */
 
