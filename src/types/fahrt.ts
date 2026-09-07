@@ -13,6 +13,7 @@ export type Fahrt = {
   notizen: string | null
   treffpunkt_berlin: string | null
   treffpunkt_bestaetigt: boolean
+  /** Hin- und Rückfahrt zusammen (für die Auswärtsstatistik), nicht die einfache Strecke. */
   route_distance_meters: number | null
 }
 

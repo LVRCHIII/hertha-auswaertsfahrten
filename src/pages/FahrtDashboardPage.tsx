@@ -63,12 +63,13 @@ export function FahrtDashboardPage() {
     routeEndpoints?.destination ?? '',
     routeDepartureTime,
   )
-  const routeDistanceMeters = route.status === 'ready' ? route.plan.distanceMeters : null
+  // Für die Auswärtsstatistik zählt Hin- und Rückfahrt, die Route-Anzeige unten bleibt einfach.
+  const routeDistanceMetersRoundtrip = route.status === 'ready' ? route.plan.distanceMeters * 2 : null
 
   useEffect(() => {
-    if (!fahrt || routeDistanceMeters == null) return
+    if (!fahrt || routeDistanceMetersRoundtrip == null) return
 
-    const roundedDistance = Math.round(routeDistanceMeters)
+    const roundedDistance = Math.round(routeDistanceMetersRoundtrip)
     if (fahrt.route_distance_meters === roundedDistance) return
 
     let cancelled = false
@@ -82,7 +83,7 @@ export function FahrtDashboardPage() {
     return () => {
       cancelled = true
     }
-  }, [fahrt?.id, fahrt?.route_distance_meters, routeDistanceMeters])
+  }, [fahrt?.id, fahrt?.route_distance_meters, routeDistanceMetersRoundtrip])
 
   const abfahrtszeit =
     fahrt && route.status === 'ready'
