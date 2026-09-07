@@ -1,32 +1,53 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { fetchHerthaAuswaertsSpiele, type ImportableSpiel } from '../lib/apiFootballFixtures'
+import {
+  fetchHerthaAuswaertsSpiele,
+  formatOpenLigaSeason,
+  getCurrentOpenLigaSeason,
+  type ImportableSpiel,
+  type VorhandenesSpiel,
+} from '../lib/openligaFixtures'
 import { insertFahrt } from '../lib/fahrtenApi'
 import { useToast } from '../contexts/ToastContext'
 
 type Props = {
-  vorhandeneSpielDaten: string[]
-  onImported: () => void
+  vorhandeneSpiele: VorhandenesSpiel[]
+  bestandWirdGeladen: boolean
+  bestandFehler: string | null
+  onBestandErneutLaden: () => void
+  onImported: (allSuccessful: boolean) => Promise<void> | void
 }
 
 type Step = 'idle' | 'loading' | 'preview' | 'importing'
 
-export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
+export function SpielplanImport({
+  vorhandeneSpiele,
+  bestandWirdGeladen,
+  bestandFehler,
+  onBestandErneutLaden,
+  onImported,
+}: Props) {
   const { user } = useAuth()
   const toast = useToast()
+  const [season] = useState(() => getCurrentOpenLigaSeason())
   const [step, setStep] = useState<Step>('idle')
   const [spiele, setSpiele] = useState<ImportableSpiel[]>([])
-  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [selected, setSelected] = useState<Set<number>>(new Set())
   const [error, setError] = useState<string | null>(null)
+  const [warnings, setWarnings] = useState<string[]>([])
 
   async function handleLaden() {
+    if (bestandWirdGeladen || bestandFehler) return
+
     setStep('loading')
     setError(null)
+    setWarnings([])
     try {
-      const result = await fetchHerthaAuswaertsSpiele(vorhandeneSpielDaten)
-      setSpiele(result)
+      const result = await fetchHerthaAuswaertsSpiele(vorhandeneSpiele, season)
+      setSpiele(result.spiele)
+      setWarnings(result.warnings)
       const neuSet = new Set(
-        result.filter((s) => !s.exists).map((s) => s.spiel_at),
+        result.spiele.filter((spiel) => !spiel.exists).map((spiel) => spiel.openliga_match_id),
       )
       setSelected(neuSet)
       setStep('preview')
@@ -36,24 +57,41 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
     }
   }
 
-  function toggleSelected(spielAt: string) {
+  function toggleSelected(matchId: number) {
+    if (step === 'importing') return
+
     setSelected((prev) => {
       const next = new Set(prev)
-      if (next.has(spielAt)) next.delete(spielAt)
-      else next.add(spielAt)
+      if (next.has(matchId)) next.delete(matchId)
+      else next.add(matchId)
       return next
     })
+  }
+
+  function handleClosePreview() {
+    if (step === 'importing') return
+    setStep('idle')
+    setSpiele([])
+    setSelected(new Set())
+    setWarnings([])
+    setError(null)
   }
 
   async function handleImport() {
     if (!user) return
     setStep('importing')
 
-    const zuImportieren = spiele.filter((s) => selected.has(s.spiel_at))
+    const zuImportieren = spiele.filter((spiel) => selected.has(spiel.openliga_match_id))
     let fehler = 0
+    const fehlgeschlageneIds = new Set<number>()
+    const erfolgreicheIds = new Set<number>()
+    const fehlerMeldungen = new Set<string>()
+
+    setError(null)
 
     for (const spiel of zuImportieren) {
       const result = await insertFahrt({
+        openliga_match_id: spiel.openliga_match_id,
         gegner: spiel.gegner,
         stadion: spiel.stadion,
         spiel_at: spiel.spiel_at,
@@ -62,21 +100,37 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
         treffpunkt_berlin: null,
         created_by: user.id,
       })
-      if (result.error) fehler++
+      if (result.error) {
+        fehler++
+        fehlgeschlageneIds.add(spiel.openliga_match_id)
+        fehlerMeldungen.add(result.error)
+      } else {
+        erfolgreicheIds.add(spiel.openliga_match_id)
+      }
     }
 
     const erfolgreich = zuImportieren.length - fehler
     if (erfolgreich > 0) {
       toast.success(`${erfolgreich} ${erfolgreich === 1 ? 'Spiel' : 'Spiele'} importiert`)
-      onImported()
+      await onImported(fehler === 0)
     }
     if (fehler > 0) {
       toast.error(`${fehler} ${fehler === 1 ? 'Spiel' : 'Spiele'} konnten nicht importiert werden`)
+      setError([...fehlerMeldungen].join(' '))
+      setSpiele((prev) => prev.map((spiel) =>
+        erfolgreicheIds.has(spiel.openliga_match_id)
+          ? { ...spiel, exists: true }
+          : spiel,
+      ))
+      setSelected(fehlgeschlageneIds)
+      setStep('preview')
+      return
     }
 
     setStep('idle')
     setSpiele([])
     setSelected(new Set())
+    setWarnings([])
   }
 
   const neuCount = selected.size
@@ -88,13 +142,25 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
           <div>
             <p className="text-sm font-semibold text-shell-fg/90">Spielplan importieren</p>
             <p className="mt-0.5 text-xs text-shell-fg/55">
-              Hertha-Auswärtsspiele automatisch aus der Datenbank laden
+              {bestandWirdGeladen
+                ? 'Vorhandene Fahrten werden geprüft …'
+                : bestandFehler
+                  ? 'Vorhandene Fahrten konnten nicht geprüft werden.'
+                  : 'Hertha-Auswärtsspiele ohne zusätzlichen API-Key laden'}
             </p>
+            <a
+              href="https://www.openligadb.de/"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 inline-block text-[10px] text-shell-fg/40 underline-offset-2 hover:text-shell-fg/65 hover:underline"
+            >
+              Daten: OpenLigaDB
+            </a>
           </div>
           <button
             type="button"
             onClick={handleLaden}
-            disabled={step === 'loading'}
+            disabled={step === 'loading' || bestandWirdGeladen || Boolean(bestandFehler)}
             className="shrink-0 rounded-lg bg-shell-cta-bg px-3 py-2 text-sm font-semibold text-shell-cta-fg transition hover:opacity-90 disabled:opacity-60"
           >
             {step === 'loading' ? (
@@ -113,6 +179,18 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
         {error ? (
           <p className="mt-3 rounded-lg bg-red-500/15 px-3 py-2 text-xs text-red-200">{error}</p>
         ) : null}
+        {bestandFehler ? (
+          <div className="mt-3 rounded-lg bg-red-500/15 px-3 py-2 text-xs text-red-200" role="alert">
+            <p>{bestandFehler}</p>
+            <button
+              type="button"
+              onClick={onBestandErneutLaden}
+              className="mt-1 font-semibold underline underline-offset-2"
+            >
+              Erneut prüfen
+            </button>
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -121,37 +199,63 @@ export function SpielplanImport({ vorhandeneSpielDaten, onImported }: Props) {
     <div className="rounded-2xl border border-shell-cta-bg/30 bg-shell-fg/8 shadow-sm">
       <div className="flex items-center justify-between border-b border-shell-fg/10 px-4 py-3">
         <div>
-          <p className="text-sm font-semibold text-shell-fg/90">Spielplan 2024/25</p>
+          <p className="text-sm font-semibold text-shell-fg/90">
+            Spielplan {formatOpenLigaSeason(season)}
+          </p>
           <p className="text-xs text-shell-fg/55">
             {spiele.filter((s) => !s.exists).length} neue · {spiele.filter((s) => s.exists).length} bereits vorhanden
           </p>
         </div>
         <button
           type="button"
-          onClick={() => setStep('idle')}
-          className="text-xs text-shell-fg/45 hover:text-shell-fg/70"
+          onClick={handleClosePreview}
+          disabled={step === 'importing'}
+          className="text-xs text-shell-fg/45 hover:text-shell-fg/70 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Schließen
         </button>
       </div>
 
+      {warnings.map((warning) => (
+        <p
+          key={warning}
+          className="mx-4 mt-3 rounded-lg bg-amber-500/15 px-3 py-2 text-xs text-amber-100"
+          role="status"
+        >
+          {warning}
+        </p>
+      ))}
+
+      {error ? (
+        <p className="mx-4 mt-3 rounded-lg bg-red-500/15 px-3 py-2 text-xs text-red-200" role="alert">
+          {error}
+        </p>
+      ) : null}
+
       <ul className="max-h-72 divide-y divide-shell-fg/10 overflow-y-auto">
+        {spiele.length === 0 ? (
+          <li className="px-4 py-6 text-center text-sm text-shell-fg/55">
+            Für {formatOpenLigaSeason(season)} wurden keine Hertha-Auswärtsspiele gefunden.
+          </li>
+        ) : null}
         {spiele.map((spiel) => {
           const datum = new Date(spiel.spiel_at)
-          const isSelected = selected.has(spiel.spiel_at)
+          const isSelected = selected.has(spiel.openliga_match_id)
 
           return (
-            <li key={spiel.spiel_at}>
+            <li key={spiel.openliga_match_id}>
               <label
-                className={`flex cursor-pointer items-center gap-3 px-4 py-3 transition hover:bg-shell-fg/10 ${
-                  spiel.exists ? 'opacity-40' : ''
+                className={`flex items-center gap-3 px-4 py-3 transition ${
+                  spiel.exists || step === 'importing'
+                    ? 'cursor-not-allowed opacity-40'
+                    : 'cursor-pointer hover:bg-shell-fg/10'
                 }`}
               >
                 <input
                   type="checkbox"
                   checked={isSelected}
-                  disabled={spiel.exists}
-                  onChange={() => toggleSelected(spiel.spiel_at)}
+                  disabled={spiel.exists || step === 'importing'}
+                  onChange={() => toggleSelected(spiel.openliga_match_id)}
                   className="h-4 w-4 rounded accent-card-accent"
                 />
                 <span className="min-w-0 flex-1">

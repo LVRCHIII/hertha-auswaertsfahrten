@@ -9,10 +9,12 @@ import { ToastProvider } from './contexts/ToastContext'
 import { supabaseConfigError } from './lib/supabase'
 import { FahrtAnlegenPage } from './pages/FahrtAnlegenPage'
 import { FahrtDashboardPage } from './pages/FahrtDashboardPage'
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { ProfilPage } from './pages/ProfilPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { RueckblickePage } from './pages/RueckblickePage'
 import { SpieltagPage } from './pages/SpieltagPage'
 import { DesignPreviewPage } from './pages/DesignPreviewPage'
@@ -32,6 +34,8 @@ function AppRoutes() {
         {import.meta.env.DEV ? <Route path="/design-preview" element={<DesignPreviewPage />} /> : null}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

@@ -23,7 +23,7 @@ Mobile-first Web-App für eine kleine Gruppe Hertha-BSC-Fans aus Berlin. Sie bü
 - Geschützte Rückblicke-Route mit allen Fotos als chronologischem Onepager, gruppiert nach Fahrt sowie durchsuch- und nach Datum filterbar
 - Futbology-CSV-Import sowie manuell erfasste besuchte Spiele
 - Saisonexport als DOCX
-- Spielplan-Import über API-Football und Vereinsdatenbank mit fünf Ligen
+- Keyloser Spielplan-Import über OpenLigaDB für Bundesliga, 2. Bundesliga und DFB-Pokal; lokale Vereinsdatenbank mit fünf Ligen
 - Fünf umschaltbare Hertha-Themes, PWA-Grundlage, Toasts, Mobile-Bottom-Navigation
 - „Matchday Editorial“-Design mit Archivo/Outfit, Glasflächen, Framer Motion und GSAP
 
@@ -41,6 +41,7 @@ Mobile-first Web-App für eine kleine Gruppe Hertha-BSC-Fans aus Berlin. Sie bü
 | Storage | Supabase Storage für Avatare und Fahrtfotos |
 | Karten / Route | Google Maps JavaScript API, Directions API |
 | Parkplatz-Suche | Places API (New), `Place.searchNearby()` |
+| Fußballdaten | OpenLigaDB JSON API, ohne API-Key |
 | Rich Text | Tiptap 3 |
 | Dokumentexport | `docx` |
 | Fotogalerie | Spotlight.js 0.7.8 als lazy geladene Lightbox |
@@ -73,10 +74,10 @@ npm run build     # TypeScript + Produktions-Build
 VITE_SUPABASE_URL=https://rjvffwjkdnbqevrkycem.supabase.co
 VITE_SUPABASE_ANON_KEY=<anon-public-oder-publishable-key>
 VITE_GOOGLE_MAPS_API_KEY=<google-maps-api-key>
-VITE_API_FOOTBALL_KEY=<optional-fuer-spielplan-import>
 ```
 
 Für Google müssen Maps JavaScript API, Directions API und Places API (New) aktiviert sein. Lokale Referrer: `http://localhost:5173/*` und `http://127.0.0.1:5173/*`.
+Der Spielplan-Import benötigt keinen zusätzlichen API-Key.
 
 ---
 
@@ -117,8 +118,9 @@ Alle unbekannten Routen werden aktuell auf `/` umgeleitet; eine eigene 404-Seite
 | `20260602140000_bericht_bilder.sql` | separate Berichtbilder-Galerie |
 | `20260602160000_futbology_manual.sql` | manuelle Spiele und `source` |
 | `20260609120000_fix_bericht_bilder_fkey.sql` | Berichtbilder direkt an `fahrten` binden |
+| `20260715150000_openliga_match_id.sql` | stabile OpenLigaDB-Match-ID und eindeutiger Dublettenschutz |
 
-Die Migration `20260609120000_fix_bericht_bilder_fkey.sql` wurde am 14. Juli 2026 laut Nutzer im Remote-Supabase-Projekt erfolgreich ausgeführt. Der Status der übrigen Remote-Migrationen muss bei Bedarf weiterhin separat geprüft werden.
+Die Migration `20260609120000_fix_bericht_bilder_fkey.sql` wurde am 14. Juli 2026 laut Nutzer im Remote-Supabase-Projekt erfolgreich ausgeführt. `20260715150000_openliga_match_id.sql` wurde am 15. Juli 2026 ausgeführt und anschließend per PostgREST-Schemaabfrage mit HTTP 200 verifiziert. Der Status der übrigen Remote-Migrationen muss bei Bedarf weiterhin separat geprüft werden.
 
 ---
 
@@ -187,7 +189,6 @@ Timeline für Zu-/Absagen sowie Änderungen an Parkplatz, Treffpunkt und Bericht
 ### Backlog
 
 - Fahnenmeer-Theme bei ausreichend hochauflösendem Asset
-- API-Football durch OpenLigaDB ersetzen; der Free-Plan deckt aktuelle Saisons nicht zuverlässig ab
 - Push-Notifications via Supabase Realtime + Web Push
 - Echte Gruppen, Einladungen und Rollen/Berechtigungen aus der älteren Roadmap
 - Vollständiges Saisonarchiv mit Berichten, Bewertungen und Statistiken; die neue Rückblicke-Route deckt zunächst das gemeinsame Fotoarchiv ab
@@ -226,6 +227,7 @@ src/lib/fotoArchivApi.ts             Fahrten und Fotos für Rückblicke laden
 src/lib/photoLightbox.ts             gemeinsam genutzte Spotlight-Kapselung
 src/components/SaisonExport.tsx
 src/components/SpielplanImport.tsx
+src/lib/openligaFixtures.ts            OpenLigaDB-Abruf und Mapping
 src/hooks/                           Daten-/UI-Hooks
 src/lib/                             Supabase-APIs und Fachlogik
 src/data/vereine.ts                  Vereinsdatenbank
@@ -237,15 +239,16 @@ public/sw.js                         aktuelle PWA-Grundlage
 
 ## Bekannte Risiken und technische Schulden
 
-- Die letzte lokale Verifikation ergab 15 bestandene Tests in 5 Dateien und einen erfolgreichen Produktions-Build.
+- Die letzte lokale Verifikation ergab 35 bestandene Tests in 9 Dateien und einen erfolgreichen Produktions-Build.
 - Der Haupt-JavaScript-Chunk liegt bei rund 1,61 MB minifiziert; Vite warnt vor fehlendem Code-Splitting.
 - Tests decken hauptsächlich reine Fachlogik ab; Komponenten-, Auth-, Supabase- und End-to-End-Tests fehlen.
 - `DirectionsService` ist veraltet und sollte mittelfristig migriert werden.
-- `VITE_API_FOOTBALL_KEY` wird clientseitig ausgeliefert und der Free-Plan ist saisonal eingeschränkt.
+- OpenLigaDB wird gemeinschaftlich gepflegt: spätere Anstoßzeiten können noch Platzhalter sein, und DFB-Pokal-Shortcuts sollten je Saison geprüft werden.
+- Neue OpenLigaDB-Importe werden über eine eindeutige `openliga_match_id` erkannt und bleiben auch nach Spielverlegungen dublettenfest. Ältere Fahrten ohne diese ID nutzen als Fallback weiterhin Gegner plus Kalendertag.
+- Fällt nur ein Wettbewerb aus, zeigt der Import die übrigen Spiele mit einer sichtbaren Warnung statt den gesamten Abruf abzubrechen.
 - Spotlight.js ist sehr klein und gekapselt, wird upstream aber seit 2021 nicht mehr aktiv gepflegt; die Lightbox bleibt deshalb austauschbar.
 - Die Fahrtfotos nutzen vorerst den öffentlichen Legacy-Bucket `bericht-images`. Falls Bilder nur für Fahrtteilnehmer sichtbar sein sollen, sollte er später durch einen privaten Bucket mit signierten URLs ersetzt werden.
 - `npm audit` meldet eine hohe `ws`-Lücke im bestehenden Tiptap/`happy-dom`-Abhängigkeitsbaum; Spotlight selbst bringt keine weiteren Pakete mit.
-- `README.md` und Teile von `CLAUDE.md` enthalten weiterhin ältere oder widersprüchliche Statusangaben; diese Datei ist der aktuell verifizierte Überblick.
 - Keine eigene 404-Seite, keine Gruppenisolierung und keine Rollenverwaltung.
 - Remote-Migrationen und produktiver Deployment-Status müssen außerhalb des Repositories geprüft werden.
 
@@ -253,10 +256,11 @@ public/sw.js                         aktuelle PWA-Grundlage
 
 ## Sinnvolle nächste Schritte
 
-1. Fahrtgalerie und Rückblicke mit echten Bildern auf Desktop, Mobile und in allen fünf Themes abnehmen.
-2. Entscheiden, ob Fahrtfotos künftig nur für Fahrtteilnehmer sichtbar sein sollen; dafür wäre privater Storage nötig.
-3. Danach M25 (Zwischenstopps) oder zuerst die technische Stabilisierung mit Code-Splitting und breiteren Tests angehen.
+1. Den OpenLigaDB-Import unter `/fahrten/neu` authentifiziert abnehmen: Vorschau, Stadion-Fallback, Dublettenanzeige und einen kontrollierten Einzelimport prüfen.
+2. Fahrtgalerie und Rückblicke mit echten Bildern auf Desktop, Mobile und in allen fünf Themes abnehmen.
+3. Entscheiden, ob Fahrtfotos künftig nur für Fahrtteilnehmer sichtbar sein sollen; dafür wäre privater Storage nötig.
+4. Danach M25 (Zwischenstopps) oder zuerst die technische Stabilisierung mit Code-Splitting und breiteren Tests angehen.
 
 ---
 
-*Zuletzt gegen den Code geprüft und aktualisiert: 14. Juli 2026.*
+*Zuletzt gegen den Code geprüft und aktualisiert: 15. Juli 2026.*

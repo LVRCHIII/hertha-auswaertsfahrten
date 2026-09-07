@@ -12,6 +12,7 @@ function createFahrt(id: string, spielAt: string): Fahrt {
     id,
     created_at: '2026-01-01T00:00:00.000Z',
     created_by: 'user-1',
+    openliga_match_id: null,
     gegner: 'Gegner',
     stadion: 'Stadion',
     spiel_at: spielAt,

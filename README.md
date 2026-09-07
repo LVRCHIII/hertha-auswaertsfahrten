@@ -1,6 +1,6 @@
 # Hertha Auswärtsfahrten Planer
 
-Milestone 1–6, 9 und 10: Auth, Fahrten verwalten, Dashboard mit Routenplanung, Mitfahrer, Mitbringliste, Parkplätze, Kalender, PWA-Grundlage, Spieltag-Modus, Auswärtsstatistik & Tests.
+Umgesetzt sind die Kernplanung bis Milestone 24, Spieltagsberichte, Bewertungen, Futbology-Import, Fotogalerien und das „Matchday Editorial“-Redesign.
 
 **Projektkontext für Cursor-Chats:** [`PROJEKT_KONTEXT.md`](./PROJEKT_KONTEXT.md)
 
@@ -36,6 +36,10 @@ Für Milestone 4 zusätzlich:
 Für Milestone 10 zusätzlich:  
 `supabase/migrations/20260518104802_milestone10_auswaertsstatistik.sql` (gespeicherte Routendistanz)
 
+Für den OpenLigaDB-Spielplanimport zusätzlich:
+
+`supabase/migrations/20260715150000_openliga_match_id.sql` (dauerhafte Match-ID und Dublettenschutz)
+
 ## App starten
 
 ```bash
@@ -50,6 +54,8 @@ cp .env.example .env
 | `VITE_SUPABASE_URL` | Project Settings → API → **Project URL** (mit `https://`) |
 | `VITE_SUPABASE_ANON_KEY` | Project Settings → API → **anon public** (kompletter JWT, ~200 Zeichen) |
 | `VITE_GOOGLE_MAPS_API_KEY` | Google Cloud Console → API-Key (siehe unten) |
+
+Der Spielplan-Import lädt Bundesliga, 2. Bundesliga und DFB-Pokal keylos über OpenLigaDB.
 
 Nach Änderungen an `.env` den Dev-Server **neu starten**.
 
@@ -83,7 +89,7 @@ Die App läuft unter http://localhost:5173
 npm test
 ```
 
-Vitest deckt aktuell Kernlogik für Kalender, Spieltag-Modus, Abfahrtszeiten/Google-Maps-URLs, Parkplatz-Metadaten und Auswärtsstatistik ab.
+Vitest deckt aktuell Kernlogik für Kalender, Spieltag-Modus, Abfahrtszeiten/Google-Maps-URLs, Parkplatz-Metadaten, Auswärtsstatistik, Vereinsauflösung und den OpenLigaDB-Import ab.
 
 ## Funktionen
 
@@ -93,23 +99,25 @@ Vitest deckt aktuell Kernlogik für Kalender, Spieltag-Modus, Abfahrtszeiten/Goo
 | Kalenderübersicht | `/` | Liste: kommende + vergangene Fahrten |
 | Auswärtsstatistik | `/` | Persönliche Statistik, Gruppen-Kilometer, Ranking und längste Fahrt |
 | Spieltag-Modus | `/spieltag` | Mobile Kurzansicht für nächste Fahrt, Ablauf und Schnelllinks |
-| Fahrt anlegen | `/fahrten/neu` | Gegner, Stadion, Datum, Anpfiff, Startpunkt, optional Notizen |
+| Fahrt anlegen | `/fahrten/neu` | Manuell oder per OpenLigaDB-Spielplanimport ohne zusätzlichen API-Key |
 | Fahrt-Dashboard | `/fahrten/:id` | Spielinfo, Abfahrtszeit, Route, Mitfahrer, Mitbringliste, Parkplatz |
 | Profil | `/profil` | Anzeigename, Profilbild, Abfahrt von Zuhause |
 | PWA | `/` | Manifest, App-Icon und Service Worker für App-Shell/offline Fallback |
 
 ## Roadmap
 
-- **Milestone 11:** Spieltagsberichte mit Rich-Text-Editor und Inline-Bildern.
-- **Milestone 12:** Bewertungen pro Fahrt für Fahrt, Stadion, Mannschaft, Stimmung, Essen und Gesamt.
-- **Milestone 13:** Saisonarchiv als Erinnerungsseite mit Berichten, Fotos, Bewertungen und Statistiken.
-- **Milestone 14/15:** Erinnerungen/Änderungshinweise und spätere Gruppenverwaltung mit Rollen.
+- **Milestone 25:** Sortierbare Zwischenstopps und Reiseplan.
+- **Milestone 26:** Strukturierte Stadioninfos.
+- **Milestone 27:** Belastbarer PWA-Offline-Modus.
+- **Milestone 28:** Manuell angelegte Fahrten vollständig absichern.
+- **Milestone 29:** Aktivitätsverlauf pro Fahrt.
 
 ## Projektstruktur
 
 - `supabase/migrations/` — SQL für die `fahrten`-Tabelle
 - `src/hooks/useFahrten.ts` — Fahrten laden
 - `src/lib/fahrtenApi.ts` — Fahrt speichern
+- `src/lib/openligaFixtures.ts` — OpenLigaDB-Spielplan laden und importierbare Auswärtsspiele abbilden
 - `src/pages/HomePage.tsx` — Kalenderübersicht
 - `src/pages/SpieltagPage.tsx` — Spieltag-Modus für die nächste Fahrt
 - `src/pages/FahrtAnlegenPage.tsx` — Formular

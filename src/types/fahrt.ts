@@ -2,6 +2,7 @@ export type Fahrt = {
   id: string
   created_at: string
   created_by: string
+  openliga_match_id: number | null
   gegner: string
   stadion: string
   spiel_at: string
@@ -21,4 +22,5 @@ export type FahrtInsert = {
   treffpunkt_berlin?: string | null
   treffpunkt_bestaetigt?: boolean
   created_by: string
+  openliga_match_id?: number | null
 }

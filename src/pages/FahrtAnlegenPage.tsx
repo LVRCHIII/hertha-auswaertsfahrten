@@ -18,8 +18,12 @@ const inputClass =
 export function FahrtAnlegenPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const { fahrten, refetch } = useFahrten()
-  const vorhandeneSpielDaten = fahrten.map((f) => f.spiel_at)
+  const { fahrten, loading: fahrtenLoading, error: fahrtenError, refetch } = useFahrten()
+  const vorhandeneSpiele = fahrten.map((fahrt) => ({
+    gegner: fahrt.gegner,
+    spiel_at: fahrt.spiel_at,
+    openliga_match_id: fahrt.openliga_match_id,
+  }))
 
   const [gegner, setGegner] = useState('')
   const [stadion, setStadion] = useState('')
@@ -71,8 +75,14 @@ export function FahrtAnlegenPage() {
     <AppShell title="Fahrt anlegen">
       <div className="mb-4">
         <SpielplanImport
-          vorhandeneSpielDaten={vorhandeneSpielDaten}
-          onImported={() => { void refetch(); navigate('/') }}
+          vorhandeneSpiele={vorhandeneSpiele}
+          bestandWirdGeladen={fahrtenLoading}
+          bestandFehler={fahrtenError}
+          onBestandErneutLaden={() => { void refetch() }}
+          onImported={async (allSuccessful) => {
+            await refetch()
+            if (allSuccessful) navigate('/')
+          }}
         />
       </div>
 

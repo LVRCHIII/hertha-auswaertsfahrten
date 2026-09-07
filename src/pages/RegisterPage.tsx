@@ -14,43 +14,26 @@ const fieldVariants = {
   }),
 }
 
-const FIELDS = [
-  { id: 'email', label: 'E-Mail', type: 'email', autoComplete: 'email' },
-  { id: 'password', label: 'Passwort', type: 'password', autoComplete: 'new-password' },
-  { id: 'confirmPassword', label: 'Passwort bestätigen', type: 'password', autoComplete: 'new-password' },
-] as const
-
 export function RegisterPage() {
   const { user, signUp } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [sent, setSent] = useState(false)
 
   if (user) {
     return <Navigate to="/" replace />
-  }
-
-  const values = { email, password, confirmPassword }
-  const setters = {
-    email: setEmail,
-    password: setPassword,
-    confirmPassword: setConfirmPassword,
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
 
-    if (password !== confirmPassword) {
+    if (password !== passwordConfirm) {
       setError('Die Passwörter stimmen nicht überein.')
-      return
-    }
-
-    if (password.length < 6) {
-      setError('Das Passwort muss mindestens 6 Zeichen lang sein.')
       return
     }
 
@@ -63,27 +46,53 @@ export function RegisterPage() {
       return
     }
 
-    navigate('/login', { replace: true })
+    if (result.needsConfirmation) {
+      setSent(true)
+      return
+    }
+
+    navigate('/', { replace: true })
+  }
+
+  if (sent) {
+    return (
+      <AuthLayout
+        title="Fast geschafft"
+        subtitle="Wir haben dir einen Bestätigungslink geschickt. Schau auch im Spam-Ordner nach, falls die Mail nicht innerhalb weniger Minuten ankommt."
+      >
+        <Link
+          className="auth-submit block w-full rounded-[0.9rem] bg-shell-cta-bg px-4 py-3 text-center font-semibold text-shell-cta-fg shadow-lg shadow-black/20 transition hover:opacity-90 active:scale-[0.98]"
+          to="/login"
+        >
+          Zurück zum Login
+        </Link>
+      </AuthLayout>
+    )
   }
 
   return (
     <AuthLayout
       title="Registrieren"
-      subtitle="Erstelle ein Konto für den Auswärtsfahrten-Planer."
+      subtitle="Leg dir einen Account an, um Auswärtsfahrten zu planen."
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {FIELDS.map((field, i) => (
-          <motion.div key={field.id} custom={i} variants={fieldVariants} initial="hidden" animate="visible">
-            <label className="auth-label mb-2 block text-shell-fg/62" htmlFor={field.id}>
-              {field.label}
+        {(['email', 'password', 'passwordConfirm'] as const).map((field, i) => (
+          <motion.div key={field} custom={i} variants={fieldVariants} initial="hidden" animate="visible">
+            <label className="auth-label mb-2 block text-shell-fg/62" htmlFor={field}>
+              {field === 'email' ? 'E-Mail' : field === 'password' ? 'Passwort' : 'Passwort bestätigen'}
             </label>
             <input
-              id={field.id}
-              type={field.type}
-              autoComplete={field.autoComplete}
+              id={field}
+              type={field === 'email' ? 'email' : 'password'}
+              autoComplete={field === 'email' ? 'email' : 'new-password'}
               required
-              value={values[field.id]}
-              onChange={(e) => setters[field.id](e.target.value)}
+              minLength={field === 'email' ? undefined : 6}
+              value={field === 'email' ? email : field === 'password' ? password : passwordConfirm}
+              onChange={(e) => {
+                if (field === 'email') setEmail(e.target.value)
+                else if (field === 'password') setPassword(e.target.value)
+                else setPasswordConfirm(e.target.value)
+              }}
               className="auth-input w-full rounded-[0.9rem] border border-shell-fg/15 bg-shell-fg/[0.055] px-4 py-3 text-shell-fg outline-none"
             />
           </motion.div>
@@ -109,14 +118,28 @@ export function RegisterPage() {
           >
             {submitting ? (
               <span className="flex items-center justify-center gap-2">
-                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12" cy="12" r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
                 </svg>
                 Wird registriert …
               </span>
             ) : (
-              'Konto erstellen'
+              'Registrieren'
             )}
           </button>
         </motion.div>
@@ -126,9 +149,9 @@ export function RegisterPage() {
         className="mt-7 text-center text-sm text-shell-fg/55"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6, duration: 0.4 }}
+        transition={{ delay: 0.55, duration: 0.4 }}
       >
-        Bereits registriert?{' '}
+        Schon einen Account?{' '}
         <Link className="font-semibold text-shell-fg underline-offset-4 hover:underline" to="/login">
           Anmelden
         </Link>

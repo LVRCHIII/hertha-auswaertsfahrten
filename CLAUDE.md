@@ -209,12 +209,15 @@ VITE_GOOGLE_MAPS_API_KEY=<Google Maps API Key>
   - Liga-Badge im `VereinAutocomplete`-Dropdown
 - **56 Wappen-PNGs** in `public/wappen/` — einmalig geladen via api-football.com
   - Script: `scripts/fetch-wappen.mjs`, `npm run fetch-wappen`
-  - api-football Team-ID Hertha: 159, API-Key in `.env` als `VITE_API_FOOTBALL_KEY`
-- **Spielplan-Import:** `src/components/SpielplanImport.tsx` + `src/lib/apiFootballFixtures.ts`
+  - Einmaliges Wartungsscript; Key nur als Prozessvariable `API_FOOTBALL_KEY`, nicht für den App-Runtime-Import
+- **Spielplan-Import:** `src/components/SpielplanImport.tsx` + `src/lib/openligaFixtures.ts`
   - Weißes Card oben auf `FahrtAnlegenPage`, "📅 Laden" → Preview mit Checkboxen → Bulk-Import
-  - Nur Hertha-Auswärtsspiele (2. BL + DFB Pokal), bereits vorhandene Fahrten ausgegraut
-  - **Einschränkung:** api-football Free Plan nur Saisons 2022–2024
-  - **Geplant:** Wechsel auf OpenLiga DB (kostenlos, kein Key) wenn Spielplan 2026/27 erscheint
+  - OpenLigaDB ohne API-Key; Hertha-Auswärtsspiele aus Bundesliga, 2. Bundesliga und DFB-Pokal
+  - UTC-Anstoßzeiten, dynamische Saison 2026/27 usw.; bereits vorhandene Fahrten ausgegraut
+  - Fehlende OpenLigaDB-Stadien werden über `src/data/vereine.ts` ergänzt
+  - `openliga_match_id` bleibt bei Spielverlegungen stabil und verhindert doppelte Imports
+  - Teilausfälle einzelner Wettbewerbe werden als Warnung angezeigt, statt alle übrigen Daten zu verwerfen
+  - Migration `20260715150000_openliga_match_id.sql` am 15. Juli 2026 remote ausgeführt und per PostgREST-Schemaabfrage verifiziert
 
 ---
 
@@ -274,6 +277,7 @@ Komplettes visuelles Redesign der App. Das Theme-System (5 Trikot-Themes) bleibt
 | `20260522140000_milestone11_spieltagsberichte.sql` | spieltagsberichte-Tabelle |
 | `20260525120000_milestone12_futbology.sql` | futbology_spiele-Tabelle |
 | `20260602120000_milestone20_bewertungen.sql` | Bewertungsspalten auf spieltagsberichte |
+| `20260715150000_openliga_match_id.sql` | stabile OpenLigaDB-Match-ID auf fahrten |
 
 ---
 
@@ -386,6 +390,5 @@ Alle Milestones M1–M24 sind im Repository umgesetzt. Produktives Deployment un
 ### Backlog (nice to have)
 
 - **Fahnenmeer-Theme** — wenn hochauflösende Version verfügbar: `public/textures/Fahnenmeer.png` ersetzen und Theme eintragen
-- **OpenLiga DB** — `src/lib/apiFootballFixtures.ts` durch `src/lib/openligaFixtures.ts` ersetzen wenn Spielplan 2026/27 erscheint
 - **Push-Notifications** — wenn jemand zusagt oder der Treffpunkt geändert wird (Supabase Realtime + Web Push API)
 - **Discord vielleicht später** — bevorzugt ausgehende Webhook-Benachrichtigungen; keine vollständige Chat-Synchronisierung

@@ -4,6 +4,17 @@ export function mapFahrtError(error: PostgrestError): string {
   const code = error.code ?? ''
   const message = error.message ?? ''
 
+  if (message.includes('openliga_match_id')) {
+    if (code === '23505') {
+      return 'Dieses OpenLigaDB-Spiel ist bereits als Fahrt vorhanden.'
+    }
+
+    return (
+      'Die OpenLigaDB-Spalte fehlt oder ist im Supabase-Schema-Cache noch nicht verfügbar. ' +
+      'Führe die Migration 20260715150000_openliga_match_id.sql aus und lade die App neu.'
+    )
+  }
+
   if (code === '42P01' || (message.includes('fahrten') && message.includes('does not exist'))) {
     return (
       'Die Datenbank-Tabelle „fahrten“ fehlt. Führe die Migration in Supabase aus ' +

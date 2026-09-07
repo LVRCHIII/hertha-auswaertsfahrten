@@ -528,22 +528,55 @@ export function findVereinByName(name: string): Verein | undefined {
   return ALLE_VEREINE.find((v) => v.name === trimmed)
 }
 
-/** Wappen-URL für einen Gegnernamen (exakt oder über Suchbegriffe). */
-export function resolveGegnerWappen(gegner: string): string | null {
+function normalizeVereinName(value: string): string {
+  return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+}
+
+function resolveGegnerVerein(gegner: string): Verein | undefined {
   const trimmed = gegner.trim()
-  if (!trimmed) return null
+  if (!trimmed) return undefined
 
   const exact = findVereinByName(trimmed)
-  if (exact) return exact.wappenUrl || null
+  if (exact) return exact
 
-  const q = trimmed.toLowerCase()
-  const match = ALLE_VEREINE.find((verein) => {
-    const name = verein.name.toLowerCase()
-    if (name.includes(q) || q.includes(name)) return true
-    return verein.suchbegriffe.some(
-      (term) => term.toLowerCase() === q || q.includes(term.toLowerCase()),
-    )
-  })
+  const query = normalizeVereinName(trimmed)
+  if (!query) return undefined
 
-  return match?.wappenUrl || null
+  let bestMatch: { verein: Verein; score: number } | undefined
+
+  for (const verein of ALLE_VEREINE) {
+    for (const term of [verein.name, ...verein.suchbegriffe]) {
+      const candidate = normalizeVereinName(term)
+      if (!candidate) continue
+
+      let score = 0
+      if (candidate === query) {
+        score = 10_000 + candidate.length
+      } else if (candidate.length >= 4 && query.includes(candidate)) {
+        score = candidate.length
+      } else if (query.length >= 4 && candidate.includes(query)) {
+        score = query.length
+      }
+
+      if (score > (bestMatch?.score ?? 0)) {
+        bestMatch = { verein, score }
+      }
+    }
+  }
+
+  return bestMatch?.verein
+}
+
+/** Wappen-URL für einen Gegnernamen (exakt oder über Suchbegriffe). */
+export function resolveGegnerWappen(gegner: string): string | null {
+  return resolveGegnerVerein(gegner)?.wappenUrl || null
+}
+
+/** Stadion aus der lokalen Vereinsdatenbank, falls eine externe Datenquelle keines liefert. */
+export function resolveGegnerStadion(gegner: string): string | null {
+  return resolveGegnerVerein(gegner)?.stadion || null
 }

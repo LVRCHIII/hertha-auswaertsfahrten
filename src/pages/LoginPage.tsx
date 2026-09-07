@@ -128,7 +128,18 @@ export function LoginPage() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.55, duration: 0.4 }}
       >
-        Noch kein Konto?{' '}
+        <Link className="font-semibold text-shell-fg underline-offset-4 hover:underline" to="/forgot-password">
+          Passwort vergessen?
+        </Link>
+      </motion.p>
+
+      <motion.p
+        className="mt-3 text-center text-sm text-shell-fg/55"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6, duration: 0.4 }}
+      >
+        Noch keinen Account?{' '}
         <Link className="font-semibold text-shell-fg underline-offset-4 hover:underline" to="/register">
           Registrieren
         </Link>

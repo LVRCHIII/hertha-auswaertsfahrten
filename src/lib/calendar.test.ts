@@ -7,6 +7,7 @@ function createFahrt(overrides: Partial<Fahrt>): Fahrt {
     id: 'fahrt-1',
     created_at: '2026-01-01T00:00:00.000Z',
     created_by: 'user-1',
+    openliga_match_id: null,
     gegner: 'Gegner',
     stadion: 'Stadion',
     spiel_at: '2026-05-16T18:30:00.000Z',
