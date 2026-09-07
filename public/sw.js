@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hertha-auswaertsfahrten-v1'
+const CACHE_NAME = 'hertha-auswaertsfahrten-v2'
 const APP_SHELL = ['/', '/manifest.webmanifest', '/icons/hertha-app-icon.svg']
 
 self.addEventListener('install', (event) => {
@@ -34,19 +34,22 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
+  // Stale-while-revalidate: sofort aus dem Cache antworten (falls vorhanden), aber
+  // immer im Hintergrund neu laden und den Cache aktualisieren. So bleiben Assets wie
+  // die Wappen-PNGs spätestens beim nächsten Reload aktuell, statt für immer im Cache
+  // hängen zu bleiben (das war der Grund, warum reparierte Wappen nicht ankamen).
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached
+    caches.open(CACHE_NAME).then((cache) =>
+      cache.match(request).then((cached) => {
+        const networkFetch = fetch(request)
+          .then((response) => {
+            if (response.ok) void cache.put(request, response.clone())
+            return response
+          })
+          .catch(() => cached)
 
-      return fetch(request).then((response) => {
-        if (!response.ok) return response
-
-        const copy = response.clone()
-        caches.open(CACHE_NAME).then((cache) => {
-          void cache.put(request, copy)
-        })
-        return response
-      })
-    }),
+        return cached ?? networkFetch
+      }),
+    ),
   )
 })
