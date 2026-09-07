@@ -17,6 +17,7 @@ export type Verein = {
 const wappen = (slug: string) => `/wappen/${slug}.png`
 
 export const HERTHA_WAPPEN_URL = wappen('hertha')
+export const HERTHA_STADION = 'Olympiastadion Berlin'
 
 export const VEREINE_1_BUNDESLIGA: Verein[] = [
   {

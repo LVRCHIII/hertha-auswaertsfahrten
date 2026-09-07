@@ -6,11 +6,12 @@ import { AppShell } from '../components/AppShell'
 import { SpielplanImport } from '../components/SpielplanImport'
 import { VereinAutocomplete } from '../components/VereinAutocomplete'
 import { useAuth } from '../contexts/AuthContext'
-import type { Verein } from '../data/vereine'
+import { HERTHA_STADION, type Verein } from '../data/vereine'
 import { combineDateAndTime } from '../lib/fahrtFormat'
 import { HERTHA_TREFFPUNKT, isDefaultTreffpunkt } from '../lib/defaultTreffpunkt'
 import { insertFahrt } from '../lib/fahrtenApi'
 import { useFahrten } from '../hooks/useFahrten'
+import type { FahrtTyp } from '../types/fahrt'
 
 const inputClass =
   'w-full rounded-lg border border-shell-fg/20 bg-shell-fg/8 px-3 py-2 text-shell-fg outline-none focus:border-shell-cta-bg focus:ring-2 focus:ring-shell-cta-bg/40'
@@ -25,6 +26,7 @@ export function FahrtAnlegenPage() {
     openliga_match_id: fahrt.openliga_match_id,
   }))
 
+  const [typ, setTyp] = useState<FahrtTyp>('auswaerts')
   const [gegner, setGegner] = useState('')
   const [stadion, setStadion] = useState('')
   const [datum, setDatum] = useState('')
@@ -34,9 +36,15 @@ export function FahrtAnlegenPage() {
   const [notizen, setNotizen] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const istHeimspiel = typ === 'heim'
+
+  function handleTypChange(nextTyp: FahrtTyp) {
+    setTyp(nextTyp)
+    setStadion(nextTyp === 'heim' ? HERTHA_STADION : '')
+  }
 
   function handleVereinSelect(verein: Verein | null) {
-    if (verein) setStadion(verein.stadion)
+    if (verein && typ === 'auswaerts') setStadion(verein.stadion)
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -53,8 +61,9 @@ export function FahrtAnlegenPage() {
 
     const result = await insertFahrt({
       gegner: gegner.trim(),
-      stadion: stadion.trim(),
+      stadion: (istHeimspiel ? HERTHA_STADION : stadion).trim(),
       spiel_at: combineDateAndTime(datum, anpfiff),
+      typ,
       startpunkt: startpunkt.trim() || 'Berlin',
       notizen: notizen.trim() || null,
       treffpunkt_berlin: isDefaultTreffpunkt(treffpunktBerlin) ? null : treffpunktBerlin.trim(),
@@ -72,9 +81,32 @@ export function FahrtAnlegenPage() {
   }
 
   return (
-    <AppShell title="Fahrt anlegen">
+    <AppShell title={istHeimspiel ? 'Heimspiel anlegen' : 'Fahrt anlegen'}>
+      <div className="glass-card mb-4 inline-flex rounded-xl p-1 gap-0.5">
+        {(
+          [
+            { id: 'auswaerts', label: 'Auswärtsspiel' },
+            { id: 'heim', label: 'Heimspiel' },
+          ] as const
+        ).map((option) => (
+          <button
+            key={option.id}
+            type="button"
+            onClick={() => handleTypChange(option.id)}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-150 active:scale-[0.97] ${
+              typ === option.id
+                ? 'bg-shell-cta-bg text-shell-cta-fg shadow-sm'
+                : 'text-shell-fg/60 hover:bg-shell-fg/10 hover:text-shell-fg'
+            }`}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+
       <div className="mb-4">
         <SpielplanImport
+          typ={typ}
           vorhandeneSpiele={vorhandeneSpiele}
           bestandWirdGeladen={fahrtenLoading}
           bestandFehler={fahrtenError}
@@ -101,22 +133,36 @@ export function FahrtAnlegenPage() {
           required
         />
 
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="stadion">
-            Stadion / Zielort <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="stadion"
-            required
-            placeholder="z. B. VELTINS-Arena, Gelsenkirchen"
-            value={stadion}
-            onChange={(e) => setStadion(e.target.value)}
-            className={inputClass}
-          />
-          <p className="mt-1 text-xs text-shell-fg/55">
-            Wird beim Vereins-Picker automatisch befüllt — lässt sich jederzeit anpassen.
-          </p>
-        </div>
+        {istHeimspiel ? (
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="stadion">
+              Stadion
+            </label>
+            <input
+              id="stadion"
+              disabled
+              value={HERTHA_STADION}
+              className={`${inputClass} cursor-not-allowed opacity-70`}
+            />
+          </div>
+        ) : (
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="stadion">
+              Stadion / Zielort <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="stadion"
+              required
+              placeholder="z. B. VELTINS-Arena, Gelsenkirchen"
+              value={stadion}
+              onChange={(e) => setStadion(e.target.value)}
+              className={inputClass}
+            />
+            <p className="mt-1 text-xs text-shell-fg/55">
+              Wird beim Vereins-Picker automatisch befüllt — lässt sich jederzeit anpassen.
+            </p>
+          </div>
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
@@ -135,31 +181,35 @@ export function FahrtAnlegenPage() {
           <AnpfiffPicker value={anpfiff} onChange={setAnpfiff} required />
         </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="startpunkt">
-            Startpunkt <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="startpunkt"
-            required
-            value={startpunkt}
-            onChange={(e) => setStartpunkt(e.target.value)}
-            className={inputClass}
-          />
-        </div>
+        {istHeimspiel ? null : (
+          <>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="startpunkt">
+                Startpunkt <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="startpunkt"
+                required
+                value={startpunkt}
+                onChange={(e) => setStartpunkt(e.target.value)}
+                className={inputClass}
+              />
+            </div>
 
-        <div>
-          <label className="mb-1 block text-sm font-medium" htmlFor="treffpunkt">
-            Treffpunkt (optional)
-          </label>
-          <input
-            id="treffpunkt"
-            placeholder={HERTHA_TREFFPUNKT.label}
-            value={treffpunktBerlin}
-            onChange={(e) => setTreffpunktBerlin(e.target.value)}
-            className={inputClass}
-          />
-        </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="treffpunkt">
+                Treffpunkt (optional)
+              </label>
+              <input
+                id="treffpunkt"
+                placeholder={HERTHA_TREFFPUNKT.label}
+                value={treffpunktBerlin}
+                onChange={(e) => setTreffpunktBerlin(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+          </>
+        )}
 
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="notizen">

@@ -8,6 +8,7 @@ const fahrten: FotoArchivFahrt[] = [
     gegner: 'FC Schalke 04',
     stadion: 'Veltins-Arena, Gelsenkirchen',
     spiel_at: '2026-08-15T18:30:00.000+02:00',
+    typ: 'auswaerts',
     fotos: [],
   },
   {
@@ -15,6 +16,7 @@ const fahrten: FotoArchivFahrt[] = [
     gegner: '1. FC Köln',
     stadion: 'RheinEnergieSTADION, Köln',
     spiel_at: '2025-11-02T13:30:00.000+01:00',
+    typ: 'auswaerts',
     fotos: [],
   },
 ]

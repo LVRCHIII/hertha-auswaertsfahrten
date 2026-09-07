@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import {
   fetchHerthaAuswaertsSpiele,
+  fetchHerthaHeimSpiele,
   formatOpenLigaSeason,
   getCurrentOpenLigaSeason,
   type ImportableSpiel,
@@ -9,8 +10,10 @@ import {
 } from '../lib/openligaFixtures'
 import { insertFahrt } from '../lib/fahrtenApi'
 import { useToast } from '../contexts/ToastContext'
+import type { FahrtTyp } from '../types/fahrt'
 
 type Props = {
+  typ: FahrtTyp
   vorhandeneSpiele: VorhandenesSpiel[]
   bestandWirdGeladen: boolean
   bestandFehler: string | null
@@ -21,6 +24,7 @@ type Props = {
 type Step = 'idle' | 'loading' | 'preview' | 'importing'
 
 export function SpielplanImport({
+  typ,
   vorhandeneSpiele,
   bestandWirdGeladen,
   bestandFehler,
@@ -43,7 +47,8 @@ export function SpielplanImport({
     setError(null)
     setWarnings([])
     try {
-      const result = await fetchHerthaAuswaertsSpiele(vorhandeneSpiele, season)
+      const fetchSpiele = typ === 'heim' ? fetchHerthaHeimSpiele : fetchHerthaAuswaertsSpiele
+      const result = await fetchSpiele(vorhandeneSpiele, season)
       setSpiele(result.spiele)
       setWarnings(result.warnings)
       const neuSet = new Set(
@@ -95,6 +100,7 @@ export function SpielplanImport({
         gegner: spiel.gegner,
         stadion: spiel.stadion,
         spiel_at: spiel.spiel_at,
+        typ,
         startpunkt: 'Berlin',
         notizen: null,
         treffpunkt_berlin: null,
@@ -146,7 +152,7 @@ export function SpielplanImport({
                 ? 'Vorhandene Fahrten werden geprüft …'
                 : bestandFehler
                   ? 'Vorhandene Fahrten konnten nicht geprüft werden.'
-                  : 'Hertha-Auswärtsspiele ohne zusätzlichen API-Key laden'}
+                  : `Hertha-${typ === 'heim' ? 'Heimspiele' : 'Auswärtsspiele'} ohne zusätzlichen API-Key laden`}
             </p>
             <a
               href="https://www.openligadb.de/"
@@ -235,7 +241,7 @@ export function SpielplanImport({
       <ul className="max-h-72 divide-y divide-shell-fg/10 overflow-y-auto">
         {spiele.length === 0 ? (
           <li className="px-4 py-6 text-center text-sm text-shell-fg/55">
-            Für {formatOpenLigaSeason(season)} wurden keine Hertha-Auswärtsspiele gefunden.
+            Für {formatOpenLigaSeason(season)} wurden keine Hertha-{typ === 'heim' ? 'Heimspiele' : 'Auswärtsspiele'} gefunden.
           </li>
         ) : null}
         {spiele.map((spiel) => {

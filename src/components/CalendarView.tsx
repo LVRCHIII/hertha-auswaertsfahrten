@@ -118,7 +118,7 @@ export function CalendarView({ fahrten, abfahrtByFahrt }: CalendarViewProps) {
                       className="flex justify-center rounded-lg bg-shell-fg/8 px-0.5 py-1 transition hover:bg-shell-fg/15"
                       aria-label={`${formatAnpfiff(fahrt.spiel_at)} ${fahrt.gegner}`}
                     >
-                      <MatchupWappen gegner={fahrt.gegner} size="sm" />
+                      <MatchupWappen gegner={fahrt.gegner} size="sm" istHeimspiel={fahrt.typ === 'heim'} />
                     </Link>
                   ))}
                   {dayFahrten.length > 2 ? (

@@ -34,9 +34,10 @@ type Props = {
   fahrtId: string
   currentUserId: string | undefined
   gegner?: string
+  istHeimspiel?: boolean
 }
 
-export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Props) {
+export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner, istHeimspiel = false }: Props) {
   const { bericht, loading, error, actionError, busy, save, remove } =
     useSpieltagsbericht(fahrtId)
   const toast = useToast()
@@ -117,8 +118,13 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
         {hasErgebnis ? (
           <div className="flex items-center justify-center gap-4">
             <div className="flex flex-col items-center gap-1">
-              <VereinWappen src={resolveGegnerWappen(gegner ?? '') ?? ''} size="md" />
-              <span className="text-[10px] text-shell-fg/45">{gegner ?? 'Gegner'}</span>
+              <VereinWappen
+                src={(istHeimspiel ? HERTHA_WAPPEN_URL : resolveGegnerWappen(gegner ?? '')) ?? ''}
+                size="md"
+              />
+              <span className="text-[10px] text-shell-fg/45">
+                {istHeimspiel ? 'Hertha BSC' : (gegner ?? 'Gegner')}
+              </span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-3xl font-black tabular-nums text-shell-fg tracking-tight leading-none">
@@ -130,8 +136,13 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
               </span>
             </div>
             <div className="flex flex-col items-center gap-1">
-              <VereinWappen src={HERTHA_WAPPEN_URL} size="md" />
-              <span className="text-[10px] text-shell-fg/45">Hertha BSC</span>
+              <VereinWappen
+                src={(istHeimspiel ? resolveGegnerWappen(gegner ?? '') : HERTHA_WAPPEN_URL) ?? ''}
+                size="md"
+              />
+              <span className="text-[10px] text-shell-fg/45">
+                {istHeimspiel ? (gegner ?? 'Gegner') : 'Hertha BSC'}
+              </span>
             </div>
           </div>
         ) : null}
@@ -169,7 +180,10 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
         <div>
           <p className="mb-2 text-sm font-medium text-shell-fg/80">Ergebnis</p>
           <div className="flex items-center gap-3">
-            <VereinWappen src={resolveGegnerWappen(gegner ?? '') ?? ''} size="sm" />
+            <VereinWappen
+              src={(istHeimspiel ? HERTHA_WAPPEN_URL : resolveGegnerWappen(gegner ?? '')) ?? ''}
+              size="sm"
+            />
             {(['ergebnis_heim', 'ergebnis_gast'] as const).map((field, i) => (
               <div key={field} className={`flex items-center gap-3 ${i === 0 ? '' : ''}`}>
                 {i === 1 && <span className="text-xl font-bold text-shell-fg/45">:</span>}
@@ -190,7 +204,10 @@ export function SpieltagsberichtSection({ fahrtId, currentUserId, gegner }: Prop
                 </div>
               </div>
             ))}
-            <VereinWappen src={HERTHA_WAPPEN_URL} size="sm" />
+            <VereinWappen
+              src={(istHeimspiel ? resolveGegnerWappen(gegner ?? '') : HERTHA_WAPPEN_URL) ?? ''}
+              size="sm"
+            />
           </div>
         </div>
 

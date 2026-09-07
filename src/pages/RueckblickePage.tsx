@@ -108,7 +108,7 @@ function FahrtRueckblick({ fahrt }: FahrtRueckblickProps) {
     <article className="scroll-mt-36 border-t border-shell-fg/12 pt-6">
       <header className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex min-w-0 items-start gap-3 sm:items-center">
-          <MatchupWappen gegner={fahrt.gegner} />
+          <MatchupWappen gegner={fahrt.gegner} istHeimspiel={fahrt.typ === 'heim'} />
           <div className="min-w-0">
             <h2 className="font-display text-2xl leading-none text-shell-fg sm:text-3xl">
               {fahrt.gegner}

@@ -1,4 +1,4 @@
-import { resolveGegnerStadion } from '../data/vereine'
+import { HERTHA_STADION, resolveGegnerStadion } from '../data/vereine'
 
 const OPENLIGA_BASE_URL = 'https://api.openligadb.de'
 const HERTHA_TEAM_ID = 54
@@ -112,6 +112,7 @@ function formatLocation(location: OpenLigaLocation | null): string {
 export function mapOpenLigaMatches(
   matches: OpenLigaMatch[],
   vorhandeneSpiele: VorhandenesSpiel[],
+  heim = false,
 ): ImportableSpiel[] {
   const vorhandeneMatchIds = new Set(
     vorhandeneSpiele.flatMap((spiel) =>
@@ -129,14 +130,16 @@ export function mapOpenLigaMatches(
 
   return [...uniqueMatches.values()]
     .flatMap((match) => {
-      if (!isHertha(match.team2) || isHertha(match.team1)) return []
+      const herthaTeam = heim ? match.team1 : match.team2
+      const gegnerTeam = heim ? match.team2 : match.team1
+      if (!isHertha(herthaTeam) || isHertha(gegnerTeam)) return []
 
-      const gegner = match.team1?.teamName?.trim() ?? ''
+      const gegner = gegnerTeam?.teamName?.trim() ?? ''
       const spielAt = normalizeUtcDate(match.matchDateTimeUTC)
       if (!gegner || !spielAt) return []
 
       const apiLocation = formatLocation(match.location)
-      const stadion = apiLocation || resolveGegnerStadion(gegner) || gegner
+      const stadion = apiLocation || (heim ? HERTHA_STADION : resolveGegnerStadion(gegner) || gegner)
 
       return [{
         openliga_match_id: match.matchID,
@@ -220,12 +223,13 @@ async function fetchCompetitionMatches(
 }
 
 /**
- * Lädt Herthas Auswärtsspiele aus Bundesliga, 2. Bundesliga und DFB-Pokal.
+ * Lädt Herthas Spiele (heim oder auswärts) aus Bundesliga, 2. Bundesliga und DFB-Pokal.
  * OpenLigaDB verwendet als Saisonwert immer das Startjahr, z. B. 2026 für 2026/27.
  */
-export async function fetchHerthaAuswaertsSpiele(
+async function fetchHerthaSpiele(
   vorhandeneSpiele: VorhandenesSpiel[],
-  season = getCurrentOpenLigaSeason(),
+  season: number,
+  heim: boolean,
 ): Promise<OpenLigaImportResult> {
   const competitionResults = await Promise.allSettled(
     COMPETITIONS.map(({ shortcut }) => fetchCompetitionMatches(shortcut, season)),
@@ -251,11 +255,25 @@ export async function fetchHerthaAuswaertsSpiele(
   }
 
   return {
-    spiele: mapOpenLigaMatches(competitionMatches.flat(), vorhandeneSpiele),
+    spiele: mapOpenLigaMatches(competitionMatches.flat(), vorhandeneSpiele, heim),
     warnings: failedCompetitions.length > 0
       ? [
           `Nicht geladen: ${failedCompetitions.join(', ')}. Der Spielplan kann unvollständig sein.`,
         ]
       : [],
   }
+}
+
+export async function fetchHerthaAuswaertsSpiele(
+  vorhandeneSpiele: VorhandenesSpiel[],
+  season = getCurrentOpenLigaSeason(),
+): Promise<OpenLigaImportResult> {
+  return fetchHerthaSpiele(vorhandeneSpiele, season, false)
+}
+
+export async function fetchHerthaHeimSpiele(
+  vorhandeneSpiele: VorhandenesSpiel[],
+  season = getCurrentOpenLigaSeason(),
+): Promise<OpenLigaImportResult> {
+  return fetchHerthaSpiele(vorhandeneSpiele, season, true)
 }

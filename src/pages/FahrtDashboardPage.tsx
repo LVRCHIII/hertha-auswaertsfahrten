@@ -53,7 +53,7 @@ export function FahrtDashboardPage() {
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [routeDistanceError, setRouteDistanceError] = useState<string | null>(null)
-  const routeEndpoints = fahrt ? getRouteEndpoints(fahrt, selectedParkplatz) : null
+  const routeEndpoints = fahrt && fahrt.typ !== 'heim' ? getRouteEndpoints(fahrt, selectedParkplatz) : null
   const routeDepartureTime = useMemo(
     () => (fahrt ? departureTimeForTraffic(fahrt.spiel_at, pufferMinuten) : undefined),
     [fahrt?.spiel_at, pufferMinuten],
@@ -125,6 +125,7 @@ export function FahrtDashboardPage() {
   }
 
   const trip = fahrt
+  const istHeimspiel = trip.typ === 'heim'
   const mapsUrl = routeEndpoints
     ? buildGoogleMapsDirectionsUrl(routeEndpoints.origin, routeEndpoints.destination)
     : '#'
@@ -186,10 +187,10 @@ export function FahrtDashboardPage() {
         ) : null}
 
         <div className="relative px-5 pb-5 pt-3 sm:px-6 sm:pb-6">
-          <MatchupWappen gegner={trip.gegner} size="md" />
+          <MatchupWappen gegner={trip.gegner} size="md" istHeimspiel={istHeimspiel} />
           <h2 className="font-display mt-4 text-3xl leading-[0.95] text-shell-fg sm:text-4xl">{trip.gegner}</h2>
 
-          <dl className="mt-5 grid gap-x-8 gap-y-3 text-sm sm:grid-cols-3">
+          <dl className={`mt-5 grid gap-x-8 gap-y-3 text-sm ${istHeimspiel ? 'sm:grid-cols-2' : 'sm:grid-cols-3'}`}>
             <div>
               <dt className="font-display-wide text-[9px] text-shell-fg/40">Anpfiff</dt>
               <dd className="mt-1 font-semibold text-shell-fg">
@@ -200,20 +201,22 @@ export function FahrtDashboardPage() {
               <dt className="font-display-wide text-[9px] text-shell-fg/40">Stadion</dt>
               <dd className="mt-1 font-semibold text-shell-fg">{trip.stadion}</dd>
             </div>
-            <div>
-              <dt className="font-display-wide text-[9px] text-shell-fg/40">Treffpunkt</dt>
-              <dd className="mt-1 font-semibold text-shell-fg">
-                {getTreffpunktLabel(trip)}
-                <a
-                  href={getTreffpunktMapsUrl(trip)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-2 text-xs font-medium text-shell-fg/60 underline underline-offset-2 hover:text-shell-fg"
-                >
-                  Karte
-                </a>
-              </dd>
-            </div>
+            {istHeimspiel ? null : (
+              <div>
+                <dt className="font-display-wide text-[9px] text-shell-fg/40">Treffpunkt</dt>
+                <dd className="mt-1 font-semibold text-shell-fg">
+                  {getTreffpunktLabel(trip)}
+                  <a
+                    href={getTreffpunktMapsUrl(trip)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-2 text-xs font-medium text-shell-fg/60 underline underline-offset-2 hover:text-shell-fg"
+                  >
+                    Karte
+                  </a>
+                </dd>
+              </div>
+            )}
           </dl>
 
           {trip.notizen ? (
@@ -225,6 +228,7 @@ export function FahrtDashboardPage() {
         </div>
       </div>
 
+      {istHeimspiel ? null : (
       <div className="mt-4 space-y-4">
         <DashboardSection title="Abfahrt" compact>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
@@ -380,12 +384,16 @@ export function FahrtDashboardPage() {
         ) : null}
 
       </div>
+      )}
 
+      {istHeimspiel ? null : (
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <MitfahrerSection fahrtId={trip.id} currentUserId={user?.id} />
         <MitbringlisteSection fahrtId={trip.id} currentUserId={user?.id} />
       </div>
+      )}
 
+      {istHeimspiel ? null : (
       <div className="mt-4">
         <ParkplatzSection
           stadion={trip.stadion}
@@ -393,12 +401,14 @@ export function FahrtDashboardPage() {
           parkplaetze={parkplaetze}
         />
       </div>
+      )}
 
       <div className="mt-4">
         <SpieltagsberichtSection
           fahrtId={trip.id}
           currentUserId={user?.id}
           gegner={trip.gegner}
+          istHeimspiel={istHeimspiel}
         />
       </div>
 

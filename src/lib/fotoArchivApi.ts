@@ -2,11 +2,11 @@ import type { BerichtBild } from './berichtBilderApi'
 import { requireSupabase } from './supabase'
 import type { Fahrt } from '../types/fahrt'
 
-export type FotoArchivFahrt = Pick<Fahrt, 'id' | 'gegner' | 'stadion' | 'spiel_at'> & {
+export type FotoArchivFahrt = Pick<Fahrt, 'id' | 'gegner' | 'stadion' | 'spiel_at' | 'typ'> & {
   fotos: BerichtBild[]
 }
 
-type ArchivFahrtRow = Pick<Fahrt, 'id' | 'gegner' | 'stadion' | 'spiel_at'>
+type ArchivFahrtRow = Pick<Fahrt, 'id' | 'gegner' | 'stadion' | 'spiel_at' | 'typ'>
 
 export async function fetchFotoArchiv(): Promise<{
   fahrten: FotoArchivFahrt[]
@@ -16,7 +16,7 @@ export async function fetchFotoArchiv(): Promise<{
   const [fahrtenResult, bilderResult] = await Promise.all([
     client
       .from('fahrten')
-      .select('id, gegner, stadion, spiel_at')
+      .select('id, gegner, stadion, spiel_at, typ')
       .order('spiel_at', { ascending: false }),
     client
       .from('bericht_bilder')

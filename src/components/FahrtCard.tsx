@@ -62,14 +62,16 @@ function HeroCard({ fahrt, mitfahrer, abfahrt }: Required<Pick<FahrtCardProps, '
         <div className="mb-5 flex items-start justify-between gap-3">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-shell-fg/15 bg-shell-fg/8 px-3 py-1">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-shell-cta-bg" />
-            <span className="font-display-wide text-[9px] text-shell-fg/70">Nächste Fahrt</span>
+            <span className="font-display-wide text-[9px] text-shell-fg/70">
+              {fahrt.typ === 'heim' ? 'Nächstes Heimspiel' : 'Nächste Fahrt'}
+            </span>
           </span>
           {hasMitfahrer ? (
             <MitfahrerAvatarStack entries={mitfahrer} ringClassName="ring-2 ring-shell-bg" />
           ) : null}
         </div>
 
-        <MatchupWappen gegner={fahrt.gegner} size="md" />
+        <MatchupWappen gegner={fahrt.gegner} size="md" istHeimspiel={fahrt.typ === 'heim'} />
 
         <div className="mt-5">
           <h3 className="font-display text-3xl leading-[0.95] text-shell-fg sm:text-5xl">{fahrt.gegner}</h3>
@@ -119,7 +121,7 @@ export function FahrtCard({ fahrt, mitfahrer = [], abfahrt = null, hero = false 
       <div className={`p-4 ${hasMitfahrer ? 'pb-12' : ''}`}>
         {upcoming ? (
           <div className="mb-3">
-            <MatchupWappen gegner={fahrt.gegner} />
+            <MatchupWappen gegner={fahrt.gegner} istHeimspiel={fahrt.typ === 'heim'} />
           </div>
         ) : null}
 

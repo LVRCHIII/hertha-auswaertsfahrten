@@ -23,7 +23,7 @@ export function pickNextSpieltagFahrt(fahrten: Fahrt[], now = new Date()): Fahrt
 
   return (
     [...fahrten]
-      .filter((fahrt) => new Date(fahrt.spiel_at).getTime() >= todayStart)
+      .filter((fahrt) => fahrt.typ === 'auswaerts' && new Date(fahrt.spiel_at).getTime() >= todayStart)
       .sort((a, b) => new Date(a.spiel_at).getTime() - new Date(b.spiel_at).getTime())[0] ?? null
   )
 }

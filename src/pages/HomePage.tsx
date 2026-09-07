@@ -29,7 +29,7 @@ export function HomePage() {
   } = useMitfahrerOverview(fahrtIds)
   const { winningByFahrt: abfahrtByFahrt } = useAbfahrtAbstimmungOverview(fahrtIds)
   const awayStats = useMemo(
-    () => buildAwayStats(fahrten, mitfahrerByFahrt, user?.id),
+    () => buildAwayStats(fahrten.filter((fahrt) => fahrt.typ === 'auswaerts'), mitfahrerByFahrt, user?.id),
     [fahrten, mitfahrerByFahrt, user?.id],
   )
   const { spiele, loading: spieleLoading, error: spieleError, reload: reloadSpiele } = useFutbologySpiele()

@@ -70,6 +70,25 @@ describe('OpenLigaDB-Mapping', () => {
     ])
   })
 
+  it('übernimmt im Heim-Modus nur Hertha-Heimspiele', () => {
+    const homeMatch = createMatch({
+      matchID: 2,
+      team1: createMatch().team2,
+      team2: createMatch().team1,
+    })
+
+    expect(mapOpenLigaMatches([homeMatch, createMatch()], [], true)).toEqual([
+      {
+        openliga_match_id: 2,
+        gegner: 'VfL Bochum',
+        stadion: 'Olympiastadion Berlin',
+        spiel_at: '2026-08-07T18:30:00.000Z',
+        liga: '2. Bundesliga',
+        exists: false,
+      },
+    ])
+  })
+
   it('formatiert API-Orte, sortiert Wettbewerbe und markiert vorhandene Fahrten', () => {
     const pokal = createMatch({
       matchID: 81849,
